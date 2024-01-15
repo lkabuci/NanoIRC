@@ -2,12 +2,7 @@
 // Created by Redouane Elkaboussi on 1/15/24.
 //
 
-
 #include "AddressResolver.hpp"
-#include <cstdlib>
-#include <cstring>
-#include <iostream>
-#include <netdb.h>
 
 AddressResolver::AddressResolver(const char* port)
     : _addresses(NULL), _port(port) {

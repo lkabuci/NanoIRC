@@ -1,17 +1,5 @@
 #include "Socket.hpp"
 #include "AddressResolver.hpp"
-#include <cerrno>
-#include <cstdio>
-#include <cstdlib>
-#include <exception>
-#include <fcntl.h>
-#include <iostream>
-#include <netdb.h>
-#include <cstdio>
-#include <cstring>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <vector>
 
 Socket::Socket() : _sockfd(), _ip(), _port(), _addresses(NULL) {}
 

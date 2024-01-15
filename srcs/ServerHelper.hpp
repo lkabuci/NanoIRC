@@ -1,9 +1,6 @@
 #pragma once
 
-#include <arpa/inet.h>
-#include <cstdio>
-#include <netinet/in.h>
-#include <sys/socket.h>
+#include "../include/IRC.h"
 
 class ServerHelper {
   public:

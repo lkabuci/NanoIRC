@@ -4,8 +4,7 @@
 
 #pragma once
 
-#include <netdb.h>
-#include <vector>
+#include "../include/IRC.h"
 
 class AddressResolver {
   public:

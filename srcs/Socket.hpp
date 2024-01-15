@@ -2,7 +2,8 @@
 
 #include "ServerHelper.hpp"
 #include "AddressResolver.hpp"
-#include <netdb.h>
+#include "../include/IRC.h"
+
 #define BACKLOG 10
 
 class Socket {
