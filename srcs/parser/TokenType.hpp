@@ -5,29 +5,29 @@
 
 namespace TYPES {
 enum TokenType {
-  // commands
-  PASS,
-  NICK,
-  USER,
-  KICK,
-  INVITE,
-  TOPIC,
-  MODE,
+    // commands
+    PASS,
+    NICK,
+    USER,
+    KICK,
+    INVITE,
+    TOPIC,
+    MODE,
 
-  // separators
-  CRLF,
-  CR,
-  LF,
-  AMPERSAND,
-  HASH,
-  COMMA,
-  PLUS,
-  MINUS,
-  SPACE,
-  SEMICOLON,
+    // separators
+    CRLF,
+    CR,
+    LF,
+    AMPERSAND,
+    HASH,
+    COMMA,
+    PLUS,
+    MINUS,
+    SPACE,
+    SEMICOLON,
 
-  LETTER,
-  END
+    LETTER,
+    END
 };
 }
 
