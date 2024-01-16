@@ -4,13 +4,13 @@
 
 #include "Reactor.hpp"
 
-Reactor &Reactor::getInstance() {
+Reactor& Reactor::getInstance() {
     static Reactor instance;
     return instance;
 }
 
 Reactor::~Reactor() {
-    for (std::vector<Client *>::iterator it = _clients.begin();
+    for (std::vector<Client*>::iterator it = _clients.begin();
          it != _clients.end(); ++it) {
         delete *it;
     }
@@ -22,14 +22,14 @@ Reactor::~Reactor() {
     _pollfds.clear();
 }
 
-void Reactor::addClient(Client *client, int socket) {
+void Reactor::addClient(Client* client, int socket) {
     _clients.push_back(client);
     pollfd newPfd = {socket, POLLIN, 0};
     _pollfds.push_back(newPfd);
 }
 
-void Reactor::removeClient(Client *client) {
-    std::vector<Client *>::iterator it =
+void Reactor::removeClient(Client* client) {
+    std::vector<Client*>::iterator it =
         std::find(_clients.begin(), _clients.end(), client);
     if (it != _clients.end()) {
         long index = std::distance(_clients.begin(), it);
@@ -49,7 +49,7 @@ void Reactor::run() {
     }
 }
 
-std::vector<pollfd> &Reactor::getPollfds() {
+std::vector<pollfd>& Reactor::getPollfds() {
     return _pollfds;
 }
 

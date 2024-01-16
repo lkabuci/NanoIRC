@@ -5,6 +5,6 @@
 #include "Demultiplexer.hpp"
 
 int Demultiplexer::waitForEvents() {
-    std::vector<pollfd> &pfds = Reactor::getInstance().getPollfds();
+    std::vector<pollfd>& pfds = Reactor::getInstance().getPollfds();
     return poll(pfds.data(), pfds.size(), -1);
 }

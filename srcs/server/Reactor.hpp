@@ -13,17 +13,17 @@
 
 class Reactor {
   public:
-    static Reactor &getInstance();
+    static Reactor& getInstance();
     ~Reactor();
-    void                 addClient(Client *, int socket);
-    void                 removeClient(Client *);
+    void                 addClient(Client*, int socket);
+    void                 removeClient(Client*);
     void                 addPfds(pollfd);
     void                 run();
-    std::vector<pollfd> &getPollfds();
+    std::vector<pollfd>& getPollfds();
 
   private:
-    std::vector<Client *> _clients;
-    std::vector<pollfd>   _pollfds;
+    std::vector<Client*> _clients;
+    std::vector<pollfd>  _pollfds;
 };
 
 #endif // IRC_REACTOR_HPP

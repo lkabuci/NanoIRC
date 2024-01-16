@@ -11,7 +11,7 @@
 
 class Dispatcher {
   public:
-    static void dispatchEvents(std::vector<pollfd> &, std::vector<Client *> &);
+    static void dispatchEvents(std::vector<pollfd>&, std::vector<Client*>&);
 };
 
 #endif // IRC_DISPATCHER_HPP
