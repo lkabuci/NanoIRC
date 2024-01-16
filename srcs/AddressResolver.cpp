@@ -4,12 +4,12 @@
 
 #include "AddressResolver.hpp"
 
-AddressResolver::AddressResolver(const char* port)
+AddressResolver::AddressResolver(const char *port)
     : _addresses(NULL), _port(port) {
     fillAddressInfo();
 }
 
-const struct addrinfo* AddressResolver::getAddresses() const {
+const struct addrinfo *AddressResolver::getAddresses() const {
     return _addresses;
 }
 

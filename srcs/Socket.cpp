@@ -3,27 +3,27 @@
 
 Socket::Socket() : _sockfd(), _ip(), _port(), _addresses(NULL) {}
 
-Socket::Socket(const char* port)
+Socket::Socket(const char *port)
     : _sockfd(-1), _ip(), _port(port), _addresses(port) {
     initializeSocket();
-    _ip = const_cast<char*>(ServerHelper::GetIPAddressFromSockAddr(_sockfd));
+    _ip = const_cast<char *>(ServerHelper::GetIPAddressFromSockAddr(_sockfd));
     _port =
-        const_cast<char*>(ServerHelper::GetPortAddressFromSockAddr(_sockfd));
+        const_cast<char *>(ServerHelper::GetPortAddressFromSockAddr(_sockfd));
     std::cout << "Successfully listening on " << _ip << ":" << _port << "\n";
 }
 
-const char* Socket::getIP() const {
+const char *Socket::getIP() const {
     return _ip;
 }
 
-const char* Socket::getPort() const {
+const char *Socket::getPort() const {
     return _port;
 }
 
 void Socket::initializeSocket() {
-    struct addrinfo* addresses =
-        const_cast<struct addrinfo*>(_addresses.getAddresses());
-    for (struct addrinfo* address = addresses; address;
+    struct addrinfo *addresses =
+        const_cast<struct addrinfo *>(_addresses.getAddresses());
+    for (struct addrinfo *address = addresses; address;
          address = address->ai_next) {
         if ((_sockfd = socket(address->ai_family, address->ai_socktype,
                               address->ai_protocol)) == -1) {
@@ -33,7 +33,7 @@ void Socket::initializeSocket() {
         try {
             configureSocket();
             bindSocket(*address);
-        } catch (const std::exception& ex) {
+        } catch (const std::exception &ex) {
             std::cout << ex.what() << std::endl;
             close(_sockfd);
             continue;

@@ -4,6 +4,6 @@
 
 class ServerHelper {
   public:
-    static const char* GetIPAddressFromSockAddr(int);
-    static const char* GetPortAddressFromSockAddr(int);
+    static const char *GetIPAddressFromSockAddr(int);
+    static const char *GetPortAddressFromSockAddr(int);
 };
