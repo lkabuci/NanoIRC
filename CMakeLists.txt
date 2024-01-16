@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 98)
 file (GLOB_RECURSE IRC_SRCS
         main.cpp
         srcs/*.cpp
+        srcs/*/*.cpp
 )
 
 add_executable(ircserv ${IRC_SRCS})
