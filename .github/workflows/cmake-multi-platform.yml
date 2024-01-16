@@ -1,0 +1,50 @@
+name: CMake Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # - name: Build and install Google Test
+      #   run: |
+      #     git clone https://github.com/google/googletest.git
+      #     cd googletest
+      #     cmake -Bbuild -DCMAKE_BUILD_TYPE=Release -S.
+      #     cmake --build build
+      #     sudo cmake --install build
+
+      - name: Install Dependecies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format
+
+      # - name: Build and run unit tests
+      #   run: |
+      #     cmake -B build/ -DBUILD_TESTS=ON
+      #     make -C build/
+      #     ./build/unit_tests
+
+      - name: Check Code Formatting
+        run: |
+          find src/ test/ include/ \
+            \( -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \) -exec \
+            clang-format --dry-run --Werror {} \; \
+          \) > clang-format-errors.txt 2>&1 || true
+          if [ -s "clang-format-errors.txt" ]; then
+            echo "Code formatting issues found:"
+            cat clang-format-errors.txt
+            exit 1
+          else
+            echo "Code formatting check passed."
+          fi
