@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "../include/IRC.h"
+#include "../../include/IRC.h"
 
 class AddressResolver {
   public:

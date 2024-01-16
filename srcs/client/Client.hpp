@@ -5,7 +5,7 @@
 #ifndef IRC_CLIENT_HPP
 #define IRC_CLIENT_HPP
 
-#include "../include/IRC.h"
+#include "../../include/IRC.h"
 #include "UserInfo.hpp"
 
 #define PORT_LEN 6

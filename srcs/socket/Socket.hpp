@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../include/IRC.h"
+#include "../../include/IRC.h"
+#include "../server/ServerHelper.hpp"
 #include "AddressResolver.hpp"
-#include "ServerHelper.hpp"
 
 #define BACKLOG 10
 

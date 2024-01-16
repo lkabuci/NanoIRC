@@ -5,9 +5,9 @@
 #ifndef IRC_SERVER_HPP
 #define IRC_SERVER_HPP
 
-#include "../include/IRC.h"
-#include "Client.hpp"
-#include "Socket.hpp"
+#include "../../include/IRC.h"
+#include "../client/Client.hpp"
+#include "../socket/Socket.hpp"
 
 class Server {
   public:

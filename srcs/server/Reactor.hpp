@@ -5,8 +5,8 @@
 #ifndef IRC_REACTOR_HPP
 #define IRC_REACTOR_HPP
 
-#include "../include/IRC.h"
-#include "Client.hpp"
+#include "../../include/IRC.h"
+#include "../client/Client.hpp"
 #include "Demultiplexer.hpp"
 #include "Dispatcher.hpp"
 #include "ServerHelper.hpp"

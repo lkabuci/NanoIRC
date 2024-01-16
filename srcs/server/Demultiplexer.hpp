@@ -5,7 +5,7 @@
 #ifndef IRC_DEMULTIPLEXER_HPP
 #define IRC_DEMULTIPLEXER_HPP
 
-#include "../include/IRC.h"
+#include "../../include/IRC.h"
 #include "Reactor.hpp"
 
 class Demultiplexer {

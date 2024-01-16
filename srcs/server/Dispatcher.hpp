@@ -5,8 +5,8 @@
 #ifndef IRC_DISPATCHER_HPP
 #define IRC_DISPATCHER_HPP
 
-#include "../include/IRC.h"
-#include "Client.hpp"
+#include "../../include/IRC.h"
+#include "../client/Client.hpp"
 #include "Reactor.hpp"
 
 class Dispatcher {

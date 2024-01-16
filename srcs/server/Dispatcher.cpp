@@ -3,7 +3,7 @@
 //
 
 #include "Dispatcher.hpp"
-#include "ClientHandler.hpp"
+#include "../client/ClientHandler.hpp"
 
 #define SERVER 0
 

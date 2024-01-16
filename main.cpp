@@ -1,6 +1,6 @@
 #include "include/IRC.h"
-#include "srcs/Reactor.hpp"
-#include "srcs/Server.hpp"
+#include "srcs/server/Reactor.hpp"
+#include "srcs/server/Server.hpp"
 
 extern volatile sig_atomic_t serverIsRunning = 1;
 

@@ -3,7 +3,7 @@
 //
 
 #include "Client.hpp"
-#include "ServerHelper.hpp"
+#include "../server/ServerHelper.hpp"
 
 Client::Client(sockaddr_storage &sockaddr, int sockfd)
     : _sockAddr(sockaddr), _sockfd(sockfd), _ip(), _port(),

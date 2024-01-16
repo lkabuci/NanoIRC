@@ -5,7 +5,7 @@
 #ifndef IRC_USERINFO_HPP
 #define IRC_USERINFO_HPP
 
-#include "../include/IRC.h"
+#include "../../include/IRC.h"
 
 class UserInfo {
   public:
