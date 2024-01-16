@@ -17,11 +17,11 @@ PASS& PASS::operator=(const PASS& p) {
 void PASS::execute(const std::vector<std::string>& parameters) {
     if (parameters.size() != 1)
         throw std::runtime_error("PASS <password>");
-    if (parameters[0] != Message::get_password())
+    if (parameters[0] != Message::getPassword())
         throw std::runtime_error("incorrect password.");
     _password = parameters[0];
 }
 
-const std::string& PASS::get() const {
+const std::string& PASS::getPassword() const {
     return _password;
 }

@@ -15,7 +15,7 @@ class NICK : public Command {
 
     virtual void execute(const std::vector<std::string>& parameters);
 
-    const std::string& get_nickname() const;
+    const std::string& getNickname() const;
 
   private:
     std::string _nick;

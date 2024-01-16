@@ -17,9 +17,8 @@ void NICK::execute(const std::vector<std::string>& parameters) {
     if (parameters.size() > 2)
         throw std::runtime_error("USER <nickname> [ <hopcount> ]");
     _nick = parameters[0];
-    std::cout << "nick: |" << _nick << "|\n";
 }
 
-const std::string& NICK::get_nickname() const {
+const std::string& NICK::getNickname() const {
     return _nick;
 }

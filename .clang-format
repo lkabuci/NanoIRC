@@ -7,4 +7,3 @@ PointerAlignment: Left
 AllowShortIfStatementsOnASingleLine: false
 AlignConsecutiveDeclarations: true
 AllowShortFunctionsOnASingleLine: Inline
-MaxEmptyLinesToKeep: 1

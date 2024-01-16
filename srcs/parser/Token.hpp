@@ -17,8 +17,8 @@ class Token {
     const TYPES::TokenType& type() const;
     const std::string&      lexeme() const;
 
-    void set_type(const TYPES::TokenType& type);
-    void set_lexeme(const std::string& lexeme);
+    void setRype(const TYPES::TokenType& type);
+    void setLexeme(const std::string& lexeme);
 
   private:
     TYPES::TokenType _type;

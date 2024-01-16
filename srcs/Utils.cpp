@@ -1,6 +1,6 @@
 #include "Utils.hpp"
 
-std::string Utils::combine(const std::vector<std::string>& arr) {
+std::string Utils::join(const std::vector<std::string>& arr) {
     if (arr.empty())
         return "";
     if (arr.size() == 1)

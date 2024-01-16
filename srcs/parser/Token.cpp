@@ -25,10 +25,10 @@ const std::string& Token::lexeme() const {
     return _lexeme;
 }
 
-void Token::set_type(const TYPES::TokenType& type) {
+void Token::setRype(const TYPES::TokenType& type) {
     _type = type;
 }
 
-void Token::set_lexeme(const std::string& lexeme) {
+void Token::setLexeme(const std::string& lexeme) {
     _lexeme = lexeme;
 }

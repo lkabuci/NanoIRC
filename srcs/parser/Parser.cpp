@@ -6,7 +6,7 @@ Token Parser::_prev;
 
 void Parser::init(const std::string& source) {
     _lexer = Lexer(source);
-    _token = _lexer.get_next_token();
+    _token = _lexer.getNextToken();
     _prev = _token;
 }
 
@@ -16,17 +16,17 @@ void Parser::consume(const TYPES::TokenType& type, const char* message) {
 }
 
 bool Parser::match(const TYPES::TokenType& type) {
-    if (is_at_end() || !check(type))
+    if (isAtEnd() || !check(type))
         return false;
     advance();
     return true;
 }
 
 const Token& Parser::advance() {
-    if (is_at_end())
+    if (isAtEnd())
         return _token;
     _prev = _token;
-    _token = _lexer.get_next_token();
+    _token = _lexer.getNextToken();
     return _prev;
 }
 
@@ -42,11 +42,11 @@ bool Parser::check(const TYPES::TokenType& type) {
     return _token.type() == type;
 }
 
-bool Parser::is_at_end() {
+bool Parser::isAtEnd() {
     return _token.type() == TYPES::END;
 }
 
-bool Parser::skip_spaces() {
+bool Parser::skipSpaces() {
     if (!check(TYPES::SPACE))
         return false;
     while (check(TYPES::SPACE))

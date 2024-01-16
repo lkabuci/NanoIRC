@@ -19,8 +19,8 @@ class JOIN : public Command {
     std::vector<std::string> _channels;
     std::vector<std::string> _keys;
 
-    void set_channels();
-    void set_keys();
+    void _setChannels();
+    void _setKeys();
 };
 
 #endif

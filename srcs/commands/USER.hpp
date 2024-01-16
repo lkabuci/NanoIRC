@@ -14,15 +14,12 @@ class USER : public Command {
     USER& operator=(const USER& user);
 
     virtual void       execute(const std::vector<std::string>& parameters);
-    const std::string& username() const;
-    const std::string& realname() const;
+    const std::string& getUsername() const;
+    const std::string& getRealname() const;
 
   private:
     std::string _username;
     std::string _realname;
-
-    void parse_username();
-    void parse_realname();
 };
 
 #endif

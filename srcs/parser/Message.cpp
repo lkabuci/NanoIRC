@@ -6,12 +6,12 @@
 
 std::string Message::_password;
 
-TYPES::TokenType Message::_command_types[] = {
+TYPES::TokenType Message::_commandTypes[] = {
     TYPES::PASS, TYPES::NICK,   TYPES::USER,  TYPES::JOIN,
     TYPES::KICK, TYPES::INVITE, TYPES::TOPIC, TYPES::MODE};
 
-std::string Message::_commands_str[] = {"PASS", "NICK",   "USER",  "JOIN",
-                                        "KICK", "INVITE", "TOPIC", "MODE"};
+std::string Message::_commandsStr[] = {"PASS", "NICK",   "USER",  "JOIN",
+                                       "KICK", "INVITE", "TOPIC", "MODE"};
 
 Message::Message() : _cmdfunc(NULL) {}
 
@@ -27,7 +27,7 @@ Message::~Message() {
 
 void Message::execute(const std::string& password) {
     _password = password;
-    switch (_which_command()) {
+    switch (_whichCommand()) {
     case TYPES::PASS:
         _cmdfunc = new PASS();
         break;
@@ -47,10 +47,10 @@ void Message::execute(const std::string& password) {
         _cmdfunc->execute(_parameters);
 }
 
-TYPES::TokenType Message::_which_command() {
+TYPES::TokenType Message::_whichCommand() {
     for (int i = 0; i < CMDS_NBR; ++i) {
-        if (_cmd == _commands_str[i])
-            return _command_types[i];
+        if (_cmd == _commandsStr[i])
+            return _commandTypes[i];
     }
     return TYPES::END;
 }
@@ -65,7 +65,7 @@ void Message::parse(const std::string& message) {
 }
 
 void Message::_command() {
-    if (!_is_command()) {
+    if (!_isCommand()) {
         ErrorReplies::reply(2, "localhost", ERROR_CODES::ERR_UNKNOWNCOMMAND,
                             "c");
         throw std::exception();
@@ -77,7 +77,7 @@ void Message::_params() {
     if (Parser::check(TYPES::CRLF))
         return;
     Parser::consume(TYPES::SPACE, "missing space.");
-    _skip_spaces();
+    _skipSpaces();
     if (Parser::match(TYPES::SEMICOLON)) {
         _parameters.push_back(Parser::previous().lexeme());
         _trailing();
@@ -88,17 +88,17 @@ void Message::_params() {
 }
 
 void Message::_trailing() {
-    Parser::skip_spaces();
+    Parser::skipSpaces();
     if (!_nospcrlfcl())
         return;
     std::string param;
     do {
         param.append(Parser::advance().lexeme());
-        if (Parser::skip_spaces() && !Parser::check(TYPES::CRLF) &&
-            !Parser::is_at_end())
+        if (Parser::skipSpaces() && !Parser::check(TYPES::CRLF) &&
+            !Parser::isAtEnd())
             param.append(Parser::previous().lexeme());
     } while (_nospcrlfcl());
-    Parser::skip_spaces();
+    Parser::skipSpaces();
     _parameters.push_back(param);
 }
 
@@ -123,12 +123,12 @@ bool Message::_nospcrlfcl() {
     return true;
 }
 
-void Message::_skip_spaces() {
+void Message::_skipSpaces() {
     while (Parser::check(TYPES::SPACE))
         Parser::advance();
 }
 
-bool Message::_is_command() {
+bool Message::_isCommand() {
     switch (Parser::peek().type()) {
     case TYPES::PASS:
     case TYPES::NICK:
@@ -145,14 +145,14 @@ bool Message::_is_command() {
     return false;
 }
 
-const std::string& Message::get_command() const {
+const std::string& Message::getCommand() const {
     return _cmd;
 }
 
-const std::vector<std::string>& Message::get_parameters() const {
+const std::vector<std::string>& Message::getParameters() const {
     return _parameters;
 }
 
-const std::string& Message::get_password() {
+const std::string& Message::getPassword() {
     return _password;
 }

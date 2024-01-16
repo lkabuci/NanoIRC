@@ -25,10 +25,10 @@ void USER::execute(const std::vector<std::string>& parameters) {
         _realname.append(parameters[i]);
 }
 
-const std::string& USER::username() const {
+const std::string& USER::getUsername() const {
     return _username;
 }
 
-const std::string& USER::realname() const {
+const std::string& USER::getRealname() const {
     return _realname;
 }

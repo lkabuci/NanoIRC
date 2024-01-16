@@ -4,7 +4,6 @@
 #define __CHANNEL_HPP__
 
 #include "../../include/IRC.h"
-#include "../Client.hpp"
 
 enum CHANNEL_MODES {
     NO_FLAG,
@@ -31,11 +30,11 @@ class Channel {
 
     Channel& operator=(const Channel& channel);
 
-    const CHANNEL_MODES& get_mode() const;
+    const CHANNEL_MODES& getMode() const;
     // const Client&        get_client(USER_MODES mode) const;
 
-    void set_channel_mode(CHANNEL_MODES mode);
-    void update_channel_mode(CHANNEL_MODES mode);
+    void setChannelMode(CHANNEL_MODES mode);
+    void updateChannelMode(CHANNEL_MODES mode);
 
     // void add_client(const Client* client, USER_MODES mode);
 

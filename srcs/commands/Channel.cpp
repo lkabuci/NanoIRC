@@ -19,7 +19,7 @@ Channel& Channel::operator=(const Channel& channel) {
     return *this;
 }
 
-const CHANNEL_MODES& Channel::get_mode() const {
+const CHANNEL_MODES& Channel::getMode() const {
     return _mode;
 }
 
@@ -27,11 +27,11 @@ const CHANNEL_MODES& Channel::get_mode() const {
 //     return _clients;
 // }
 
-void Channel::set_channel_mode(CHANNEL_MODES mode) {
+void Channel::setChannelMode(CHANNEL_MODES mode) {
     _mode = _mode | mode;
 }
 
-void Channel::update_channel_mode(CHANNEL_MODES mode) {
+void Channel::updateChannelMode(CHANNEL_MODES mode) {
     _mode = mode;
 }
 

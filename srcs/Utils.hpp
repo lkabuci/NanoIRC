@@ -8,7 +8,7 @@
 
 class Utils {
   public:
-    static std::string combine(const std::vector<std::string>& arr);
+    static std::string join(const std::vector<std::string>& arr);
 
   private:
     Utils();
