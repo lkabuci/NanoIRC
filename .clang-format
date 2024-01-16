@@ -3,7 +3,7 @@ UseTab: Never
 TabWidth: 4
 IndentWidth: 4
 ColumnLimit: 80
-PointerAlignment: Right
+PointerAlignment: Left
 AllowShortIfStatementsOnASingleLine: false
 AlignConsecutiveDeclarations: true
 AllowShortFunctionsOnASingleLine: Inline

@@ -23,8 +23,18 @@ extern volatile sig_atomic_t serverIsRunning;
 #include <netdb.h>
 #include <netinet/in.h>
 #include <poll.h>
+#include <cstdlib>
+#include <cstring>
+#include <fcntl.h>
+#include <iostream>
+#include <list>
+#include <map>
+#include <netdb.h>
+#include <poll.h>
+#include <string>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <vector>
 
 #endif // IRC_IRC_H
+
