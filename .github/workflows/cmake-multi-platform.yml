@@ -37,14 +37,23 @@ jobs:
 
       - name: Check Code Formatting
         run: |
-          find src/ test/ include/ \
-            \( -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \) -exec \
-            clang-format --dry-run --Werror {} \; \
-          \) > clang-format-errors.txt 2>&1 || true
-          if [ -s "clang-format-errors.txt" ]; then
-            echo "Code formatting issues found:"
-            cat clang-format-errors.txt
-            exit 1
-          else
-            echo "Code formatting check passed."
+          RED='\033[0;31m'
+          GREEN='\033[0;32m'
+          YELLOW='\033[1;33m'
+          NC='\033[0m' # No Color
+          echo -e "${YELLOW}+ Checking formatter${NC}"
+          is_formatted=0
+          for file in $(find srcs/ include/ -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \)); do
+              output=$(clang-format --dry-run -Werror "$file" 2>&1)
+              # Check if output contains any suggestions
+              if [[ -n "${output//[$'\n\r ']}" ]]; then
+                  echo -e "${RED}x ${NC}$(basename $file)"
+                  is_formatted=1
+              else
+                  echo -e "${GREEN}✓ ${NC}$(basename $file)"
+              fi
+          done
+          if [[ $is_formatted -eq 1 ]]; then
+              echo "Some files aren't properly formatted"
+              exit 1
           fi
