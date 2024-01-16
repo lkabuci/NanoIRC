@@ -3,15 +3,16 @@
 //
 
 #include "ClientHandler.hpp"
+#include "../parser/Message.hpp"
 #include "../server/Reactor.hpp"
 
 #define MAX_MSG_LEN 512
 
-void ClientHandler::handleNewConnection(const pollfd &serverFd) {
+void ClientHandler::handleNewConnection(const pollfd& serverFd) {
     sockaddr_storage clientAddr;
     socklen_t        clientAddrLen = sizeof(clientAddr);
     int              clientSocket = accept(
-        serverFd.fd, reinterpret_cast<sockaddr *>(&clientAddr), &clientAddrLen);
+        serverFd.fd, reinterpret_cast<sockaddr*>(&clientAddr), &clientAddrLen);
 
     if (clientSocket == -1) {
         std::cerr << "Failed to accept new connection" << std::endl;
@@ -22,7 +23,7 @@ void ClientHandler::handleNewConnection(const pollfd &serverFd) {
                                      clientSocket);
 }
 
-void ClientHandler::handleClientInput(Client *&pClient) {
+void ClientHandler::handleClientInput(Client*& pClient) {
     if (pClient->isDoneReading()) {
         return;
     }
@@ -44,23 +45,29 @@ void ClientHandler::handleClientInput(Client *&pClient) {
         handleTooLongMessage(pClient);
         return;
     }
-
     pClient->appendMessage(buffer);
 
     if (hasEndOfMessage(pClient->getMessage())) {
         pClient->setIsDoneReading(true);
+        Message msg_parser;
+
+        try {
+            msg_parser.parse(pClient->getMessage());
+        } catch (const std::exception& e) {
+            std::cout << e.what() << std::endl;
+        }
     }
 }
 
-void ClientHandler::handleReceiveError(Client *&pClient) {
+void ClientHandler::handleReceiveError(Client*& pClient) {
     Reactor::getInstance().removeClient(pClient);
 }
 
-void ClientHandler::handleTooLongMessage(Client *&pClient) {
+void ClientHandler::handleTooLongMessage(Client*& pClient) {
     // TODO: Throw an exception or handle the case of a too long message
 }
 
-bool ClientHandler::hasEndOfMessage(const std::string &message) {
-    return (message.find(CRLF) != std::string::npos) ||
-           (message.find(LF) != std::string::npos);
+bool ClientHandler::hasEndOfMessage(const std::string& message) {
+    return (message.find(CR_LF) != std::string::npos) ||
+           (message.find(LF_) != std::string::npos);
 }

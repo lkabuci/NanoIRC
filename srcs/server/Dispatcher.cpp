@@ -14,8 +14,8 @@
  * 512 is for the last trailing CRLF(\r\n)
  * 513 a byte extra for protection if exceeded the limits
  */
-void Dispatcher::dispatchEvents(std::vector<pollfd>   &fds,
-                                std::vector<Client *> &clients) {
+void Dispatcher::dispatchEvents(std::vector<pollfd>&  fds,
+                                std::vector<Client*>& clients) {
     for (size_t i = 0; i < fds.size(); ++i) {
         // TODO: add POLLHUP POLLERROR
         if (fds[i].revents & POLLIN) {

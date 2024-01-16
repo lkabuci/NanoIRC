@@ -5,7 +5,7 @@
 #include "Server.hpp"
 #include "Reactor.hpp"
 
-Server::Server(const char *port) : _sock(port) {
+Server::Server(const char* port) : _sock(port) {
     pollfd serverPollfd = {_sock.getSocketFd(), POLLIN, 0};
     Reactor::getInstance().addPfds(serverPollfd);
 }

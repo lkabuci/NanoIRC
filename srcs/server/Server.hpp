@@ -11,7 +11,7 @@
 
 class Server {
   public:
-    explicit Server(const char *port);
+    explicit Server(const char* port);
     void run();
 
   private:

@@ -9,12 +9,12 @@
 
 class UserInfo {
   public:
-    const std::string &getUsername() const;
-    void               setUsername(const std::string &username);
-    const std::string &getNickname() const;
-    void               setNickname(const std::string &nickname);
-    const std::string &getRealname() const;
-    void               setRealname(const std::string &realname);
+    const std::string& getUsername() const;
+    void               setUsername(const std::string& username);
+    const std::string& getNickname() const;
+    void               setNickname(const std::string& nickname);
+    const std::string& getRealname() const;
+    void               setRealname(const std::string& realname);
 
   private:
     std::string _username;

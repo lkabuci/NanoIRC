@@ -58,7 +58,13 @@ TYPES::TokenType Message::_whichCommand() {
 void Message::parse(const std::string& message) {
     if (message.empty())
         return;
-    Parser::init(message);
+    std::string msg(message);
+    size_t      crfl_pos = message.rfind("\r\n");
+    if (crfl_pos == std::string::npos) {
+        size_t lf_pos = msg.rfind("\n");
+        msg.insert(lf_pos, "\r");
+    }
+    Parser::init(msg);
     _command();
     _params();
     Parser::consume(TYPES::CRLF, "messing CRLF at end.");
