@@ -1,0 +1,151 @@
+ IRC messages are always lines of characters terminated with a CR-LF
+(Carriage Return - Line Feed) pair, and these messages shall not
+exceed 512 characters in length, counting all characters including
+the trailing CR-LF. Thus, there are 510 characters maximum allowed
+for the command and its parameters
+
+
+
+
+
+
+<message>  ::= <command> <params> <crlf>
+<command>  ::= <letter> | <number> <number> <number>
+<SPACE>    ::= ' ' { ' ' }
+<params>   ::= <SPACE> [ ':' <trailing> | <middle> <params> ]
+
+<middle>   ::= <Any *non-empty* sequence of octets not including SPACE
+               or NUL or CR or LF, the first of which may not be ':'>
+<trailing> ::= <Any, possibly *empty*, sequence of octets not including
+                 NUL or CR or LF>
+
+<crlf>     ::= CR LF
+
+message    =  command [ params ] crlf
+command    =  1*letter / 3digit
+params     =  *14( SPACE middle ) [ SPACE ":" trailing ]
+           =/ 14( SPACE middle ) [ SPACE [ ":" ] trailing ]
+
+nospcrlfcl =  %x01-09 / %x0B-0C / %x0E-1F / %x21-39 / %x3B-FF
+                ; any octet except NUL, CR, LF, " " and ":"
+middle     =  nospcrlfcl *( ":" / nospcrlfcl )
+trailing   =  *( ":" / " " / nospcrlfcl )
+
+SPACE      =  %x20        ; space character
+crlf       =  %x0D %x0A   ; "carriage return" "linefeed"
+
+
+
+If the server encounters a fatal error while parsing a message, an error must be
+sent back to the client and the parsing terminated.  A fatal error
+may be considered to be incorrect command, a destination which is
+otherwise unknown to the server (server, nick or channel names fit
+this category), not enough parameters or incorrect privileges.
+
+If a full set of parameters is presented, then each must be checked
+for validity and appropriate responses sent back to the client.  In
+the case of messages which use parameter lists using the comma as an
+item separator, a reply must be sent for each item.
+
+
+1. Pass message
+    Command: PASS
+    Parameters: <password>
+
+------------------------------------------------------------------------------
+
+2. Nick message
+    Command: NICK
+    Parameters: <nickname>
+
+If a NICK message arrives at a server which already knows about an
+identical nickname for another client, a nickname collision occurs.
+As a result of a nickname collision, all instances of the nickname
+are removed from the server's database, and a KILL command is issued
+to remove the nickname from all other server's database. If the NICK
+message causing the collision was a nickname change, then the
+original (old) nick must be removed as well.
+
+Error Replies:
+    ERR_NEEDMOREPARAMS
+    ERR_ALREADYREGISTRED
+
+------------------------------------------------------------------------------
+
+3. User message
+    Command: USER
+    Parameters: <username> <hostname> <servername> <realname>
+
+
+------------------------------------------------------------------------------
+
+    Command: JOIN
+    Parameters: <channel>{,<channel>} [<key>{,<key>}]
+
+
+-----------------------------------------------------------------------------
+
+
+The numeric reply must be sent as one message consisting of the sender prefix,
+the three digit numeric, and the target of the reply.
+
+reply(const std::string& sender, const ERROR_CODES::Codes& code,
+    const std::string& target);
+
+Replies:
+421     ERR_UNKNOWNCOMMAND
+                    "<command> :Unknown command"
+
+            - Returned to a registered client to indicate that the
+            command sent is unknown by the server.
+
+431     ERR_NONICKNAMEGIVEN
+                    ":No nickname given"
+
+
+
+Valid IRC Messages:
+
+    User Authentication:
+        Valid: PASS mypassword
+        Valid: NICK mynickname
+        Valid: USER username 0 * :realname
+
+    Joining a Channel:
+        Valid: JOIN #channelname
+
+    Sending Messages:
+        Valid: PRIVMSG #channelname :Hello, everyone!
+        Valid: PRIVMSG targetuser :Private message
+
+    Leaving a Channel:
+        Valid: PART #channelname
+
+    Quitting the Server:
+        Valid: QUIT :Leaving the chat
+
+    Pinging and Ponging:
+        Valid: PING :server.example.com
+        Valid: PONG :server.example.com
+
+Invalid IRC Messages:
+
+    Incorrect Number of Parameters:
+        Invalid: JOIN (missing channel parameter)
+        Invalid: PRIVMSG (missing target and message parameters)
+
+    Invalid Command:
+        Invalid: INVALIDCMD #channelname :This is not a valid command
+
+    Unrecognized Prefix:
+        Invalid: @prefix COMMAND #channelname :Message (if the server does not recognize the given prefix)
+
+    Invalid Channel/User Names:
+        Invalid: JOIN #invalid channel name (channel name with spaces)
+        Invalid: NICK user name (username with spaces)
+
+    Missing Colon Before Message:
+        Invalid: PRIVMSG #channelname Hello, everyone! (missing colon before the message)
+
+    Exceeding Maximum Message Length:
+        Invalid: PRIVMSG #channelname : followed by a very long message that exceeds the server's maximum message length.
