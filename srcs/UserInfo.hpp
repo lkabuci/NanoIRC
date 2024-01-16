@@ -1,0 +1,25 @@
+//
+// Created by Redouane Elkaboussi on 1/16/24.
+//
+
+#ifndef IRC_USERINFO_HPP
+#define IRC_USERINFO_HPP
+
+#include "../include/IRC.h"
+
+class UserInfo {
+  public:
+    const std::string &getUsername() const;
+    void               setUsername(const std::string &username);
+    const std::string &getNickname() const;
+    void               setNickname(const std::string &nickname);
+    const std::string &getRealname() const;
+    void               setRealname(const std::string &realname);
+
+  private:
+    std::string _username;
+    std::string _nickname;
+    std::string _realname;
+};
+
+#endif // IRC_USERINFO_HPP
