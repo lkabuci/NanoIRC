@@ -1,7 +1,6 @@
 #include "Lexer.hpp"
 
 std::map<std::string, TYPES::TokenType> Lexer::_commands(_init());
-std::map<TYPES::TokenType, std::string> Lexer::values(_init_values());
 
 Lexer::Lexer() : _message(""), _start(0), _current(0), _token() {}
 
@@ -26,16 +25,14 @@ Lexer& Lexer::operator=(const Lexer& lexer) {
     return *this;
 }
 
-Token Lexer::get_next_token() {
+Token Lexer::getNextToken() {
     char c;
 
-    while (!_is_at_end()) {
+    while (!_isAtEnd()) {
         _start = _current;
         switch (c = _advance()) {
         case '\0':
             break;
-        case '&':
-            return Token(TYPES::AMPERSAND, "&");
         case '#':
             return Token(TYPES::HASH, "#");
         case ',':
@@ -63,7 +60,7 @@ Token Lexer::get_next_token() {
 }
 
 void Lexer::_letter() {
-    while (!_is_at_end() && !_is_sepatator())
+    while (!_isAtEnd() && !_isSepatator())
         _advance();
     std::string      lexeme = _message.substr(_start, _current - _start);
     TYPES::TokenType type;
@@ -76,19 +73,19 @@ void Lexer::_letter() {
 }
 
 char Lexer::_advance() {
-    if (_is_at_end())
+    if (_isAtEnd())
         return '\0';
     return _message.at(_current++);
 }
 
 bool Lexer::_match(char expected) {
-    if (_is_at_end() || _message.at(_current) != expected)
+    if (_isAtEnd() || _message.at(_current) != expected)
         return false;
     ++_current;
     return true;
 }
 
-bool Lexer::_is_sepatator() {
+bool Lexer::_isSepatator() {
     switch (_message.at(_current)) {
     case '&':
     case '#':
@@ -106,7 +103,7 @@ bool Lexer::_is_sepatator() {
     return false;
 }
 
-bool Lexer::_is_at_end() const {
+bool Lexer::_isAtEnd() const {
     return _current >= _length;
 }
 
@@ -116,31 +113,12 @@ std::map<std::string, TYPES::TokenType> Lexer::_init() {
     m["PASS"] = TYPES::PASS;
     m["NICK"] = TYPES::NICK;
     m["USER"] = TYPES::USER;
+    m["JOIN"] = TYPES::JOIN;
     m["KICK"] = TYPES::KICK;
     m["INVITE"] = TYPES::INVITE;
     m["TOPIC"] = TYPES::TOPIC;
     m["MODE"] = TYPES::MODE;
-    return m;
-}
-
-std::map<TYPES::TokenType, std::string> Lexer::_init_values() {
-    std::map<TYPES::TokenType, std::string> m;
-
-    m[TYPES::PASS] = "PASS";
-    m[TYPES::NICK] = "NICK";
-    m[TYPES::USER] = "USER";
-    m[TYPES::KICK] = "KICK";
-    m[TYPES::INVITE] = "INVITE";
-    m[TYPES::TOPIC] = "TOPIC";
-    m[TYPES::MODE] = "MODE";
-    m[TYPES::CRLF] = "CRLF";
-    m[TYPES::AMPERSAND] = "AMPERSAND";
-    m[TYPES::HASH] = "HASH";
-    m[TYPES::COMMA] = "COMMA";
-    m[TYPES::PLUS] = "PLUS";
-    m[TYPES::MINUS] = "MINUS";
-    m[TYPES::SPACE] = "SPACE";
-    m[TYPES::LETTER] = "LETTER";
-    m[TYPES::END] = "END";
+    m["PRIVMSG"] = TYPES::PRIVMSG;
+    m["NOTICE"] = TYPES::NOTICE;
     return m;
 }

@@ -13,10 +13,9 @@ class NICK : public Command {
 
     NICK& operator=(const NICK& nick);
 
-    virtual void execute(const std::string& first,
-                         const std::string& parameters);
+    virtual void execute(const std::vector<std::string>& parameters);
 
-    virtual const std::string& get() const;
+    const std::string& getNickname() const;
 
   private:
     std::string _nick;

@@ -14,14 +14,11 @@ class Lexer {
 
     Lexer& operator=(const Lexer& lexer);
 
-    Token get_next_token();
-
-    static std::map<TYPES::TokenType, std::string> values;
+    Token getNextToken();
 
   private:
     static std::map<std::string, TYPES::TokenType> _commands;
     static std::map<std::string, TYPES::TokenType> _init();
-    static std::map<TYPES::TokenType, std::string> _init_values();
 
     std::string _message;
     size_t      _start;
@@ -32,8 +29,8 @@ class Lexer {
     void _letter();
     char _advance();
     bool _match(char expected);
-    bool _is_sepatator();
-    bool _is_at_end() const;
+    bool _isSepatator();
+    bool _isAtEnd() const;
 };
 
 #endif

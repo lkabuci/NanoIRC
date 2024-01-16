@@ -13,21 +13,12 @@ NICK& NICK::operator=(const NICK& nick) {
     return *this;
 }
 
-void NICK::execute(const std::string& first, const std::string& parameters) {
-    (void)first;
-    if (Parser::is_at_end()) {
-        ErrorReplies::reply(2, "me", ERROR_CODES::ERR_NEEDMOREPARAMS,
-                            "chiwa7d");
-        throw std::exception();
-    }
-    _nick = Parser::advance().lexeme();
-    if (!Parser::is_at_end()) {
-        ErrorReplies::reply(2, "me", ERROR_CODES::ERR_NEEDMOREPARAMS,
-                            "chiwa7d");
-        throw std::exception();
-    }
+void NICK::execute(const std::vector<std::string>& parameters) {
+    if (parameters.size() > 2)
+        throw std::runtime_error("USER <nickname> [ <hopcount> ]");
+    _nick = parameters[0];
 }
 
-const std::string& NICK::get() const {
+const std::string& NICK::getNickname() const {
     return _nick;
 }

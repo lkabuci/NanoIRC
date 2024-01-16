@@ -1,6 +1,8 @@
+#include <iostream>
 #include "include/IRC.h"
 #include "srcs/server/Reactor.hpp"
 #include "srcs/server/Server.hpp"
+#include "srcs/parser/Message.hpp"
 
 extern volatile sig_atomic_t serverIsRunning = 1;
 
@@ -12,8 +14,12 @@ int main(int argc, char *argv[]) {
 
     Reactor &reactor = Reactor::getInstance();
     Server   server(argv[1]);
-    server.run();
+    try {
+        server.run();
+    }catch (const std::exception& e) {
+        std::cerr << e.what() << '\n';
+        return 1;
+    }
     (void)reactor;
-
     return 0;
 }

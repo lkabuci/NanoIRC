@@ -15,47 +15,20 @@ USER& USER::operator=(const USER& user) {
     return *this;
 }
 
-void USER::execute(const std::string& first, const std::string& parameters) {
-    Parser::init(parameters);
-    parse_username();
-    parse_realname();
-    std::cout << "username: " << _username << '\n';
-    std::cout << "realname: " << _realname << '\n';
+void USER::execute(const std::vector<std::string>& parameters) {
+    if (parameters.size() < 3)
+        throw std::runtime_error("USER <username> <realname>");
+    _username = parameters[0];
+    if (parameters[1] != ":")
+        throw std::runtime_error("missing semicolon for realname.");
+    for (size_t i = 2; i < parameters.size(); ++i)
+        _realname.append(parameters[i]);
 }
 
-void USER::parse_username() {
-    if (Parser::is_at_end()) {
-        ErrorReplies::reply(2, "localhost", ERROR_CODES::ERR_NEEDMOREPARAMS,
-                            "chi wa7d");
-        throw std::exception();
-    }
-    _username = Parser::advance().lexeme();
-}
-
-void USER::parse_realname() {
-    Parser::consume(TYPES::SEMICOLON, ERROR_CODES::ERR_UNKNOWNCOMMAND);
-    if (Parser::is_at_end()) {
-        ErrorReplies::reply(2, "localhost", ERROR_CODES::ERR_NEEDMOREPARAMS,
-                            "chi wa7d");
-        throw std::exception();
-    }
-    while (!Parser::is_at_end()) {
-        if (Parser::check(TYPES::SPACE)) {
-            Parser::skip_spaces();
-            _realname.append(" ");
-        } else
-            _realname.append(Parser::advance().lexeme());
-    }
-}
-
-const std::string& USER::get() const {
+const std::string& USER::getUsername() const {
     return _username;
 }
 
-const std::string& USER::username() const {
-    return _username;
-}
-
-const std::string& USER::realname() const {
+const std::string& USER::getRealname() const {
     return _realname;
 }

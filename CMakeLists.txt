@@ -9,4 +9,4 @@ file (GLOB_RECURSE IRC_SRCS
 )
 
 add_executable(ircserv ${IRC_SRCS})
-target_compile_options(ircserv PRIVATE -Wall -Wextra)
+target_compile_options(ircserv PRIVATE -Wall -Wextra -g)
