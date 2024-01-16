@@ -1,20 +1,25 @@
 #include <iostream>
+#include "include/IRC.h"
+#include "srcs/server/Reactor.hpp"
+#include "srcs/server/Server.hpp"
 #include "srcs/parser/Message.hpp"
 
-int main(int argc, char* argv[]) {
+extern volatile sig_atomic_t serverIsRunning = 1;
+
+int main(int argc, char *argv[]) {
     if (argc != 3) {
-        std::cerr << "Usage: " << argv[0] << " <password> <command>"
-                  << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <port> <password>\n";
         return 1;
     }
-    try {
-        Message parser(std::string(argv[2]) + "\r\n");
 
-        parser.execute(argv[1]);
-        // std::cout << parser.get() << '\n';
-    } catch (const std::exception& e) {
+    Reactor &reactor = Reactor::getInstance();
+    Server   server(argv[1]);
+    try {
+        server.run();
+    }catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return 1;
     }
+    (void)reactor;
     return 0;
 }
