@@ -1,4 +1,5 @@
 #include "PASS.hpp"
+#include "../parser/Message.hpp"
 
 PASS::PASS() {}
 
@@ -13,19 +14,12 @@ PASS& PASS::operator=(const PASS& p) {
     return *this;
 }
 
-void PASS::execute(const std::string& first, const std::string& password) {
-    Parser::init(password);
-    if (Parser::is_at_end()) {
-        ErrorReplies::reply(2, "me", ERROR_CODES::ERR_PASSWDMISMATCH,
-                            "chiwa7d");
-        throw std::exception();
-    }
-    if (Parser::advance().lexeme() != first || !Parser::is_at_end()) {
-        ErrorReplies::reply(2, "me", ERROR_CODES::ERR_PASSWDMISMATCH,
-                            "chiwa7d");
-        throw std::exception();
-    }
-    _password = Parser::previous().lexeme();
+void PASS::execute(const std::vector<std::string>& parameters) {
+    if (parameters.size() != 1)
+        throw std::runtime_error("PASS <password>");
+    if (parameters[0] != Message::get_password())
+        throw std::runtime_error("incorrect password.");
+    _password = parameters[0];
 }
 
 const std::string& PASS::get() const {

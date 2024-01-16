@@ -9,14 +9,14 @@
 class Parser {
   public:
     static void init(const std::string& source);
-    static void consume(const TYPES::TokenType& type, ERROR_CODES::Codes code);
+    static void consume(const TYPES::TokenType& type, const char* message);
     static bool match(const TYPES::TokenType& type);
     static const Token& advance();
     static const Token& previous();
     static const Token& peek();
     static bool         check(const TYPES::TokenType& type);
     static bool         is_at_end();
-    static void         skip_spaces();
+    static bool         skip_spaces();
 
   private:
     Parser();

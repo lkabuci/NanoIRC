@@ -77,10 +77,23 @@ Error Replies:
     Parameters: <username> <hostname> <servername> <realname>
 
 
+
 ------------------------------------------------------------------------------
 
     Command: JOIN
     Parameters: <channel>{,<channel>} [<key>{,<key>}]
+
+JOIN #foobar                    ; join channel #foobar.
+
+JOIN &foo fubar                 ; join channel &foo using key "fubar".
+
+JOIN #foo,&bar fubar            ; join channel #foo using key "fubar"
+                                and &bar using no key.
+
+JOIN #foo,#bar fubar,foobar     ; join channel #foo using key "fubar".
+                                and channel #bar using key "foobar".
+
+JOIN #foo,#bar                  ; join channels #foo and #bar.
 
 
 -----------------------------------------------------------------------------

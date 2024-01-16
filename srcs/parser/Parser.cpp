@@ -10,11 +10,9 @@ void Parser::init(const std::string& source) {
     _prev = _token;
 }
 
-void Parser::consume(const TYPES::TokenType& type, ERROR_CODES::Codes code) {
-    if (!match(type)) {
-        ErrorReplies::reply(2, "localhost", code, "c");
-        throw std::exception();
-    }
+void Parser::consume(const TYPES::TokenType& type, const char* message) {
+    if (!match(type))
+        throw std::runtime_error(message);
 }
 
 bool Parser::match(const TYPES::TokenType& type) {
@@ -48,7 +46,10 @@ bool Parser::is_at_end() {
     return _token.type() == TYPES::END;
 }
 
-void Parser::skip_spaces() {
+bool Parser::skip_spaces() {
+    if (!check(TYPES::SPACE))
+        return false;
     while (check(TYPES::SPACE))
         advance();
+    return true;
 }

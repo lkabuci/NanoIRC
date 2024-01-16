@@ -3,6 +3,7 @@
 #ifndef __IRC_HPP__
 #define __IRC_HPP__
 
+#include "../srcs/Utils.hpp"
 #include "../srcs/parser/TokenType.hpp"
 #include <cstdlib>
 #include <cstring>

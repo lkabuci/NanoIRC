@@ -5,10 +5,6 @@
 #ifndef IRC_SERVER_HPP
 #define IRC_SERVER_HPP
 
+class Server {};
 
-class Server {
-
-};
-
-
-#endif //IRC_SERVER_HPP
+#endif // IRC_SERVER_HPP

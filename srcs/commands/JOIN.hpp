@@ -5,24 +5,22 @@
 
 #include "Command.hpp"
 
-// class   JOIN {
-// public:
-//     JOIN();
-//     JOIN(const JOIN& join);
-//     virtual ~JOIN();
+class JOIN : public Command {
+  public:
+    JOIN();
+    JOIN(const JOIN& join);
+    virtual ~JOIN();
 
-//    JOIN&   operator=(const JOIN& join);
+    JOIN& operator=(const JOIN& join);
 
-//    virtual void    execute(const std::string& first,
-//                            const std::vector<std::string>& parameters);
-//    virtual const std::string&  get() const;
+    virtual void execute(const std::vector<std::string>& parameters);
 
-// private:
+  private:
+    std::vector<std::string> _channels;
+    std::vector<std::string> _keys;
 
-//    std::vector<std::string>    _channels;
-//    std::vector<std::string>    _keys;
-
-//    void    channel();
-//};
+    void set_channels();
+    void set_keys();
+};
 
 #endif

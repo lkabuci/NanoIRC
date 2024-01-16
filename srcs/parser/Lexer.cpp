@@ -34,8 +34,6 @@ Token Lexer::get_next_token() {
         switch (c = _advance()) {
         case '\0':
             break;
-        case '&':
-            return Token(TYPES::AMPERSAND, "&");
         case '#':
             return Token(TYPES::HASH, "#");
         case ',':
@@ -116,10 +114,13 @@ std::map<std::string, TYPES::TokenType> Lexer::_init() {
     m["PASS"] = TYPES::PASS;
     m["NICK"] = TYPES::NICK;
     m["USER"] = TYPES::USER;
+    m["JOIN"] = TYPES::JOIN;
     m["KICK"] = TYPES::KICK;
     m["INVITE"] = TYPES::INVITE;
     m["TOPIC"] = TYPES::TOPIC;
     m["MODE"] = TYPES::MODE;
+    m["PRIVMSG"] = TYPES::PRIVMSG;
+    m["NOTICE"] = TYPES::NOTICE;
     return m;
 }
 
@@ -134,13 +135,14 @@ std::map<TYPES::TokenType, std::string> Lexer::_init_values() {
     m[TYPES::TOPIC] = "TOPIC";
     m[TYPES::MODE] = "MODE";
     m[TYPES::CRLF] = "CRLF";
-    m[TYPES::AMPERSAND] = "AMPERSAND";
     m[TYPES::HASH] = "HASH";
     m[TYPES::COMMA] = "COMMA";
     m[TYPES::PLUS] = "PLUS";
     m[TYPES::MINUS] = "MINUS";
     m[TYPES::SPACE] = "SPACE";
     m[TYPES::LETTER] = "LETTER";
+    m[TYPES::PRIVMSG] = "PRIVMSG";
+    m[TYPES::NOTICE] = "NOTICE";
     m[TYPES::END] = "END";
     return m;
 }
