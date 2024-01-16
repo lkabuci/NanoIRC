@@ -1,5 +1,8 @@
 #include "include/IRC.h"
-#include "srcs/Socket.hpp"
+#include "srcs/Reactor.hpp"
+#include "srcs/Server.hpp"
+
+extern volatile sig_atomic_t serverIsRunning = 1;
 
 int main(int argc, char *argv[]) {
     if (argc != 3) {
@@ -7,10 +10,10 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    Socket s(argv[1]);
-    std::cout << "socket fd: " << s.getSocketFd() << std::endl;
-    std::cout << "ip: " << s.getIP() << std::endl;
-    std::cout << "port: " << s.getPort() << std::endl;
+    Reactor &reactor = Reactor::getInstance();
+    Server   server(argv[1]);
+    server.run();
+    (void)reactor;
 
     return 0;
 }
