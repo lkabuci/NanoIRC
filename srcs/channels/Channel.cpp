@@ -2,8 +2,9 @@
 
 Channel::Channel() {}
 
-Channel::Channel(const std::string& name)
-    : _name(name), _mode(CHANNEL_MODE::SET_KEY) {}
+Channel::Channel(const std::string& name, const std::string& password,
+                 CHANNEL_MODE::Modes mode)
+    : _password(password), _name(name), _mode(mode) {}
 
 void Channel::add(Client* newMember, MEMBER_PERMISSION premission) {
     _members.insert(
@@ -80,6 +81,14 @@ Client* Channel::getClient(const std::string& username) {
             return it->first;
     }
     return NULL;
+}
+
+const std::string& Channel::getPassword() const {
+    return _password;
+}
+
+void Channel::setPassword(const std::string& password) {
+    _password = password;
 }
 
 CHANNEL_MODE::Modes operator|(CHANNEL_MODE::Modes a, CHANNEL_MODE::Modes b) {

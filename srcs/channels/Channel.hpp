@@ -9,6 +9,7 @@
 
 namespace CHANNEL_MODE {
 enum Modes {
+    NO_PASSWORD,
     SET_INVITE_ONLY,
     REMOVE_INVITE_ONLY,
     SET_TOPIC,
@@ -26,7 +27,8 @@ enum MEMBER_PERMISSION { OPERATOR, REGULAR };
 
 class Channel {
   public:
-    Channel(const std::string& name);
+    Channel(const std::string& name, const std::string& password = "",
+            CHANNEL_MODE::Modes mode = CHANNEL_MODE::NO_PASSWORD);
     Channel();
 
     void               add(Client* newMember, MEMBER_PERMISSION premission);
@@ -42,9 +44,12 @@ class Channel {
     bool               modeIsSet(CHANNEL_MODE::Modes mode);
     bool               flagIsSet(Client* client, MEMBER_PERMISSION flag);
     Client*            getClient(const std::string& username);
+    const std::string& getPassword() const;
+    void               setPassword(const std::string& password);
 
   private:
     std::string                          _name;
+    std::string                          _password;
     std::map<Client*, MEMBER_PERMISSION> _members;
     CHANNEL_MODE::Modes                  _mode;
 };
