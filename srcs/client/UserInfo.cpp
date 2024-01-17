@@ -30,7 +30,7 @@ void UserInfo::setRealname(const std::string& realname) {
     _realname = realname;
 }
 
-const std::string&  UserInfo::getPassword() const {
+const std::string& UserInfo::getPassword() const {
     return _password;
 }
 
@@ -39,10 +39,10 @@ void UserInfo::setPassword(const std::string& password) {
     _flags |= PASSWORD_SET;
 }
 
-bool    UserInfo::isSet(int flag) {
+bool UserInfo::isSet(int flag) {
     return _flags & flag;
 }
 
-bool    UserInfo::isRegistered() {
+bool UserInfo::isRegistered() {
     return _flags & (PASSWORD_SET | NICK_SET | USER_SET);
 }

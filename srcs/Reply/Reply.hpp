@@ -21,9 +21,9 @@ enum CODES {
 class Reply {
   public:
     static void success(int fd, SUCCESS_CODES::CODES code,
-                       const std::string&              servername,
-                       const std::string&              nickname,
-                       const std::vector<std::string>& message);
+                        const std::string&              servername,
+                        const std::string&              nickname,
+                        const std::vector<std::string>& message);
     static void error(int fd, ERROR_CODES::CODES code,
                       const std::string&        servername,
                       const std::string&        nickname,

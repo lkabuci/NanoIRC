@@ -3,11 +3,11 @@
 #ifndef __MESSAGE_HPP__
 #define __MESSAGE_HPP__
 
+#include "../Reply/Reply.hpp"
 #include "../client/Client.hpp"
 #include "../commands/Command.hpp"
 #include "Lexer.hpp"
 #include "Parser.hpp"
-#include "../Reply/Reply.hpp"
 
 class Message {
   public:

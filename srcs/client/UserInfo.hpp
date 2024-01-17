@@ -21,7 +21,7 @@ class UserInfo {
     bool               isRegistered();
 
   private:
-    enum    {PASSWORD_SET = 0, NICK_SET = 2, USER_SET = 4};
+    enum { PASSWORD_SET = 0, NICK_SET = 2, USER_SET = 4 };
 
     std::string _password;
     std::string _username;

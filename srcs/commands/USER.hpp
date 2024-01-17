@@ -13,8 +13,8 @@ class USER : public Command {
 
     USER& operator=(const USER& user);
 
-    virtual void       execute(Client* client,
-                                const std::vector<std::string>& parameters);
+    virtual void       execute(Client*                         client,
+                               const std::vector<std::string>& parameters);
     const std::string& getUsername() const;
     const std::string& getRealname() const;
 

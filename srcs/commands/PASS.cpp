@@ -23,8 +23,8 @@ void PASS::execute(Client* client, const std::vector<std::string>& parameters) {
         // TODO sent ERR_NEEDMOREPARAMS reply
         return;
     }
-    //if (parameters[0] != Message::getPassword())
-    //    throw std::runtime_error("incorrect password.");
+    // if (parameters[0] != Message::getPassword())
+    //     throw std::runtime_error("incorrect password.");
     _password = parameters[0];
     client->getUserInfo().setPassword(_password);
 }

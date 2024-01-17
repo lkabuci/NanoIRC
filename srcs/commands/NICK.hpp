@@ -13,8 +13,8 @@ class NICK : public Command {
 
     NICK& operator=(const NICK& nick);
 
-    virtual void execute(Client* client,
-                        const std::vector<std::string>& parameters);
+    virtual void execute(Client*                         client,
+                         const std::vector<std::string>& parameters);
 
     const std::string& getNickname() const;
 
