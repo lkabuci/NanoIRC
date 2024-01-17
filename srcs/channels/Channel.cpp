@@ -23,9 +23,9 @@ Channel& Channel::operator=(const Channel& channel) {
     return *this;
 }
 
-void Channel::add(Client* newMember, MEMBER_PERMISSION premission) {
+void Channel::add(Client* newMember, MEMBER_PERMISSION::Flags premission) {
     _members.insert(
-        std::pair<Client*, MEMBER_PERMISSION>(newMember, premission));
+        std::pair<Client*, MEMBER_PERMISSION::Flags>(newMember, premission));
 }
 
 void Channel::setMode(CHANNEL_MODE::Modes mode) {
@@ -41,14 +41,14 @@ size_t Channel::getNumberOfMembers() const {
 }
 
 void Channel::sendToAll(const std::string& message) {
-    std::map<Client*, MEMBER_PERMISSION>::iterator it = _members.begin();
+    std::map<Client*, MEMBER_PERMISSION::Flags>::iterator it = _members.begin();
 
     for (; it != _members.end(); ++it)
         send(it->first->getSockfd(), message.c_str(), message.length(), 0);
 }
 
 void Channel::remove(const std::string& username) {
-    std::map<Client*, MEMBER_PERMISSION>::iterator it = _members.begin();
+    std::map<Client*, MEMBER_PERMISSION::Flags>::iterator it = _members.begin();
 
     for (; it != _members.end(); ++it) {
         if (it->first->getUserInfo().getUsername() == username) {
@@ -60,7 +60,7 @@ void Channel::remove(const std::string& username) {
 }
 
 void Channel::remove(Client* client) {
-    std::map<Client*, MEMBER_PERMISSION>::iterator client_pos =
+    std::map<Client*, MEMBER_PERMISSION::Flags>::iterator client_pos =
         _members.find(client);
 
     if (client_pos == _members.end())
@@ -77,8 +77,7 @@ bool Channel::empty() const {
 }
 
 bool Channel::exist(Client* client) {
-    return std::find(_members.begin(), _members.end(), client) !=
-           _members.end();
+    return _members.find(client) != _members.end();
 }
 
 const std::string& Channel::name() const {
@@ -89,14 +88,15 @@ bool Channel::modeIsSet(CHANNEL_MODE::Modes mode) {
     return _mode & mode;
 }
 
-bool Channel::flagIsSet(Client* client, MEMBER_PERMISSION flag) {
-    std::map<Client*, MEMBER_PERMISSION>::iterator it = _members.find(client);
+bool Channel::flagIsSet(Client* client, MEMBER_PERMISSION::Flags flag) {
+    std::map<Client*, MEMBER_PERMISSION::Flags>::iterator it =
+        _members.find(client);
 
     return (it == _members.end()) ? false : it->second & flag;
 }
 
 Client* Channel::getClient(const std::string& username) {
-    std::map<Client*, MEMBER_PERMISSION>::iterator it = _members.begin();
+    std::map<Client*, MEMBER_PERMISSION::Flags>::iterator it = _members.begin();
 
     for (; it != _members.end(); ++it) {
         if (it->first->getUserInfo().getUsername() == username)
