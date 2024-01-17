@@ -6,6 +6,23 @@ Channel::Channel(const std::string& name, const std::string& password,
                  CHANNEL_MODE::Modes mode)
     : _password(password), _name(name), _mode(mode) {}
 
+Channel::Channel(const Channel& channel)
+    : _name(channel._name), _password(channel._password),
+      _members(channel._members), _invited(channel._invited),
+      _mode(channel._mode), _topic(channel._topic) {}
+
+Channel& Channel::operator=(const Channel& channel) {
+    if (this == &channel)
+        return *this;
+    _name = channel._name;
+    _password = channel._password;
+    _members = channel._members;
+    _invited = channel._invited;
+    _mode = channel._mode;
+    _topic = channel._topic;
+    return *this;
+}
+
 void Channel::add(Client* newMember, MEMBER_PERMISSION premission) {
     _members.insert(
         std::pair<Client*, MEMBER_PERMISSION>(newMember, premission));
