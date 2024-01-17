@@ -1,4 +1,5 @@
 #include "Utils.hpp"
+#include <sstream>
 
 std::string Utils::join(const std::vector<std::string>& arr) {
     if (arr.empty())
@@ -15,4 +16,10 @@ std::string Utils::join(const std::vector<std::string>& arr) {
         i++;
     } while (i < arr.size());
     return str;
+}
+
+std::string Utils::toStr(int nbr) {
+    std::stringstream ss(nbr);
+
+    return ss.str();
 }
