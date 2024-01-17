@@ -33,7 +33,8 @@ void JOIN::_joinUser(Client* client) {
 
         if (channel == NULL)
             _createChannel(client, i);
-        _addToChannel(client, *channel);
+        else
+            _addToChannel(client, *channel, i);
     }
 }
 
@@ -44,11 +45,25 @@ void JOIN::_createChannel(Client* client, const size_t& index) {
         channel.setMode(CHANNEL_MODE::SET_KEY);
     }
     channel.add(client, MEMBER_PERMISSION::OPERATOR);
-    // TChannels::add
-    // channel.add(Client *newMember, MEMBER_PERMISSION premission)
+    TChannels::add(_channels[index], channel);
 }
 
-void JOIN::_addToChannel(Client* client, Channel& channel) {}
+void JOIN::_addToChannel(Client* client, Channel& channel,
+                         const size_t& index) {
+    if (channel.exist(client))
+        return;
+    if (channel.modeIsSet(CHANNEL_MODE::SET_INVITE_ONLY) &&
+        !channel.isInvited(client))
+        throw std::runtime_error(
+            "472 ERR_INVITEONLYCHAN::Cannot join channel (+i).");
+    if (index < _keys.size()) {
+        if (channel.getPassword() != _keys[index])
+            throw std::runtime_error(
+                "475 ERR_BADCHANNELKEY:Cannot join channel (+k)");
+    }
+    channel.add(client, MEMBER_PERMISSION::REGULAR);
+    TChannels::add(_channels[index], channel);
+}
 
 void JOIN::_setChannels() {
     Parser::consume(TYPES::HASH, "channel must begin with #.");

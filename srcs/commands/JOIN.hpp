@@ -24,7 +24,7 @@ class JOIN : public Command {
     void _setKeys();
     void _joinUser(Client* client);
     void _createChannel(Client* client, const size_t& index);
-    void _addToChannel(Client* client, Channel& channel);
+    void _addToChannel(Client* client, Channel& channel, const size_t& index);
 };
 
 #endif

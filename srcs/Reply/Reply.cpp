@@ -12,6 +12,8 @@ std::map<ERROR_CODES::CODES, std::string> Reply::_fillErrorMap() {
     ret[ERROR_CODES::ERR_NONICKNAMEGIVEN] = ":No nickname given";
     ret[ERROR_CODES::ERR_NICKNAMEINUSE] = ":Nickname is already in use";
     ret[ERROR_CODES::ERR_NOSUCHCHANNEL] = ":No such channel";
+    ret[ERROR_CODES::ERR_INVITEONLYCHAN] = ":Cannot join channel (+i)";
+    ret[ERROR_CODES::ERR_BADCHANNELKEY] = ":Cannot join channel (+k)";
     return (ret);
 }
 
