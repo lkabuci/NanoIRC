@@ -32,10 +32,23 @@ void JOIN::_joinUser(Client* client) {
         channel = &TChannels::channel(_channels[i]);
 
         if (channel == NULL)
-            throw std::runtime_error(
-                "403 ERR_NOSUCHCHANNEL:<channel name> No such channel.");
+            _createChannel(client, i);
+        _addToChannel(client, *channel);
     }
 }
+
+void JOIN::_createChannel(Client* client, const size_t& index) {
+    Channel channel(_channels[index]);
+    if (index < _keys.size()) {
+        channel.setPassword(_keys[index]);
+        channel.setMode(CHANNEL_MODE::SET_KEY);
+    }
+    channel.add(client, MEMBER_PERMISSION::OPERATOR);
+    // TChannels::add
+    // channel.add(Client *newMember, MEMBER_PERMISSION premission)
+}
+
+void JOIN::_addToChannel(Client* client, Channel& channel) {}
 
 void JOIN::_setChannels() {
     Parser::consume(TYPES::HASH, "channel must begin with #.");
