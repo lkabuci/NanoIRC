@@ -5,6 +5,7 @@
 
 #include "../Reply/Reply.hpp"
 #include "../Utils.hpp"
+#include "../channels/TChannels.hpp"
 #include "../client/Clients.hpp"
 #include "../parser/Parser.hpp"
 

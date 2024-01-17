@@ -9,6 +9,7 @@
 
 namespace CHANNEL_MODE {
 enum Modes {
+    NO_PASSWORD,
     SET_INVITE_ONLY,
     REMOVE_INVITE_ONLY,
     SET_TOPIC,
@@ -26,7 +27,12 @@ enum MEMBER_PERMISSION { OPERATOR, REGULAR };
 
 class Channel {
   public:
-    Channel(const std::string& name);
+    Channel();
+    Channel(const std::string& name, const std::string& password = "",
+            CHANNEL_MODE::Modes mode = CHANNEL_MODE::NO_PASSWORD);
+    Channel(const Channel& channel);
+
+    Channel& operator=(const Channel& channel);
 
     void               add(Client* newMember, MEMBER_PERMISSION premission);
     void               setMode(CHANNEL_MODE::Modes mode);
@@ -37,15 +43,25 @@ class Channel {
     void               remove(Client* client);
     void               clear();
     bool               empty() const;
+    bool               exist(Client* client);
     const std::string& name() const;
     bool               modeIsSet(CHANNEL_MODE::Modes mode);
     bool               flagIsSet(Client* client, MEMBER_PERMISSION flag);
     Client*            getClient(const std::string& username);
+    const std::string& getPassword() const;
+    void               setPassword(const std::string& password);
+    void               invite(Client* client);
+    bool               isInvited(Client* client);
+    const std::string& getTopic() const;
+    void               setTopic(const std::string& topic);
 
   private:
     std::string                          _name;
+    std::string                          _password;
     std::map<Client*, MEMBER_PERMISSION> _members;
+    std::vector<Client*>                 _invited;
     CHANNEL_MODE::Modes                  _mode;
+    std::string                          _topic;
 };
 
 CHANNEL_MODE::Modes operator|(CHANNEL_MODE::Modes a, CHANNEL_MODE::Modes b);

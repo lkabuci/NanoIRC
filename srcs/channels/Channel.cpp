@@ -1,7 +1,27 @@
 #include "Channel.hpp"
 
-Channel::Channel(const std::string& name)
-    : _name(name), _mode(CHANNEL_MODE::SET_KEY) {}
+Channel::Channel() {}
+
+Channel::Channel(const std::string& name, const std::string& password,
+                 CHANNEL_MODE::Modes mode)
+    : _password(password), _name(name), _mode(mode) {}
+
+Channel::Channel(const Channel& channel)
+    : _name(channel._name), _password(channel._password),
+      _members(channel._members), _invited(channel._invited),
+      _mode(channel._mode), _topic(channel._topic) {}
+
+Channel& Channel::operator=(const Channel& channel) {
+    if (this == &channel)
+        return *this;
+    _name = channel._name;
+    _password = channel._password;
+    _members = channel._members;
+    _invited = channel._invited;
+    _mode = channel._mode;
+    _topic = channel._topic;
+    return *this;
+}
 
 void Channel::add(Client* newMember, MEMBER_PERMISSION premission) {
     _members.insert(
@@ -56,6 +76,11 @@ bool Channel::empty() const {
     return _members.empty();
 }
 
+bool Channel::exist(Client* client) {
+    return std::find(_members.begin(), _members.end(), client) !=
+           _members.end();
+}
+
 const std::string& Channel::name() const {
     return _name;
 }
@@ -78,6 +103,31 @@ Client* Channel::getClient(const std::string& username) {
             return it->first;
     }
     return NULL;
+}
+
+const std::string& Channel::getPassword() const {
+    return _password;
+}
+
+void Channel::setPassword(const std::string& password) {
+    _password = password;
+}
+
+void Channel::invite(Client* client) {
+    _invited.push_back(client);
+}
+
+bool Channel::isInvited(Client* client) {
+    return std::find(_invited.begin(), _invited.end(), client) !=
+           _invited.end();
+}
+
+const std::string& Channel::getTopic() const {
+    return _topic;
+}
+
+void Channel::setTopic(const std::string& topic) {
+    _topic = topic;
 }
 
 CHANNEL_MODE::Modes operator|(CHANNEL_MODE::Modes a, CHANNEL_MODE::Modes b) {
