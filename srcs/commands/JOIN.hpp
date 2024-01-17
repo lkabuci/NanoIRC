@@ -22,6 +22,7 @@ class JOIN : public Command {
 
     void _setChannels();
     void _setKeys();
+    void _joinUser(Client* client);
 };
 
 #endif

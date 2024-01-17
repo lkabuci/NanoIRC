@@ -15,7 +15,6 @@ JOIN& JOIN::operator=(const JOIN& join) {
 }
 
 void JOIN::execute(Client* client, const std::vector<std::string>& parameters) {
-    (void)client;
     if (parameters.empty())
         throw std::runtime_error("JOIN <channel>{,<channel>} [<key>{,<key>}]");
     std::string params = Utils::join(parameters);
@@ -23,6 +22,19 @@ void JOIN::execute(Client* client, const std::vector<std::string>& parameters) {
     Parser::init(params);
     _setChannels();
     _setKeys();
+    _joinUser(client);
+}
+
+void JOIN::_joinUser(Client* client) {
+    Channel* channel;
+
+    for (size_t i = 0; i < _channels.size(); ++i) {
+        channel = &TChannels::channel(_channels[i]);
+
+        if (channel == NULL)
+            throw std::runtime_error(
+                "403 ERR_NOSUCHCHANNEL:<channel name> No such channel.");
+    }
 }
 
 void JOIN::_setChannels() {
