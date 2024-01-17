@@ -23,7 +23,9 @@ enum Modes {
 };
 }
 
-enum MEMBER_PERMISSION { OPERATOR, REGULAR };
+namespace MEMBER_PERMISSION {
+enum Flags { OPERATOR, REGULAR };
+}
 
 class Channel {
   public:
@@ -34,19 +36,19 @@ class Channel {
 
     Channel& operator=(const Channel& channel);
 
-    void               add(Client* newMember, MEMBER_PERMISSION premission);
-    void               setMode(CHANNEL_MODE::Modes mode);
-    void               updateMode(CHANNEL_MODE::Modes mode); // temporary
-    size_t             getNumberOfMembers() const;
-    void               sendToAll(const std::string& message);
-    void               remove(const std::string& username);
-    void               remove(Client* client);
-    void               clear();
-    bool               empty() const;
-    bool               exist(Client* client);
+    void   add(Client* newMember, MEMBER_PERMISSION::Flags premission);
+    void   setMode(CHANNEL_MODE::Modes mode);
+    void   updateMode(CHANNEL_MODE::Modes mode); // temporary
+    size_t getNumberOfMembers() const;
+    void   sendToAll(const std::string& message);
+    void   remove(const std::string& username);
+    void   remove(Client* client);
+    void   clear();
+    bool   empty() const;
+    bool   exist(Client* client);
     const std::string& name() const;
     bool               modeIsSet(CHANNEL_MODE::Modes mode);
-    bool               flagIsSet(Client* client, MEMBER_PERMISSION flag);
+    bool               flagIsSet(Client* client, MEMBER_PERMISSION::Flags flag);
     Client*            getClient(const std::string& username);
     const std::string& getPassword() const;
     void               setPassword(const std::string& password);
@@ -56,12 +58,12 @@ class Channel {
     void               setTopic(const std::string& topic);
 
   private:
-    std::string                          _name;
-    std::string                          _password;
-    std::map<Client*, MEMBER_PERMISSION> _members;
-    std::vector<Client*>                 _invited;
-    CHANNEL_MODE::Modes                  _mode;
-    std::string                          _topic;
+    std::string                                 _name;
+    std::string                                 _password;
+    std::map<Client*, MEMBER_PERMISSION::Flags> _members;
+    std::vector<Client*>                        _invited;
+    CHANNEL_MODE::Modes                         _mode;
+    std::string                                 _topic;
 };
 
 CHANNEL_MODE::Modes operator|(CHANNEL_MODE::Modes a, CHANNEL_MODE::Modes b);

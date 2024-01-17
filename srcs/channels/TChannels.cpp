@@ -24,7 +24,7 @@ Channel& TChannels::channel(const std::string& name) {
 }
 
 void TChannels::create(const std::string& name, Client* client,
-                       MEMBER_PERMISSION premission) {
+                       MEMBER_PERMISSION::Flags premission) {
     Channel channel(name);
 
     channel.add(client, premission);
