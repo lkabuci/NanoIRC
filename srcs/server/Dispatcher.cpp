@@ -7,10 +7,12 @@
 #include "Reactor.hpp"
 
 #define SERVER 0
+#define BOT 1
 
 void Dispatcher::dispatchEvents(std::vector<pollfd>&  fds,
                                 std::vector<Client*>& clients) {
     for (size_t i = 0; i < fds.size(); ++i) {
+        // TODO: add BOT option
         if (fds[i].revents & POLLHUP) {
             if (i == SERVER) {
                 serverIsRunning = 0;
