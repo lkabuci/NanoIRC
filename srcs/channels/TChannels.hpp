@@ -9,6 +9,7 @@ class TChannels {
   public:
     static void     create(const std::string& name, Client* client,
                            MEMBER_PERMISSION permission);
+    static void     add(const std::string& name, Channel channel);
     static size_t   size();
     static void     remove(const std::string& name);
     static Channel& channel(const std::string& name);

@@ -31,6 +31,10 @@ void TChannels::create(const std::string& name, Client* client,
     _channels[name] = channel;
 }
 
+void TChannels::add(const std::string& name, Channel channel) {
+    _channels[name] = channel;
+}
+
 void TChannels::removeMember(const std::string& channel_name,
                              const std::string& nickname) {
     std::map<std::string, Channel>::iterator channel_pos =
