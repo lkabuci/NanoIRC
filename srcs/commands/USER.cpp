@@ -16,6 +16,7 @@ USER& USER::operator=(const USER& user) {
 }
 
 void USER::execute(Client* client, const std::vector<std::string>& parameters) {
+    (void)client;
     if (parameters.size() < 3)
         throw std::runtime_error("USER <username> <realname>");
     _username = parameters[0];
