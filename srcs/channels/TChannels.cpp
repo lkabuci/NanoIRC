@@ -2,7 +2,7 @@
 
 std::map<std::string, Channel> TChannels::_channels;
 
-const size_t TChannels::size() {
+size_t TChannels::size() {
     return _channels.size();
 }
 
@@ -41,4 +41,10 @@ void TChannels::removeMember(const std::string& channel_name,
     channel_pos->second.remove(nickname);
     if (channel_pos->second.empty())
         _channels.erase(channel_pos);
+}
+
+bool TChannels::exist(const std::string& name) {
+    std::map<std::string, Channel>::const_iterator it = _channels.find(name);
+
+    return it != _channels.end();
 }
