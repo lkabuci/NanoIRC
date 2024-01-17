@@ -3,6 +3,7 @@
 #ifndef __MESSAGE_HPP__
 #define __MESSAGE_HPP__
 
+#include "../client/Client.hpp"
 #include "../commands/Command.hpp"
 #include "ErrorReplies.hpp"
 #include "Lexer.hpp"
@@ -14,7 +15,8 @@ class Message {
     Message(const std::string& message);
     ~Message();
 
-    void parse(const std::string& message);
+    // void parse(const std::string& message);
+    void parse(Client* client);
     void execute(const std::string& password);
 
     const std::string&              getCommand() const;
@@ -31,6 +33,8 @@ class Message {
     static TYPES::TokenType _commandTypes[CMDS_NBR];
     static std::string      _commandsStr[CMDS_NBR];
 
+    Client*                  _client;
+    std::string              _message;
     std::string              _cmd;
     std::vector<std::string> _parameters;
     static std::string       _password;
