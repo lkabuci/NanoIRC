@@ -10,7 +10,7 @@ const std::string& UserInfo::getUsername() const {
 
 void UserInfo::setUsername(const std::string& username) {
     _username = username;
-    _flags |= USER_SET;
+    _flags |= USER_FLAGS::USER_SET;
 }
 
 const std::string& UserInfo::getNickname() const {
@@ -19,7 +19,7 @@ const std::string& UserInfo::getNickname() const {
 
 void UserInfo::setNickname(const std::string& nickname) {
     _nickname = nickname;
-    _flags |= NICK_SET;
+    _flags |= USER_FLAGS::NICK_SET;
 }
 
 const std::string& UserInfo::getRealname() const {
@@ -36,7 +36,7 @@ const std::string& UserInfo::getPassword() const {
 
 void UserInfo::setPassword(const std::string& password) {
     _password = password;
-    _flags |= PASSWORD_SET;
+    _flags |= USER_FLAGS::PASSWORD_SET;
 }
 
 bool UserInfo::isSet(int flag) {
@@ -44,5 +44,10 @@ bool UserInfo::isSet(int flag) {
 }
 
 bool UserInfo::isRegistered() {
-    return _flags & (PASSWORD_SET | NICK_SET | USER_SET);
+    return _flags & (USER_FLAGS::PASSWORD_SET | USER_FLAGS::NICK_SET |
+                     USER_FLAGS::USER_SET);
+}
+
+void UserInfo::setFlag(USER_FLAGS::Flags flag) {
+    _flags |= flag;
 }

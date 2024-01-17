@@ -7,6 +7,10 @@
 
 #include "../../include/IRC.h"
 
+namespace USER_FLAGS {
+enum Flags { PASSWORD_SET = 0, NICK_SET = 2, USER_SET = 4 };
+}
+
 class UserInfo {
   public:
     const std::string& getUsername() const;
@@ -19,10 +23,9 @@ class UserInfo {
     void               setPassword(const std::string& password);
     bool               isSet(int flag);
     bool               isRegistered();
+    void               setFlag(USER_FLAGS::Flags flag);
 
   private:
-    enum { PASSWORD_SET = 0, NICK_SET = 2, USER_SET = 4 };
-
     std::string _password;
     std::string _username;
     std::string _nickname;
