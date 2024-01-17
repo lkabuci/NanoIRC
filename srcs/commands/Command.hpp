@@ -3,8 +3,9 @@
 #ifndef __COMMAND_HPP__
 #define __COMMAND_HPP__
 
+#include "../Reply/Reply.hpp"
 #include "../Utils.hpp"
-#include "../client/Client.hpp"
+#include "../client/Clients.hpp"
 #include "../parser/Parser.hpp"
 
 class Command {

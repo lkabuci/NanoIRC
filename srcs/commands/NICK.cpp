@@ -15,8 +15,13 @@ NICK& NICK::operator=(const NICK& nick) {
 
 void NICK::execute(Client* client, const std::vector<std::string>& parameters) {
     if (parameters.empty() || parameters.size() > 2)
-        throw std::runtime_error("USER <nickname> [ <hopcount> ]");
+        throw std::runtime_error("431 ERR_NONICKNAMEGIVEN:No nickname given.");
     _nick = parameters[0];
+    if (Clients::exist(_nick)) {
+        throw std::runtime_error(
+            "433 ERR_NICKNAMEINUSE:Nickname is already in use.");
+    }
+    client->getUserInfo().setNickname(_nick);
 }
 
 const std::string& NICK::getNickname() const {
