@@ -26,15 +26,12 @@ void JOIN::execute(Client* client, const std::vector<std::string>& parameters) {
 }
 
 void JOIN::_joinUser(Client* client) {
-    Channel* channel;
-
     for (size_t i = 0; i < _channels.size(); ++i) {
-        channel = &TChannels::channel(_channels[i]);
-
-        if (channel == NULL)
+        if (!TChannels::exist(_channels[i]))
             _createChannel(client, i);
-        else
-            _addToChannel(client, *channel, i);
+        else {
+            _addToChannel(client, TChannels::channel(_channels[i]), i);
+        }
     }
 }
 
