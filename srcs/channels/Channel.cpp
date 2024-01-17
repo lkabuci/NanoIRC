@@ -105,6 +105,14 @@ bool Channel::isInvited(Client* client) {
            _invited.end();
 }
 
+const std::string& Channel::getTopic() const {
+    return _topic;
+}
+
+void Channel::setTopic(const std::string& topic) {
+    _topic = topic;
+}
+
 CHANNEL_MODE::Modes operator|(CHANNEL_MODE::Modes a, CHANNEL_MODE::Modes b) {
     return static_cast<CHANNEL_MODE::Modes>(static_cast<int>(a) |
                                             static_cast<int>(b));

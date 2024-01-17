@@ -49,6 +49,8 @@ class Channel {
     void               setPassword(const std::string& password);
     void               invite(Client* client);
     bool               isInvited(Client* client);
+    const std::string& getTopic() const;
+    void               setTopic(const std::string& topic);
 
   private:
     std::string                          _name;
@@ -56,6 +58,7 @@ class Channel {
     std::map<Client*, MEMBER_PERMISSION> _members;
     std::vector<Client*>                 _invited;
     CHANNEL_MODE::Modes                  _mode;
+    std::string                          _topic;
 };
 
 CHANNEL_MODE::Modes operator|(CHANNEL_MODE::Modes a, CHANNEL_MODE::Modes b);
