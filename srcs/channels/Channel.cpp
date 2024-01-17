@@ -59,6 +59,11 @@ bool Channel::empty() const {
     return _members.empty();
 }
 
+bool Channel::exist(Client* client) {
+    return std::find(_members.begin(), _members.end(), client) !=
+           _members.end();
+}
+
 const std::string& Channel::name() const {
     return _name;
 }
@@ -89,6 +94,15 @@ const std::string& Channel::getPassword() const {
 
 void Channel::setPassword(const std::string& password) {
     _password = password;
+}
+
+void Channel::invite(Client* client) {
+    _invited.push_back(client);
+}
+
+bool Channel::isInvited(Client* client) {
+    return std::find(_invited.begin(), _invited.end(), client) !=
+           _invited.end();
 }
 
 CHANNEL_MODE::Modes operator|(CHANNEL_MODE::Modes a, CHANNEL_MODE::Modes b) {
