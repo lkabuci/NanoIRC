@@ -22,7 +22,7 @@ enum Modes {
 };
 }
 
-enum MEMBER_PERMISSION { OPERATOR, ADMIN, REGULAR };
+enum MEMBER_PERMISSION { OPERATOR, REGULAR };
 
 class Channel {
   public:
@@ -33,12 +33,13 @@ class Channel {
     void               updateMode(CHANNEL_MODE::Modes mode); // temporary
     const size_t       getNumberOfMembers() const;
     void               sendToAll(const std::string& message);
-    void               remove(const std::string& nickname);
+    void               remove(const std::string& username);
     void               clear();
     bool               empty() const;
     const std::string& name() const;
-    bool               isSet(CHANNEL_MODE::Modes mode);
-    Client*            getClient(const std::string& nickname);
+    bool               modeIsSet(CHANNEL_MODE::Modes mode);
+    bool               flagIsSet(Client* client, MEMBER_PERMISSION flag);
+    Client*            getClient(const std::string& username);
 
   private:
     std::string                          _name;
