@@ -52,3 +52,9 @@ bool TChannels::exist(const std::string& name) {
 
     return it != _channels.end();
 }
+
+Channel& TChannels::get(const size_t& index) {
+    if (index >= _channels.size())
+        throw std::out_of_range("no such channel.");
+    return _channels.begin()->second;
+}
