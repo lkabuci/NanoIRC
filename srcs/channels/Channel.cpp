@@ -16,7 +16,7 @@ void Channel::updateMode(CHANNEL_MODE::Modes mode) {
     _mode = mode;
 }
 
-const size_t Channel::getNumberOfMembers() const {
+size_t Channel::getNumberOfMembers() const {
     return _members.size();
 }
 
