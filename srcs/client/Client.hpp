@@ -15,7 +15,7 @@ class Client {
     explicit Client(struct sockaddr_storage&, int);
     ~Client();
     int                getSockfd() const;
-    const UserInfo&    getUserInfo() const;
+    UserInfo&    getUserInfo();
     void               setUserInfo(const UserInfo& userInfo);
     const std::string& getMessage() const;
     void               appendMessage(const std::string& message);

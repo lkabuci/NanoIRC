@@ -14,12 +14,19 @@ PASS& PASS::operator=(const PASS& p) {
     return *this;
 }
 
-void PASS::execute(const std::vector<std::string>& parameters) {
-    if (parameters.size() != 1)
-        throw std::runtime_error("PASS <password>");
-    if (parameters[0] != Message::getPassword())
-        throw std::runtime_error("incorrect password.");
+void PASS::execute(Client* client, const std::vector<std::string>& parameters) {
+    if (client->getUserInfo().isRegistered()) {
+        // TODO sent ERR_ALREADYREGISTRED reply and ignore the command
+        return;
+    }
+    if (parameters.size() != 1) {
+        // TODO sent ERR_NEEDMOREPARAMS reply
+        return;
+    }
+    //if (parameters[0] != Message::getPassword())
+    //    throw std::runtime_error("incorrect password.");
     _password = parameters[0];
+    client->getUserInfo().setPassword(_password);
 }
 
 const std::string& PASS::getPassword() const {

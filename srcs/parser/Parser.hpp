@@ -3,7 +3,6 @@
 #ifndef __PARSER_HPP__
 #define __PARSER_HPP__
 
-#include "ErrorReplies.hpp"
 #include "Lexer.hpp"
 
 class Parser {

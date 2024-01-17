@@ -5,9 +5,9 @@
 
 #include "../client/Client.hpp"
 #include "../commands/Command.hpp"
-#include "ErrorReplies.hpp"
 #include "Lexer.hpp"
 #include "Parser.hpp"
+#include "../Reply/Reply.hpp"
 
 class Message {
   public:

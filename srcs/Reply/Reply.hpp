@@ -13,13 +13,14 @@ enum CODES {
 
 namespace ERROR_CODES {
 enum CODES {
-
+    ERR_ALREADYREGISTRED = 462,
+    ERR_NEEDMOREPARAMS = 461,
 };
 }
 
 class Reply {
   public:
-    static void succes(int fd, SUCCESS_CODES::CODES code,
+    static void success(int fd, SUCCESS_CODES::CODES code,
                        const std::string&              servername,
                        const std::string&              nickname,
                        const std::vector<std::string>& message);

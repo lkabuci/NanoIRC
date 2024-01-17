@@ -43,7 +43,7 @@ void Message::execute(const std::string& password) {
         break;
     }
     if (_cmdfunc)
-        _cmdfunc->execute(_parameters);
+        _cmdfunc->execute(_client, _parameters);
 }
 
 TYPES::TokenType Message::_whichCommand() {
@@ -55,7 +55,8 @@ TYPES::TokenType Message::_whichCommand() {
 }
 
 void Message::parse(Client* client) {
-    _message = client->getMessage();
+    _client = client;
+    _message = _client->getMessage();
     if (_message.empty())
         return;
     std::string msg(_message);
@@ -72,8 +73,6 @@ void Message::parse(Client* client) {
 
 void Message::_command() {
     if (!_isCommand()) {
-        ErrorReplies::reply(2, "localhost", ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                            "c");
         throw std::exception();
     }
     _cmd = Parser::advance().lexeme();

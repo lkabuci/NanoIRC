@@ -49,7 +49,7 @@ void Client::fillClientIpPort() {
     }
 }
 
-const UserInfo& Client::getUserInfo() const {
+UserInfo& Client::getUserInfo() {
     return _userInfo;
 }
 

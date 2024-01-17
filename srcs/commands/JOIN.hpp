@@ -13,7 +13,8 @@ class JOIN : public Command {
 
     JOIN& operator=(const JOIN& join);
 
-    virtual void execute(const std::vector<std::string>& parameters);
+    virtual void execute(Client* client,
+                        const std::vector<std::string>& parameters);
 
   private:
     std::vector<std::string> _channels;

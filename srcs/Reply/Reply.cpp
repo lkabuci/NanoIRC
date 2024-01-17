@@ -6,8 +6,9 @@ std::map<ERROR_CODES::CODES, std::string> Reply::_errorReply = _fillErrorMap();
 
 std::map<ERROR_CODES::CODES, std::string> Reply::_fillErrorMap() {
     std::map<ERROR_CODES::CODES, std::string> ret;
-    // ret[1] = "zabba w chta sabba";
 
+    ret[ERROR_CODES::ERR_ALREADYREGISTRED] = ":You may not reregister";
+    ret[ERROR_CODES::ERR_NEEDMOREPARAMS] = ":You may not reregister";
     return (ret);
 }
 
@@ -17,14 +18,13 @@ std::map<SUCCESS_CODES::CODES, std::string> Reply::_fillSuccessMap() {
     return ret;
 }
 
-void Reply::succes(int fd, SUCCESS_CODES::CODES code,
+void Reply::success(int fd, SUCCESS_CODES::CODES code,
                    const std::string& servername, const std::string& nickname,
                    const std::vector<std::string>& message) {
     //      join #toast,#ircv3 mysecret
     //      S <-   :alice!~a@localhost JOIN #toast
     std::string reply = std::string(":") + nickname + "@" + servername + " " +
                         Utils::join(message);
-    ;
 
     send(fd, reply.c_str(), reply.length(), 0);
 }

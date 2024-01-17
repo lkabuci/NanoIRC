@@ -13,8 +13,8 @@ NICK& NICK::operator=(const NICK& nick) {
     return *this;
 }
 
-void NICK::execute(const std::vector<std::string>& parameters) {
-    if (parameters.size() > 2)
+void NICK::execute(Client* client, const std::vector<std::string>& parameters) {
+    if (parameters.empty() || parameters.size() > 2)
         throw std::runtime_error("USER <nickname> [ <hopcount> ]");
     _nick = parameters[0];
 }

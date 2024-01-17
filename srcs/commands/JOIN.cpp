@@ -14,7 +14,7 @@ JOIN& JOIN::operator=(const JOIN& join) {
     return *this;
 }
 
-void JOIN::execute(const std::vector<std::string>& parameters) {
+void JOIN::execute(Client* client, const std::vector<std::string>& parameters) {
     if (parameters.empty())
         throw std::runtime_error("JOIN <channel>{,<channel>} [<key>{,<key>}]");
     std::string params = Utils::join(parameters);
