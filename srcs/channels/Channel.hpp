@@ -40,17 +40,21 @@ class Channel {
     void               remove(Client* client);
     void               clear();
     bool               empty() const;
+    bool               exist(Client* client);
     const std::string& name() const;
     bool               modeIsSet(CHANNEL_MODE::Modes mode);
     bool               flagIsSet(Client* client, MEMBER_PERMISSION flag);
     Client*            getClient(const std::string& username);
     const std::string& getPassword() const;
     void               setPassword(const std::string& password);
+    void               invite(Client* client);
+    bool               isInvited(Client* client);
 
   private:
     std::string                          _name;
     std::string                          _password;
     std::map<Client*, MEMBER_PERMISSION> _members;
+    std::vector<Client*>                 _invited;
     CHANNEL_MODE::Modes                  _mode;
 };
 
