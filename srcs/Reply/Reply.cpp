@@ -20,8 +20,8 @@ std::map<SUCCESS_CODES::CODES, std::string> Reply::_fillSuccessMap() {
     return ret;
 }
 
-void Reply::success(int fd, SUCCESS_CODES::CODES code,
-                    const std::string& servername, const std::string& nickname,
+void Reply::success(int fd, const std::string& servername,
+                    const std::string&              nickname,
                     const std::vector<std::string>& message) {
     //      join #toast,#ircv3 mysecret
     //      S <-   :alice!~a@localhost JOIN #toast
