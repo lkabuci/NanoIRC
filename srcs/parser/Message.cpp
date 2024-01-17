@@ -13,12 +13,11 @@ TYPES::TokenType Message::_commandTypes[] = {
 std::string Message::_commandsStr[] = {"PASS", "NICK",   "USER",  "JOIN",
                                        "KICK", "INVITE", "TOPIC", "MODE"};
 
-Message::Message() : _cmdfunc(NULL) {}
+Message::Message() : _client(NULL), _cmdfunc(NULL) {}
 
-Message::Message(const std::string& message) : _cmdfunc(NULL) {
+Message::Message(const std::string& message) : _client(NULL), _cmdfunc(NULL) {
     if (message.length() >= MAX_MSG_LEN)
         throw std::runtime_error("message too large.");
-    parse(message);
 }
 
 Message::~Message() {
@@ -55,11 +54,12 @@ TYPES::TokenType Message::_whichCommand() {
     return TYPES::END;
 }
 
-void Message::parse(const std::string& message) {
-    if (message.empty())
+void Message::parse(Client* client) {
+    _message = client->getMessage();
+    if (_message.empty())
         return;
-    std::string msg(message);
-    size_t      crfl_pos = message.rfind("\r\n");
+    std::string msg(_message);
+    size_t      crfl_pos = _message.rfind("\r\n");
     if (crfl_pos == std::string::npos) {
         size_t lf_pos = msg.rfind("\n");
         msg.insert(lf_pos, "\r");

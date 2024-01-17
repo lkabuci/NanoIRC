@@ -6,3 +6,5 @@ cmake-build-debug/
 .cache/
 .vscode/
 venv/
+CmakePresets.json
+CMakeUserPresets.json

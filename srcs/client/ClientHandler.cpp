@@ -60,7 +60,7 @@ void ClientHandler::handleClientInput(Client*& pClient) {
         Message msg_parser;
 
         try {
-            msg_parser.parse(pClient->getMessage());
+            msg_parser.parse(pClient);
         } catch (const std::exception& e) {
             std::cout << e.what() << std::endl;
         }
@@ -79,3 +79,5 @@ bool ClientHandler::hasEndOfMessage(const std::string& message) {
     return (message.find(CR_LF) != std::string::npos) ||
            (message.find(LF_) != std::string::npos);
 }
+
+#undef MAX_MSG_LEN
