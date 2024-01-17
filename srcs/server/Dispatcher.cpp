@@ -4,20 +4,21 @@
 
 #include "Dispatcher.hpp"
 #include "../client/ClientHandler.hpp"
+#include "Reactor.hpp"
 
 #define SERVER 0
 
-/*
- * RFC 1459 #section-2.3
- *
- * 510 is the Max _message length
- * 512 is for the last trailing CRLF(\r\n)
- * 513 a byte extra for protection if exceeded the limits
- */
 void Dispatcher::dispatchEvents(std::vector<pollfd>&  fds,
                                 std::vector<Client*>& clients) {
     for (size_t i = 0; i < fds.size(); ++i) {
-        // TODO: add POLLHUP POLLERROR
+        if (fds[i].revents & POLLHUP) {
+            if (i == SERVER) {
+                serverIsRunning = 0;
+                break;
+            }
+            Reactor::getInstance().removeClient(clients[i - 1]);
+            continue;
+        }
         if (fds[i].revents & POLLIN) {
             if (i == SERVER) {
                 ClientHandler::handleNewConnection(fds[i]);

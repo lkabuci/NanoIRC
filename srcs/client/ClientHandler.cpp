@@ -6,6 +6,14 @@
 #include "../parser/Message.hpp"
 #include "../server/Reactor.hpp"
 
+/*
+ * RFC 1459 #section-2.3
+ *
+ * 510 is the Max _message length
+ * 512 is for the last trailing CRLF(\r\n)
+ * 513 a byte extra for protection if exceeded the limits
+ */
+
 #define MAX_MSG_LEN 512
 
 void ClientHandler::handleNewConnection(const pollfd& serverFd) {
