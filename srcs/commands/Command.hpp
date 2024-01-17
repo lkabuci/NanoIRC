@@ -4,8 +4,8 @@
 #define __COMMAND_HPP__
 
 #include "../Utils.hpp"
+#include "../channels/Channel.hpp"
 #include "../parser/Parser.hpp"
-#include "Channel.hpp"
 
 class Command {
   public:
