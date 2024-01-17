@@ -1,5 +1,7 @@
 #include "Channel.hpp"
 
+Channel::Channel() {}
+
 Channel::Channel(const std::string& name)
     : _name(name), _mode(CHANNEL_MODE::SET_KEY) {}
 

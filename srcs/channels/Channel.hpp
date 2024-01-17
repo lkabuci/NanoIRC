@@ -27,6 +27,7 @@ enum MEMBER_PERMISSION { OPERATOR, REGULAR };
 class Channel {
   public:
     Channel(const std::string& name);
+    Channel();
 
     void               add(Client* newMember, MEMBER_PERMISSION premission);
     void               setMode(CHANNEL_MODE::Modes mode);
