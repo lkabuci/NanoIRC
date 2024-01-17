@@ -34,6 +34,7 @@ class Channel {
     const size_t       getNumberOfMembers() const;
     void               sendToAll(const std::string& message);
     void               remove(const std::string& username);
+    void               remove(Client* client);
     void               clear();
     bool               empty() const;
     const std::string& name() const;

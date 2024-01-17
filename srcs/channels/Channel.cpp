@@ -39,6 +39,15 @@ void Channel::remove(const std::string& username) {
     throw std::runtime_error("No such client.");
 }
 
+void Channel::remove(Client* client) {
+    std::map<Client*, MEMBER_PERMISSION>::iterator client_pos =
+        _members.find(client);
+
+    if (client_pos == _members.end())
+        throw std::runtime_error("No such client.");
+    _members.erase(client_pos);
+}
+
 void Channel::clear() {
     _members.clear();
 }
