@@ -11,6 +11,7 @@ std::map<ERROR_CODES::CODES, std::string> Reply::_fillErrorMap() {
     ret[ERROR_CODES::ERR_NEEDMOREPARAMS] = ":You may not reregister";
     ret[ERROR_CODES::ERR_NONICKNAMEGIVEN] = ":No nickname given";
     ret[ERROR_CODES::ERR_NICKNAMEINUSE] = ":Nickname is already in use";
+    ret[ERROR_CODES::ERR_NOSUCHCHANNEL] = ":No such channel";
     return (ret);
 }
 
