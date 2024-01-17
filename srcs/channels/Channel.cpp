@@ -27,11 +27,11 @@ void Channel::sendToAll(const std::string& message) {
         send(it->first->getSockfd(), message.c_str(), message.length(), 0);
 }
 
-void Channel::remove(const std::string& nickname) {
+void Channel::remove(const std::string& username) {
     std::map<Client*, MEMBER_PERMISSION>::iterator it = _members.begin();
 
     for (; it != _members.end(); ++it) {
-        if (it->first->getUserInfo().getNickname() == nickname) {
+        if (it->first->getUserInfo().getUsername() == username) {
             _members.erase(it);
             return;
         }
@@ -51,15 +51,21 @@ const std::string& Channel::name() const {
     return _name;
 }
 
-bool Channel::isSet(CHANNEL_MODE::Modes mode) {
+bool Channel::modeIsSet(CHANNEL_MODE::Modes mode) {
     return _mode & mode;
 }
 
-Client* Channel::getClient(const std::string& nickname) {
+bool Channel::flagIsSet(Client* client, MEMBER_PERMISSION flag) {
+    std::map<Client*, MEMBER_PERMISSION>::iterator it = _members.find(client);
+
+    return (it == _members.end()) ? false : it->second & flag;
+}
+
+Client* Channel::getClient(const std::string& username) {
     std::map<Client*, MEMBER_PERMISSION>::iterator it = _members.begin();
 
     for (; it != _members.end(); ++it) {
-        if (it->first->getUserInfo().getNickname() == nickname)
+        if (it->first->getUserInfo().getUsername() == username)
             return it->first;
     }
     return NULL;
