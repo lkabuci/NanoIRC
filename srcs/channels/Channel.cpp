@@ -156,7 +156,7 @@ CHANNEL_MODE::Modes operator&(CHANNEL_MODE::Modes a, CHANNEL_MODE::Modes b) {
                                             static_cast<int>(b));
 }
 
-void Channel::eraseFromInvitedlist(Client* client) {
+void Channel::eraseFromInviteeslist(Client* client) {
     std::vector<Client*>::iterator it =
         std::find(_invited.begin(), _invited.end(), client);
 
