@@ -14,6 +14,11 @@ std::map<ERROR_CODES::CODES, std::string> Reply::_fillErrorMap() {
     ret[ERROR_CODES::ERR_NOSUCHCHANNEL] = ":No such channel";
     ret[ERROR_CODES::ERR_INVITEONLYCHAN] = ":Cannot join channel (+i)";
     ret[ERROR_CODES::ERR_BADCHANNELKEY] = ":Cannot join channel (+k)";
+    ret[ERROR_CODES::ERR_NORECIPIENT] = ":No recipient given (<command>)";
+    ret[ERROR_CODES::ERR_NOTEXTTOSEND] = ":No text to send";
+    ret[ERROR_CODES::ERR_TOOMANYTARGETS] =
+        "<target> :Duplicate recipients. No message delivered";
+    ret[ERROR_CODES::ERR_NOSUCHNICK] = "<nickname> :No such nick/channel";
     return (ret);
 }
 
