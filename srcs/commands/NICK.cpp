@@ -16,12 +16,25 @@ NICK& NICK::operator=(const NICK& nick) {
 void NICK::execute(Client* client, const std::vector<std::string>& parameters) {
     if (parameters.empty() || parameters.size() > 2)
         throw std::runtime_error("431 ERR_NONICKNAMEGIVEN:No nickname given.");
+    if (!client->getUserInfo().isSet(UserInfo::PASSWORD_SET))
+        throw std::runtime_error("User must set a password first.");
     _nick = parameters[0];
-    if (Clients::exist(_nick)) {
+    if (_isNicknameCollision(client)) {
+        _removeInstances();
         throw std::runtime_error(
             "433 ERR_NICKNAMEINUSE:Nickname is already in use.");
     }
     client->getUserInfo().setNickname(_nick);
+}
+
+void NICK::_removeInstances() {
+    while (Clients::exist(_nick))
+        Clients::remove(_nick);
+}
+
+bool NICK::_isNicknameCollision(Client* client) {
+    return Clients::exist(_nick) &&
+           _nick != client->getUserInfo().getNickname();
 }
 
 const std::string& NICK::getNickname() const {

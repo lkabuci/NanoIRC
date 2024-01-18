@@ -20,6 +20,9 @@ class NICK : public Command {
 
   private:
     std::string _nick;
+
+    bool _isNicknameCollision(Client* client);
+    void _removeInstances();
 };
 
 #endif
