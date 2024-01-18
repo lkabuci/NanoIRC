@@ -28,6 +28,10 @@ void TOPIC::execute(Client*                         client,
             topic += " ";
         }
         topic.pop_back();
-        tmpChannel.setTopic(topic);
+        if (tmpChannel.flagIsSet(client, MEMBER_PERMISSION::OPERATOR) ||
+            tmpChannel.modeIsSet(CHANNEL_MODE::SET_TOPIC))
+            tmpChannel.setTopic(topic);
+        else
+            throw std::runtime_error("cannot set topic");
     }
 }

@@ -1,8 +1,11 @@
 #include "Message.hpp"
+#include "../commands/INVITE.hpp"
 #include "../commands/JOIN.hpp"
 #include "../commands/NICK.hpp"
 #include "../commands/PASS.hpp"
+#include "../commands/TOPIC.hpp"
 #include "../commands/USER.hpp"
+#include "TokenType.hpp"
 
 std::string Message::_password;
 
@@ -38,6 +41,12 @@ void Message::execute(const std::string& password) {
         break;
     case TYPES::JOIN:
         _cmdfunc = new JOIN();
+        break;
+    case TYPES::INVITE:
+        _cmdfunc = new INVITE();
+        break;
+    case TYPES::TOPIC:
+        _cmdfunc = new TOPIC();
         break;
     default:
         break;
