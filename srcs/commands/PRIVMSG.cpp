@@ -21,11 +21,13 @@ void PRIVMSG::execute(Client*                         client,
                       const std::vector<std::string>& parameters) {
     if (parameters.empty())
         return;
-    (void)client;
+    _sender = client;
     std::string message = Utils::join(parameters);
 
     Parser::init(message);
     _parseReceivers();
+    _parseText();
+    _sentText();
     return;
 }
 
@@ -39,6 +41,39 @@ void PRIVMSG::_parseReceivers() {
     }
 }
 
+void PRIVMSG::_parseText() {
+    if (Parser::isAtEnd())
+        throw std::runtime_error("412 ERR_NOTEXTTOSEND:No text to send");
+    Parser::consume(TYPES::SEMICOLON, "missing semicolon.");
+    while (!Parser::isAtEnd())
+        _textToSent.append(Parser::advance().lexeme());
+}
+
+void PRIVMSG::_sentText() {
+    for (size_t i = 0; i < _users.size(); ++i) {
+        if (_userBelongToChannel(_users[i]))
+            continue;
+        _sendToUser(_users[i]);
+    }
+}
+
+void PRIVMSG::_sendToUser(const std::string& name) {
+    // Client*     receiver = TChannels::c
+
+    // if (!receiver)
+    //     throw std::runtime_error("user not in channel.");
+    // send(receiver->getSockfd(), _textToSent.c_str(), _textToSent.length(),
+    // 0);
+}
+
+bool PRIVMSG::_userBelongToChannel(const std::string& name) {
+    for (size_t i = 0; i < _channels.size(); ++i) {
+        if (TChannels::channel(_channels[i]).exist(name))
+            return true;
+    }
+    return false;
+}
+
 void PRIVMSG::_addChannel() {
     if (!Parser::check(TYPES::LETTER))
         throw std::runtime_error(
@@ -46,11 +81,15 @@ void PRIVMSG::_addChannel() {
     if (!TChannels::exist(Parser::peek().lexeme()))
         throw std::runtime_error(
             "401 ERR_NOSUCHNICK:<nickname> :No such nick/channel");
-    if (std::find(_channels.begin(), _channels.end(),
-                  Parser::peek().lexeme()) != _channels.end())
+    if (_channelAlreadyExists(Parser::peek().lexeme()))
         throw std::runtime_error("407 ERR_TOOMANYTARGETS:<target> :Duplicate "
                                  "recipients. No message delivered");
     _channels.push_back(Parser::advance().lexeme());
+}
+
+bool PRIVMSG::_channelAlreadyExists(const std::string& name) {
+    return std::find(_channels.begin(), _channels.end(), name) !=
+           _channels.end();
 }
 
 void PRIVMSG::_addUser() {
@@ -60,9 +99,13 @@ void PRIVMSG::_addUser() {
     if (!Clients::exist(Parser::peek().lexeme()))
         throw std::runtime_error(
             "401 ERR_NOSUCHNICK:<nickname> :No such nick/channel");
-    if (std::find(_users.begin(), _users.end(), Parser::peek().lexeme()) !=
-        _users.end())
+    if (_userAlreadyExists(Parser::peek().lexeme()))
         throw std::runtime_error("407 ERR_TOOMANYTARGETS:<target> :Duplicate "
                                  "recipients. No message delivered");
-    _users.push_back(Parser::advance().lexeme());
+    if (Parser::peek().lexeme() != _sender->getUserInfo().getNickname())
+        _users.push_back(Parser::advance().lexeme());
+}
+
+bool PRIVMSG::_userAlreadyExists(const std::string& name) {
+    return std::find(_users.begin(), _users.end(), name) != _users.end();
 }

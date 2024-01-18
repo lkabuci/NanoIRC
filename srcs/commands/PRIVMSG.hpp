@@ -20,10 +20,17 @@ class PRIVMSG : public Command {
     std::vector<std::string> _users;
     std::vector<std::string> _channels;
     std::string              _textToSent;
+    Client*                  _sender;
 
     void _parseReceivers();
+    void _parseText();
+    void _sentText();
     void _addChannel();
     void _addUser();
+    bool _userAlreadyExists(const std::string& name);
+    bool _channelAlreadyExists(const std::string& name);
+    bool _userBelongToChannel(const std::string& user);
+    void _sendToUser(const std::string& name);
 };
 
 #endif
