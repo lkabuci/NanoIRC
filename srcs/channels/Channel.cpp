@@ -4,7 +4,9 @@ Channel::Channel() {}
 
 Channel::Channel(const std::string& name, const std::string& password,
                  CHANNEL_MODE::Modes mode)
-    : _name(name), _password(password), _mode(mode) {}
+    : _name(name), _password(password), _mode(mode) {
+    _topic.first = false;
+}
 
 Channel::Channel(const Channel& channel)
     : _name(channel._name), _password(channel._password),
@@ -80,6 +82,17 @@ bool Channel::exist(Client* client) {
     return _members.find(client) != _members.end();
 }
 
+bool Channel::exist(const std::string& nickname) {
+    std::map<Client*, MEMBER_PERMISSION::Flags>::const_iterator it =
+        _members.begin();
+
+    for (; it != _members.end(); ++it) {
+        if (it->first->getUserInfo().getNickname() == nickname)
+            return true;
+    }
+    return false;
+}
+
 const std::string& Channel::name() const {
     return _name;
 }
@@ -123,11 +136,22 @@ bool Channel::isInvited(Client* client) {
 }
 
 const std::string& Channel::getTopic() const {
-    return _topic;
+    return _topic.second;
 }
 
 void Channel::setTopic(const std::string& topic) {
-    _topic = topic;
+    _topic.second = topic;
+}
+
+void Channel::setTopicRole() {
+    _topic.first = true;
+}
+bool Channel::getTopicRole() const {
+    return _topic.first;
+}
+
+void Channel::unsetTopicRole() {
+    _topic.first = false;
 }
 
 CHANNEL_MODE::Modes operator|(CHANNEL_MODE::Modes a, CHANNEL_MODE::Modes b) {
