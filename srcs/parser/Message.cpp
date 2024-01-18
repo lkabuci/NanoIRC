@@ -2,16 +2,18 @@
 #include "../commands/JOIN.hpp"
 #include "../commands/NICK.hpp"
 #include "../commands/PASS.hpp"
+#include "../commands/PRIVMSG.hpp"
 #include "../commands/USER.hpp"
 
 std::string Message::_password;
 
 TYPES::TokenType Message::_commandTypes[] = {
-    TYPES::PASS, TYPES::NICK,   TYPES::USER,  TYPES::JOIN,
-    TYPES::KICK, TYPES::INVITE, TYPES::TOPIC, TYPES::MODE};
+    TYPES::PASS,   TYPES::NICK,  TYPES::USER, TYPES::JOIN,   TYPES::KICK,
+    TYPES::INVITE, TYPES::TOPIC, TYPES::MODE, TYPES::PRIVMSG};
 
-std::string Message::_commandsStr[] = {"PASS", "NICK",   "USER",  "JOIN",
-                                       "KICK", "INVITE", "TOPIC", "MODE"};
+std::string Message::_commandsStr[] = {"PASS",  "NICK", "USER",
+                                       "JOIN",  "KICK", "INVITE",
+                                       "TOPIC", "MODE", "PRIVMSG"};
 
 Message::Message() : _client(NULL), _cmdfunc(NULL) {}
 
@@ -38,6 +40,9 @@ void Message::execute(const std::string& password) {
         break;
     case TYPES::JOIN:
         _cmdfunc = new JOIN();
+        break;
+    case TYPES::PRIVMSG:
+        _cmdfunc = new PRIVMSG();
         break;
     default:
         break;
@@ -143,6 +148,7 @@ bool Message::_isCommand() {
     case TYPES::INVITE:
     case TYPES::TOPIC:
     case TYPES::MODE:
+    case TYPES::PRIVMSG:
         return true;
     default:
         break;

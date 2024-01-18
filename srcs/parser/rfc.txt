@@ -99,6 +99,12 @@ JOIN #foo,#bar                  ; join channels #foo and #bar.
 -----------------------------------------------------------------------------
 
 
+    Command: PRIVMSG
+    Parameters: <receiver>{,<receiver>} <text to be sent>
+
+
+
+-----------------------------------------------------------------------------
 The numeric reply must be sent as one message consisting of the sender prefix,
 the three digit numeric, and the target of the reply.
 
