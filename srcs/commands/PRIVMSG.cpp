@@ -24,9 +24,7 @@ void PRIVMSG::execute(Client*                         client,
     if (!client->getUserInfo().isRegistered())
         throw std::runtime_error("client is not registered.");
     _sender = client;
-    std::string message = Utils::join(parameters);
-
-    Parser::init(message);
+    Parser::init(Utils::join(parameters));
     _parseReceivers();
     _parseText();
     _sentText();
@@ -34,11 +32,13 @@ void PRIVMSG::execute(Client*                         client,
 }
 
 void PRIVMSG::_parseReceivers() {
-    while (!Parser::isAtEnd() && !Parser::check(TYPES::SPACE)) {
+    while (!Parser::isAtEnd()) {
         if (Parser::match(TYPES::HASH))
             _addChannel();
         else
             _addUser();
+        if (Parser::match(TYPES::SPACE))
+            break;
         Parser::consume(TYPES::COMMA, "missing comma.");
     }
 }
@@ -47,6 +47,7 @@ void PRIVMSG::_parseText() {
     if (Parser::isAtEnd())
         throw std::runtime_error("412 ERR_NOTEXTTOSEND:No text to send");
     Parser::consume(TYPES::SEMICOLON, "missing semicolon.");
+    Parser::advance();
     while (!Parser::isAtEnd())
         _textToSent.append(Parser::advance().lexeme());
 }
@@ -109,7 +110,8 @@ void PRIVMSG::_addUser() {
         throw std::runtime_error("407 ERR_TOOMANYTARGETS:<target> :Duplicate "
                                  "recipients. No message delivered");
     if (Parser::peek().lexeme() != _sender->getUserInfo().getNickname())
-        _users.push_back(Parser::advance().lexeme());
+        _users.push_back(Parser::peek().lexeme());
+    Parser::advance();
 }
 
 bool PRIVMSG::_userAlreadyExists(const std::string& name) {
