@@ -82,6 +82,17 @@ bool Channel::exist(Client* client) {
     return _members.find(client) != _members.end();
 }
 
+bool Channel::exist(const std::string& nickname) {
+    std::map<Client*, MEMBER_PERMISSION::Flags>::const_iterator it =
+        _members.begin();
+
+    for (; it != _members.end(); ++it) {
+        if (it->first->getUserInfo().getNickname() == nickname)
+            return true;
+    }
+    return false;
+}
+
 const std::string& Channel::name() const {
     return _name;
 }

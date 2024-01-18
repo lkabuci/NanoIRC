@@ -46,6 +46,7 @@ class Channel {
     void   clear();
     bool   empty() const;
     bool   exist(Client* client);
+    bool   exist(const std::string& nickname);
     const std::string& name() const;
     bool               modeIsSet(CHANNEL_MODE::Modes mode);
     bool               flagIsSet(Client* client, MEMBER_PERMISSION::Flags flag);
