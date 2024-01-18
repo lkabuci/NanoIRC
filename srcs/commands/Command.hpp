@@ -6,7 +6,7 @@
 #include "../Reply/Reply.hpp"
 #include "../Utils.hpp"
 #include "../channels/TChannels.hpp"
-#include "../client/Clients.hpp"
+#include "../client/ClientList.hpp"
 #include "../parser/Parser.hpp"
 
 class Command {

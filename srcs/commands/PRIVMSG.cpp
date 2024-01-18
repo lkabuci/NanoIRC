@@ -63,7 +63,7 @@ void PRIVMSG::_sentText() {
 }
 
 void PRIVMSG::_sendToUser(const std::string& name) {
-    Client* receiver = Clients::get(name);
+    Client* receiver = ClientList::get(name);
 
     send(receiver->getSockfd(), _textToSent.c_str(), _textToSent.length(), 0);
 }
@@ -102,7 +102,7 @@ void PRIVMSG::_addUser() {
     if (!Parser::check(TYPES::LETTER))
         throw std::runtime_error(
             "411 ERR_NORECIPIENT::No recipient given (<command>)");
-    if (!Clients::exist(Parser::peek().lexeme()))
+    if (!ClientList::exist(Parser::peek().lexeme()))
         throw std::runtime_error(
             "401 ERR_NOSUCHNICK:<nickname> :No such nick/channel");
     if (_userAlreadyExists(Parser::peek().lexeme()))

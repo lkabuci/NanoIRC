@@ -25,17 +25,17 @@ void NICK::execute(Client* client, const std::vector<std::string>& parameters) {
             "433 ERR_NICKNAMEINUSE:Nickname is already in use.");
     }
     client->getUserInfo().setNickname(_nick);
-    if (!Clients::exist(_nick))
-        Clients::add(client);
+    if (!ClientList::exist(_nick))
+        ClientList::add(client);
 }
 
 void NICK::_removeInstances() {
-    while (Clients::exist(_nick))
-        Clients::remove(_nick);
+    while (ClientList::exist(_nick))
+        ClientList::remove(_nick);
 }
 
 bool NICK::_isNicknameCollision(Client* client) {
-    return Clients::exist(_nick) &&
+    return ClientList::exist(_nick) &&
            _nick != client->getUserInfo().getNickname();
 }
 
