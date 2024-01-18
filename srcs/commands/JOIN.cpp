@@ -60,6 +60,8 @@ void JOIN::_addToChannel(Client* client, Channel& channel,
     }
     channel.add(client, MEMBER_PERMISSION::REGULAR);
     TChannels::add(_channels[index], channel);
+    if (channel.isInvited(client))
+        channel.eraseFromInviteeslist(client);
 }
 
 void JOIN::_setChannels() {
