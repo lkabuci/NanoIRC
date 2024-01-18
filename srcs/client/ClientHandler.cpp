@@ -73,6 +73,7 @@ void ClientHandler::handleReceiveError(Client*& pClient) {
 }
 
 void ClientHandler::handleTooLongMessage(Client*& pClient) {
+    (void)pClient;
     // TODO: Throw an exception or handle the case of a too long message
 }
 

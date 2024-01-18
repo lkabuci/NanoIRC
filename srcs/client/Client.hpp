@@ -21,6 +21,7 @@ class Client {
     void               appendMessage(const std::string& message);
     bool               isDoneReading() const;
     void               setIsDoneReading(bool isDoneReading);
+    void               finish();
 
   private:
     struct sockaddr_storage& _sockAddr;

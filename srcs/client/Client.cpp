@@ -72,3 +72,8 @@ bool Client::isDoneReading() const {
 void Client::setIsDoneReading(bool isDoneReading) {
     _isDoneReading = isDoneReading;
 }
+
+void Client::finish() {
+    _isDoneReading = false;
+    _message.clear();
+}
