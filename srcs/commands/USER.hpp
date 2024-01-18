@@ -21,6 +21,8 @@ class USER : public Command {
   private:
     std::string _username;
     std::string _realname;
+
+    void _parseRealName();
 };
 
 #endif

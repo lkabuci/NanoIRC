@@ -16,14 +16,22 @@ USER& USER::operator=(const USER& user) {
 }
 
 void USER::execute(Client* client, const std::vector<std::string>& parameters) {
-    (void)client;
-    if (parameters.size() < 3)
+    if (parameters.size() < 2)
         throw std::runtime_error("USER <username> <realname>");
-    _username = parameters[0];
-    if (parameters[1] != ":")
-        throw std::runtime_error("missing semicolon for realname.");
-    for (size_t i = 2; i < parameters.size(); ++i)
-        _realname.append(parameters[i]);
+    Parser::init(Utils::join(parameters));
+    _username = Parser::advance().lexeme();
+    Parser::consume(TYPES::SPACE, "missing space.");
+    _parseRealName();
+    client->getUserInfo().setUsername(_username);
+    client->getUserInfo().setRealname(_realname);
+    std::cout << "name: " << client->getUserInfo().getUsername() << '\n';
+    std::cout << "realname: " << client->getUserInfo().getRealname() << '\n';
+}
+
+void USER::_parseRealName() {
+    Parser::consume(TYPES::SEMICOLON, "missing semicolon.");
+    while (!Parser::isAtEnd())
+        _realname.append(Parser::advance().lexeme());
 }
 
 const std::string& USER::getUsername() const {
