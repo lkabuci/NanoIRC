@@ -57,11 +57,11 @@ void ClientHandler::handleClientInput(Client*& pClient) {
 
     if (hasEndOfMessage(pClient->getMessage())) {
         pClient->setIsDoneReading(true);
-        Message msg_parser;
+        Message msg;
 
         try {
-            msg_parser.parse(pClient);
-            msg_parser.execute("");
+            msg.parse(pClient);
+            msg.execute("");
         } catch (const std::exception& e) {
             std::cout << e.what() << std::endl;
         }
