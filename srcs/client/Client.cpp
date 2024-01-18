@@ -9,6 +9,9 @@ Client::Client(sockaddr_storage& sockaddr, int sockfd)
     : _sockAddr(sockaddr), _sockfd(sockfd), _ip(), _port(),
       _isDoneReading(false) {
     fillClientIpPort();
+    if (std::strlen(_ip) == 0) {
+        std::memcpy(_ip, "bot", 3);
+    }
     std::cout << "+ add client: (" << sockfd << ") \"" << _ip << "\""
               << std::endl;
 }
@@ -42,9 +45,7 @@ void Client::fillClientIpPort() {
         std::snprintf(_port, sizeof(_port), "%d", ntohs(ipv6->sin6_port));
         break;
     default:
-        // TODO: here I should probably return a -1 or throw an error so the
-        // poll multiplexing ignore it
-        std::cerr << "Unknown address family\n";
+        std::memcpy(_ip, "BOT", 3);
         break;
     }
 }
