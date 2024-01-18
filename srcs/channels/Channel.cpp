@@ -34,6 +34,10 @@ void Channel::setMode(CHANNEL_MODE::Modes mode) {
     _mode = _mode | mode;
 }
 
+void Channel::unsetMode(CHANNEL_MODE::Modes mode) {
+    _mode = static_cast<CHANNEL_MODE::Modes>(_mode & ~mode);
+}
+
 void Channel::updateMode(CHANNEL_MODE::Modes mode) {
     _mode = mode;
 }
