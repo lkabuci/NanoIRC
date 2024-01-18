@@ -25,6 +25,8 @@ void NICK::execute(Client* client, const std::vector<std::string>& parameters) {
             "433 ERR_NICKNAMEINUSE:Nickname is already in use.");
     }
     client->getUserInfo().setNickname(_nick);
+    if (!Clients::exist(_nick))
+        Clients::add(client);
 }
 
 void NICK::_removeInstances() {
