@@ -49,8 +49,7 @@ void Message::execute(const std::string& password) {
     }
     if (_cmdfunc)
         _cmdfunc->execute(_client, _parameters);
-    _client->setIsDoneReading(false);
-    _client->clearMessage();
+    _client->finish();
 }
 
 TYPES::TokenType Message::_whichCommand() {
