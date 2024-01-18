@@ -31,6 +31,8 @@ void USER::execute(Client* client, const std::vector<std::string>& parameters) {
     _parseRealName();
     client->getUserInfo().setUsername(_username);
     client->getUserInfo().setRealname(_realname);
+    if (!ClientList::exist(client->getUserInfo().getNickname()))
+        ClientList::add(client);
 }
 
 void USER::_parseRealName() {
