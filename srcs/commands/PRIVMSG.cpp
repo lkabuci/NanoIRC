@@ -55,15 +55,19 @@ void PRIVMSG::_sentText() {
             continue;
         _sendToUser(_users[i]);
     }
+    for (size_t i = 0; i < _channels.size(); ++i) {
+        _sendToChannel(_channels[i]);
+    }
 }
 
 void PRIVMSG::_sendToUser(const std::string& name) {
-    // Client*     receiver = TChannels::c
+    Client* receiver = Clients::get(name);
 
-    // if (!receiver)
-    //     throw std::runtime_error("user not in channel.");
-    // send(receiver->getSockfd(), _textToSent.c_str(), _textToSent.length(),
-    // 0);
+    send(receiver->getSockfd(), _textToSent.c_str(), _textToSent.length(), 0);
+}
+
+void PRIVMSG::_sendToChannel(const std::string& name) {
+    TChannels::channel(name).sendToAll(_textToSent);
 }
 
 bool PRIVMSG::_userBelongToChannel(const std::string& name) {

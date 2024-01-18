@@ -31,6 +31,7 @@ class PRIVMSG : public Command {
     bool _channelAlreadyExists(const std::string& name);
     bool _userBelongToChannel(const std::string& user);
     void _sendToUser(const std::string& name);
+    void _sendToChannel(const std::string& name);
 };
 
 #endif
