@@ -24,7 +24,7 @@ Channel& TChannels::channel(const std::string& name) {
 }
 
 void TChannels::create(const std::string& name, Client* client,
-                       MEMBER_PERMISSION premission) {
+                       MEMBER_PERMISSION::Flags premission) {
     Channel channel(name);
 
     channel.add(client, premission);
@@ -51,4 +51,10 @@ bool TChannels::exist(const std::string& name) {
     std::map<std::string, Channel>::const_iterator it = _channels.find(name);
 
     return it != _channels.end();
+}
+
+Channel& TChannels::get(const size_t& index) {
+    if (index >= _channels.size())
+        throw std::out_of_range("no such channel.");
+    return _channels.begin()->second;
 }

@@ -8,7 +8,7 @@
 class TChannels {
   public:
     static void     create(const std::string& name, Client* client,
-                           MEMBER_PERMISSION permission);
+                           MEMBER_PERMISSION::Flags permission);
     static void     add(const std::string& name, Channel channel);
     static size_t   size();
     static void     remove(const std::string& name);
@@ -16,6 +16,7 @@ class TChannels {
     static void     removeMember(const std::string& channel_name,
                                  const std::string& nickname);
     static bool     exist(const std::string& name);
+    static Channel& get(const size_t& index);
 
   private:
     TChannels();
