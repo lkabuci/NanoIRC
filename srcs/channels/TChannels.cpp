@@ -56,5 +56,8 @@ bool TChannels::exist(const std::string& name) {
 Channel& TChannels::get(const size_t& index) {
     if (index >= _channels.size())
         throw std::out_of_range("no such channel.");
-    return _channels.begin()->second;
+    std::map<std::string, Channel>::iterator it = _channels.begin();
+
+    std::advance(it, index);
+    return it->second;
 }
