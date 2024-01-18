@@ -1,12 +1,11 @@
 #include "Channel.hpp"
+#include "../client/Client.hpp"
 
 Channel::Channel() {}
 
 Channel::Channel(const std::string& name, const std::string& password,
                  CHANNEL_MODE::Modes mode)
-    : _name(name), _password(password), _mode(mode) {
-    _topic.first = false;
-}
+    : _name(name), _password(password), _mode(mode) {}
 
 Channel::Channel(const Channel& channel)
     : _name(channel._name), _password(channel._password),
@@ -140,22 +139,11 @@ bool Channel::isInvited(Client* client) {
 }
 
 const std::string& Channel::getTopic() const {
-    return _topic.second;
+    return _topic;
 }
 
 void Channel::setTopic(const std::string& topic) {
-    _topic.second = topic;
-}
-
-void Channel::setTopicRole() {
-    _topic.first = true;
-}
-bool Channel::getTopicRole() const {
-    return _topic.first;
-}
-
-void Channel::unsetTopicRole() {
-    _topic.first = false;
+    _topic = topic;
 }
 
 CHANNEL_MODE::Modes operator|(CHANNEL_MODE::Modes a, CHANNEL_MODE::Modes b) {
