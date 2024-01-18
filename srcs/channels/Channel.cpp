@@ -34,6 +34,10 @@ void Channel::setMode(CHANNEL_MODE::Modes mode) {
     _mode = _mode | mode;
 }
 
+void Channel::unsetMode(CHANNEL_MODE::Modes mode) {
+    _mode = static_cast<CHANNEL_MODE::Modes>(_mode & ~mode);
+}
+
 void Channel::updateMode(CHANNEL_MODE::Modes mode) {
     _mode = mode;
 }
@@ -80,6 +84,17 @@ bool Channel::empty() const {
 
 bool Channel::exist(Client* client) {
     return _members.find(client) != _members.end();
+}
+
+bool Channel::exist(const std::string& nickname) {
+    std::map<Client*, MEMBER_PERMISSION::Flags>::const_iterator it =
+        _members.begin();
+
+    for (; it != _members.end(); ++it) {
+        if (it->first->getUserInfo().getNickname() == nickname)
+            return true;
+    }
+    return false;
 }
 
 const std::string& Channel::name() const {

@@ -9,17 +9,12 @@
 
 namespace CHANNEL_MODE {
 enum Modes {
-    NO_PASSWORD,
-    SET_INVITE_ONLY,
-    REMOVE_INVITE_ONLY,
-    SET_TOPIC,
-    REMOVE_TOPIC,
-    SET_KEY,
-    REMOVE_KEY,
-    GIVE_PRIVILEGE,
-    TAKE_PRIVILEGE,
-    SET_LIMIT,
-    REMOVE_LIMIT
+    NO_MODE = 0,
+    SET_INVITE_ONLY = 2,
+    SET_TOPIC = 4,
+    SET_KEY = 8,
+    GIVE_PRIVILEGE = 16,
+    SET_LIMIT = 32,
 };
 }
 
@@ -31,13 +26,14 @@ class Channel {
   public:
     Channel();
     Channel(const std::string& name, const std::string& password = "",
-            CHANNEL_MODE::Modes mode = CHANNEL_MODE::NO_PASSWORD);
+            CHANNEL_MODE::Modes mode = CHANNEL_MODE::NO_MODE);
     Channel(const Channel& channel);
 
     Channel& operator=(const Channel& channel);
 
     void   add(Client* newMember, MEMBER_PERMISSION::Flags premission);
     void   setMode(CHANNEL_MODE::Modes mode);
+    void   unsetMode(CHANNEL_MODE::Modes mode);
     void   updateMode(CHANNEL_MODE::Modes mode); // temporary
     size_t getNumberOfMembers() const;
     void   sendToAll(const std::string& message);
@@ -46,6 +42,7 @@ class Channel {
     void   clear();
     bool   empty() const;
     bool   exist(Client* client);
+    bool   exist(const std::string& nickname);
     const std::string& name() const;
     bool               modeIsSet(CHANNEL_MODE::Modes mode);
     bool               flagIsSet(Client* client, MEMBER_PERMISSION::Flags flag);
