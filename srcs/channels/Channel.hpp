@@ -5,7 +5,8 @@
 #define __CHANNEL_HPP__
 
 #include "../../include/IRC.h"
-#include "../client/Client.hpp"
+
+class Client;
 
 namespace CHANNEL_MODE {
 enum Modes {

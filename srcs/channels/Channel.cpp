@@ -1,12 +1,11 @@
 #include "Channel.hpp"
+#include "../client/Client.hpp"
 
 Channel::Channel() {}
 
 Channel::Channel(const std::string& name, const std::string& password,
                  CHANNEL_MODE::Modes mode)
-    : _name(name), _password(password), _mode(mode) {
-    _topic.first = false;
-}
+    : _name(name), _password(password), _mode(mode) {}
 
 Channel::Channel(const Channel& channel)
     : _name(channel._name), _password(channel._password),
