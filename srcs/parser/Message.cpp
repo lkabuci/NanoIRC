@@ -47,8 +47,13 @@ void Message::execute(const std::string& password) {
     default:
         break;
     }
-    if (_cmdfunc)
+    if (!_cmdfunc)
+        return;
+    try {
         _cmdfunc->execute(_client, _parameters);
+    } catch (const std::exception& e) {
+        std::cout << e.what() << std::endl;
+    }
     _client->finish();
 }
 
