@@ -52,6 +52,7 @@ class Channel {
     void               setPassword(const std::string& password);
     void               invite(Client* client);
     bool               isInvited(Client* client);
+    void               eraseFromInviteeslist(Client* client);
     const std::string& getTopic() const;
     void               setTopic(const std::string& topic);
 

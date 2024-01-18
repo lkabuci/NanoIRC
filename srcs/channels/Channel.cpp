@@ -155,3 +155,12 @@ CHANNEL_MODE::Modes operator&(CHANNEL_MODE::Modes a, CHANNEL_MODE::Modes b) {
     return static_cast<CHANNEL_MODE::Modes>(static_cast<int>(a) &
                                             static_cast<int>(b));
 }
+
+void Channel::eraseFromInviteeslist(Client* client) {
+    std::vector<Client*>::iterator it =
+        std::find(_invited.begin(), _invited.end(), client);
+
+    if (it == _invited.end())
+        throw std::runtime_error("No such client in invited list.");
+    _invited.erase(it);
+}
