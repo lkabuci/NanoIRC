@@ -17,14 +17,14 @@ PASS& PASS::operator=(const PASS& p) {
 void PASS::execute(Client* client, const std::vector<std::string>& parameters) {
     if (client->getUserInfo().isRegistered()) {
         // TODO sent ERR_ALREADYREGISTRED reply and ignore the command
-        return;
+        throw std::runtime_error(
+            "462 ERR_ALREADYREGISTRED:You may not reregister");
     }
     if (parameters.size() != 1) {
         // TODO sent ERR_NEEDMOREPARAMS reply
-        return;
+        throw std::runtime_error(
+            "462 ERR_NEEDMOREPARAMS:You may not reregister");
     }
-    // if (parameters[0] != Message::getPassword())
-    //     throw std::runtime_error("incorrect password.");
     _password = parameters[0];
     client->getUserInfo().setPassword(_password);
 }

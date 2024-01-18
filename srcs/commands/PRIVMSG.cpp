@@ -21,6 +21,8 @@ void PRIVMSG::execute(Client*                         client,
                       const std::vector<std::string>& parameters) {
     if (parameters.empty())
         return;
+    if (!client->getUserInfo().isRegistered())
+        throw std::runtime_error("client is not registered.");
     _sender = client;
     std::string message = Utils::join(parameters);
 

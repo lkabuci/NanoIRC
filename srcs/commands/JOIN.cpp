@@ -17,12 +17,19 @@ JOIN& JOIN::operator=(const JOIN& join) {
 void JOIN::execute(Client* client, const std::vector<std::string>& parameters) {
     if (parameters.empty())
         throw std::runtime_error("JOIN <channel>{,<channel>} [<key>{,<key>}]");
+    if (!client->getUserInfo().isRegistered())
+        throw std::runtime_error("client is not registered.");
     std::string params = Utils::join(parameters);
 
     Parser::init(params);
     _setChannels();
     _setKeys();
     _joinUser(client);
+    std::cout << "size: " << TChannels::size() << '\n';
+    std::cout << "channels:";
+    for (size_t i = 0; i < TChannels::size(); ++i)
+        std::cout << " " << TChannels::get(i).name();
+    std::cout << '\n';
 }
 
 void JOIN::_joinUser(Client* client) {

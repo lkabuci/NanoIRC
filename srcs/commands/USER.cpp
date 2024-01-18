@@ -18,14 +18,14 @@ USER& USER::operator=(const USER& user) {
 void USER::execute(Client* client, const std::vector<std::string>& parameters) {
     if (parameters.size() < 2)
         throw std::runtime_error("USER <username> <realname>");
+    if (!client->getUserInfo().isSet(UserInfo::PASSWORD_SET))
+        throw std::runtime_error("client is not registered.");
     Parser::init(Utils::join(parameters));
     _username = Parser::advance().lexeme();
     Parser::consume(TYPES::SPACE, "missing space.");
     _parseRealName();
     client->getUserInfo().setUsername(_username);
     client->getUserInfo().setRealname(_realname);
-    std::cout << "name: " << client->getUserInfo().getUsername() << '\n';
-    std::cout << "realname: " << client->getUserInfo().getRealname() << '\n';
 }
 
 void USER::_parseRealName() {
