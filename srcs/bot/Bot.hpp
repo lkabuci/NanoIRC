@@ -11,7 +11,6 @@ class BOT {
     void addToClients();
 
   private:
-    const char*           _port;
     const AddressResolver _address;
 };
 

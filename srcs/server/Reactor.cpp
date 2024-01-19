@@ -15,10 +15,6 @@ Reactor::~Reactor() {
          it != _clients.end(); ++it) {
         delete *it;
     }
-    for (std::vector<pollfd>::iterator it = _pollfds.begin();
-         it != _pollfds.end(); ++it) {
-        close(it->fd);
-    }
     _clients.clear();
     _pollfds.clear();
 }

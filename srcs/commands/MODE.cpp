@@ -1,5 +1,5 @@
 #include "MODE.hpp"
-#include <cctype>
+
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
