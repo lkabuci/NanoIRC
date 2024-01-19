@@ -1,6 +1,7 @@
 #include "Message.hpp"
 #include "../commands/JOIN.hpp"
 #include "../commands/NICK.hpp"
+#include "../commands/NOTICE.hpp"
 #include "../commands/PASS.hpp"
 #include "../commands/PRIVMSG.hpp"
 #include "../commands/USER.hpp"
@@ -8,12 +9,12 @@
 std::string Message::_password;
 
 TYPES::TokenType Message::_commandTypes[] = {
-    TYPES::PASS,   TYPES::NICK,  TYPES::USER, TYPES::JOIN,   TYPES::KICK,
-    TYPES::INVITE, TYPES::TOPIC, TYPES::MODE, TYPES::PRIVMSG};
+    TYPES::PASS,   TYPES::NICK,  TYPES::USER, TYPES::JOIN,    TYPES::KICK,
+    TYPES::INVITE, TYPES::TOPIC, TYPES::MODE, TYPES::PRIVMSG, TYPES::NOTICE};
 
-std::string Message::_commandsStr[] = {"PASS",  "NICK", "USER",
-                                       "JOIN",  "KICK", "INVITE",
-                                       "TOPIC", "MODE", "PRIVMSG"};
+std::string Message::_commandsStr[] = {"PASS",    "NICK",   "USER",  "JOIN",
+                                       "KICK",    "INVITE", "TOPIC", "MODE",
+                                       "PRIVMSG", "NOTICE"};
 
 Message::Message() : _client(NULL), _cmdfunc(NULL) {}
 
@@ -24,6 +25,23 @@ Message::Message(const std::string& message) : _client(NULL), _cmdfunc(NULL) {
 
 Message::~Message() {
     delete _cmdfunc;
+}
+
+void Message::parse(Client* client) {
+    _client = client;
+    _message = _client->getMessage();
+    if (_message.empty())
+        return;
+    std::string msg(_message);
+    size_t      crfl_pos = _message.rfind("\r\n");
+    if (crfl_pos == std::string::npos) {
+        size_t lf_pos = msg.rfind("\n");
+        msg.insert(lf_pos, "\r");
+    }
+    Parser::init(msg);
+    _command();
+    _params();
+    Parser::consume(TYPES::CRLF, "messing CRLF at end.");
 }
 
 void Message::execute(const std::string& password) {
@@ -44,6 +62,9 @@ void Message::execute(const std::string& password) {
     case TYPES::PRIVMSG:
         _cmdfunc = new PRIVMSG();
         break;
+    case TYPES::NOTICE:
+        _cmdfunc = new NOTICE();
+        break;
     default:
         break;
     }
@@ -63,23 +84,6 @@ TYPES::TokenType Message::_whichCommand() {
             return _commandTypes[i];
     }
     return TYPES::END;
-}
-
-void Message::parse(Client* client) {
-    _client = client;
-    _message = _client->getMessage();
-    if (_message.empty())
-        return;
-    std::string msg(_message);
-    size_t      crfl_pos = _message.rfind("\r\n");
-    if (crfl_pos == std::string::npos) {
-        size_t lf_pos = msg.rfind("\n");
-        msg.insert(lf_pos, "\r");
-    }
-    Parser::init(msg);
-    _command();
-    _params();
-    Parser::consume(TYPES::CRLF, "messing CRLF at end.");
 }
 
 void Message::_command() {
@@ -155,6 +159,7 @@ bool Message::_isCommand() {
     case TYPES::TOPIC:
     case TYPES::MODE:
     case TYPES::PRIVMSG:
+    case TYPES::NOTICE:
         return true;
     default:
         break;

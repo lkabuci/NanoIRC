@@ -15,7 +15,6 @@ class Message {
     Message(const std::string& message);
     ~Message();
 
-    // void parse(const std::string& message);
     void parse(Client* client);
     void execute(const std::string& password);
 
@@ -28,7 +27,7 @@ class Message {
     Message(const Message&);
     Message& operator=(const Message&);
 
-    enum { MAX_MSG_LEN = 512, MAX_PARAMS = 15, CMDS_NBR = 9 };
+    enum { MAX_MSG_LEN = 512, MAX_PARAMS = 15, CMDS_NBR = 10 };
 
     static TYPES::TokenType _commandTypes[CMDS_NBR];
     static std::string      _commandsStr[CMDS_NBR];
