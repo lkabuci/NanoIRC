@@ -55,6 +55,7 @@ class Channel {
     void               eraseFromInviteeslist(Client* client);
     const std::string& getTopic() const;
     void               setTopic(const std::string& topic);
+    void                setPermission(Client *client ,MEMBER_PERMISSION::Flags flag);
 
   private:
     std::string                                 _name;

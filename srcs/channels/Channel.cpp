@@ -24,6 +24,12 @@ Channel& Channel::operator=(const Channel& channel) {
     return *this;
 }
 
+void Channel::setPermission(Client *client , MEMBER_PERMISSION::Flags flag)
+{
+    if(_members.find(client) != _members.end())
+        _members[client] = flag;
+}
+
 void Channel::add(Client* newMember, MEMBER_PERMISSION::Flags premission) {
     _members.insert(
         std::pair<Client*, MEMBER_PERMISSION::Flags>(newMember, premission));
