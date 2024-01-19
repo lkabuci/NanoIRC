@@ -56,3 +56,11 @@ std::vector<pollfd>& Reactor::getPollfds() {
 void Reactor::addPfds(pollfd pfd) {
     _pollfds.push_back(pfd);
 }
+
+void Reactor::setServerIp(char* ip) {
+    _serverIp = ip;
+}
+
+const char* Reactor::getServerIp() {
+    return _serverIp;
+}

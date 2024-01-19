@@ -20,10 +20,13 @@ class Reactor {
     void                 addPfds(pollfd);
     void                 run();
     std::vector<pollfd>& getPollfds();
+    void                 setServerIp(char* ip);
+    const char*          getServerIp();
 
   private:
     std::vector<Client*> _clients;
     std::vector<pollfd>  _pollfds;
+    char*                _serverIp;
 };
 
 #endif // IRC_REACTOR_HPP
