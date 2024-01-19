@@ -8,6 +8,7 @@
 #include "../channels/TChannels.hpp"
 #include "../client/ClientList.hpp"
 #include "../parser/Parser.hpp"
+#include "../server/Reactor.hpp"
 
 class Command {
   public:
