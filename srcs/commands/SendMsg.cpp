@@ -60,7 +60,7 @@ void SendMsg::_sendToUser(const std::string& name) {
 }
 
 void SendMsg::_sendToChannel(const std::string& name) {
-    TChannels::channel(name).sendToAll(_textToSend);
+    TChannels::channel(name).sendToAll(_sender, _textToSend);
 }
 
 void SendMsg::_addChannel() {
