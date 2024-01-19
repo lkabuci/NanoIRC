@@ -14,11 +14,10 @@ void INVITE::execute(Client*                         client,
     tmp.erase(tmp.begin());
     if (tmp[0][0] != '#')
         throw std::runtime_error("Channel needed");
-    tmp[0].erase(0);
+    tmp[0].erase(0, 1);
     if (!TChannels::exist(tmp[0]))
         throw std::runtime_error("Channel not found a sahbi");
     Channel tmpChannel = TChannels::channel(tmp[0]);
-
     tmp.erase(tmp.begin());
     if (!tmpChannel.exist(client))
         throw std::runtime_error("You Re not a member in the channel");

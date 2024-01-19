@@ -10,10 +10,13 @@ void TOPIC::execute(Client*                         client,
         throw std::runtime_error("");
     if (tmp[0][0] != '#')
         throw std::runtime_error("channel !!?");
-    tmp[0].erase(0);
+    tmp[0].erase(0, 1);
+    std::cout << tmp[0] << std::endl;
     if (!TChannels::exist(tmp[0]))
         throw std::runtime_error("Channel not found a sahbi");
     Channel tmpChannel = TChannels::channel(tmp[0]);
+    if (!tmpChannel.exist(client))
+        throw std::runtime_error("u re not in the channel");
     tmp.erase(tmp.begin());
     if (tmp.empty()) {
         std::string topic = tmpChannel.getTopic();
@@ -21,7 +24,7 @@ void TOPIC::execute(Client*                         client,
     } else {
         if (tmp[0][0] != ':')
             throw std::runtime_error(": makaynach");
-        tmp[0].erase(0);
+        tmp[0].erase(0, 1);
         std::string topic;
         for (size_t i = 0; i < tmp.size(); i++) {
             topic += tmp[i];

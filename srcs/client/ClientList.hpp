@@ -1,11 +1,11 @@
 #pragma once
 
-#ifndef __CLIENTS_HPP__
-#define __CLIENTS_HPP__
+#ifndef __CLIENT_LIST_HPP__
+#define __CLIENT_LIST_HPP__
 
 #include "Client.hpp"
 
-class Clients {
+class ClientList {
   public:
     static void    add(Client* client);
     static Client* get(const std::string& nickname);
@@ -16,7 +16,7 @@ class Clients {
     static size_t  size();
 
   private:
-    Clients();
+    ClientList();
 
     static std::map<std::string, Client*> _clients;
 };

@@ -45,11 +45,14 @@ size_t Channel::getNumberOfMembers() const {
     return _members.size();
 }
 
-void Channel::sendToAll(const std::string& message) {
+void Channel::sendToAll(Client* sender, const std::string& message) {
     std::map<Client*, MEMBER_PERMISSION::Flags>::iterator it = _members.begin();
 
-    for (; it != _members.end(); ++it)
+    for (; it != _members.end(); ++it) {
+        if (it->first == sender)
+            continue;
         send(it->first->getSockfd(), message.c_str(), message.length(), 0);
+    }
 }
 
 void Channel::remove(const std::string& username) {

@@ -37,7 +37,7 @@ class Channel {
     void   unsetMode(CHANNEL_MODE::Modes mode);
     void   updateMode(CHANNEL_MODE::Modes mode); // temporary
     size_t getNumberOfMembers() const;
-    void   sendToAll(const std::string& message);
+    void   sendToAll(Client* sender, const std::string& message);
     void   remove(const std::string& username);
     void   remove(Client* client);
     void   clear();

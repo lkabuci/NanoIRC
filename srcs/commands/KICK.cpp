@@ -9,7 +9,7 @@ void KICK::execute(Client* client, const std::vector<std::string>& parameters) {
         throw std::runtime_error("invalid args");
     if (tmp[0][0] != '#')
         throw std::runtime_error("Invalid Channel");
-    tmp[0].erase(0);
+    tmp[0].erase(0, 1);
     if (!TChannels::exist(tmp[0]))
         throw std::runtime_error("Channel not found a sahbi");
     Channel tmpChannel = TChannels::channel(tmp[0]);
@@ -28,7 +28,7 @@ void KICK::execute(Client* client, const std::vector<std::string>& parameters) {
     if (!tmp.empty()) {
         if (tmp[0][0] != ':')
             throw std::runtime_error("Syntax reason error need \':\'");
-        tmp[0].erase(0);
+        tmp[0].erase(0, 1);
         std::string reason;
         for (size_t i = 0; i < tmp.size(); i++) {
             reason += tmp[i];
