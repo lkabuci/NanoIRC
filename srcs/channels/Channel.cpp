@@ -24,9 +24,8 @@ Channel& Channel::operator=(const Channel& channel) {
     return *this;
 }
 
-void Channel::setPermission(Client *client , MEMBER_PERMISSION::Flags flag)
-{
-    if(_members.find(client) != _members.end())
+void Channel::setPermission(Client* client, MEMBER_PERMISSION::Flags flag) {
+    if (_members.find(client) != _members.end())
         _members[client] = flag;
 }
 
