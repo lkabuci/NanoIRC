@@ -5,12 +5,12 @@ Channel::Channel() {}
 
 Channel::Channel(const std::string& name, const std::string& password,
                  CHANNEL_MODE::Modes mode)
-    : _name(name), _password(password), _mode(mode) {}
+    : _name(name), _password(password), _mode(mode), _limit(0) {}
 
 Channel::Channel(const Channel& channel)
     : _name(channel._name), _password(channel._password),
       _members(channel._members), _invited(channel._invited),
-      _mode(channel._mode), _topic(channel._topic) {}
+      _mode(channel._mode), _topic(channel._topic), _limit(channel._limit) {}
 
 Channel& Channel::operator=(const Channel& channel) {
     if (this == &channel)
@@ -21,6 +21,7 @@ Channel& Channel::operator=(const Channel& channel) {
     _invited = channel._invited;
     _mode = channel._mode;
     _topic = channel._topic;
+    _limit = channel._limit;
     return *this;
 }
 
@@ -171,4 +172,12 @@ void Channel::eraseFromInviteeslist(Client* client) {
     if (it == _invited.end())
         throw std::runtime_error("No such client in invited list.");
     _invited.erase(it);
+}
+
+const uint16_t& Channel::getLimit() const {
+    return _limit;
+}
+
+void Channel::setLimit(const uint16_t& limit) {
+    _limit = limit;
 }

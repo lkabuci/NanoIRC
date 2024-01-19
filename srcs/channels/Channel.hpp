@@ -56,6 +56,8 @@ class Channel {
     const std::string& getTopic() const;
     void               setTopic(const std::string& topic);
     void setPermission(Client* client, MEMBER_PERMISSION::Flags flag);
+    const uint16_t& getLimit() const;
+    void            setLimit(const uint16_t& limit);
 
   private:
     std::string                                 _name;
@@ -64,6 +66,7 @@ class Channel {
     std::vector<Client*>                        _invited;
     CHANNEL_MODE::Modes                         _mode;
     std::string                                 _topic;
+    uint16_t                                    _limit;
 };
 
 CHANNEL_MODE::Modes operator|(CHANNEL_MODE::Modes a, CHANNEL_MODE::Modes b);
