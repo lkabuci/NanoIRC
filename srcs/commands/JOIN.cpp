@@ -1,8 +1,9 @@
 #include "JOIN.hpp"
 
-JOIN::JOIN() {}
+JOIN::JOIN() : _sender(NULL) {}
 
-JOIN::JOIN(const JOIN& join) : _channels(join._channels), _keys(join._keys) {}
+JOIN::JOIN(const JOIN& join)
+    : _channels(join._channels), _keys(join._keys), _sender(join._sender) {}
 
 JOIN::~JOIN() {}
 
@@ -11,21 +12,32 @@ JOIN& JOIN::operator=(const JOIN& join) {
         return *this;
     _channels = join._channels;
     _keys = join._keys;
+    _sender = join._sender;
     return *this;
 }
 
 void JOIN::execute(Client* client, const std::vector<std::string>& parameters) {
-    if (parameters.empty())
+    if (parameters.empty()) {
         Reply::error(client->getSockfd(), ERROR_CODES::ERR_NEEDMOREPARAMS,
                      "JOIN", Reactor::getInstance().getServerIp());
-    if (!client->getUserInfo().isRegistered())
-        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED, "",
-                     Reactor::getInstance().getServerIp());
-
+        return;
+    }
+    if (!_userIsRegistered())
+        return;
+    _sender = client;
     Parser::init(Utils::join(parameters));
     _setChannels();
     _setKeys();
     _joinUser(client);
+}
+
+bool JOIN::_userIsRegistered() {
+    if (!_sender->getUserInfo().isRegistered()) {
+        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED, "",
+                     Reactor::getInstance().getServerIp());
+        return false;
+    }
+    return true;
 }
 
 void JOIN::_joinUser(Client* client) {
@@ -65,12 +77,25 @@ void JOIN::_addToChannel(Client* client, Channel& channel,
 }
 
 void JOIN::_setChannels() {
-    Parser::consume(TYPES::HASH, "channel must begin with #.");
+    // Parser::consume(TYPES::HASH, "channel must begin with #.");
+    if (!Parser::match(TYPES::HASH)) {
+        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
+                     "JOIN", Reactor::getInstance().getServerIp());
+        throw std::exception();
+    }
     _channels.push_back(Parser::advance().lexeme());
     while (!Parser::isAtEnd() && Parser::match(TYPES::COMMA)) {
-        Parser::consume(TYPES::HASH, "channel must begin with #.");
-        if (Parser::isAtEnd())
-            throw std::runtime_error("missing channel.");
+        // Parser::consume(TYPES::HASH, "channel must begin with #.");
+        if (!Parser::match(TYPES::HASH)) {
+            Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
+                         "JOIN", Reactor::getInstance().getServerIp());
+            throw std::exception();
+        }
+        if (Parser::isAtEnd()) {
+            Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
+                         "JOIN", Reactor::getInstance().getServerIp());
+            throw std::exception();
+        }
         _channels.push_back(Parser::advance().lexeme());
     }
 }
@@ -83,12 +108,25 @@ bool JOIN::_keyIsCorrect(Channel& channel, const size_t& index) {
 void JOIN::_setKeys() {
     if (Parser::isAtEnd())
         return;
-    Parser::consume(TYPES::SPACE, "missing space.");
+    // Parser::consume(TYPES::SPACE, "missing space.");
+    if (Parser::match(TYPES::SPACE)) {
+        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
+                     "JOIN", Reactor::getInstance().getServerIp());
+        throw std::exception();
+    }
     _keys.push_back(Parser::advance().lexeme());
     while (!Parser::isAtEnd()) {
-        Parser::consume(TYPES::COMMA, "keys must be separated by ,.");
-        if (Parser::isAtEnd())
-            throw std::runtime_error("missing key.");
+        // Parser::consume(TYPES::COMMA, "keys must be separated by ,.");
+        if (Parser::match(TYPES::COMMA)) {
+            Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
+                         "JOIN", Reactor::getInstance().getServerIp());
+            throw std::exception();
+        }
+        if (Parser::isAtEnd()) {
+            Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
+                         "JOIN", Reactor::getInstance().getServerIp());
+            throw std::exception();
+        }
         _keys.push_back(Parser::advance().lexeme());
     }
 }

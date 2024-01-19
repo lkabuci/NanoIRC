@@ -19,6 +19,7 @@ class JOIN : public Command {
   private:
     std::vector<std::string> _channels;
     std::vector<std::string> _keys;
+    Client*                  _sender;
 
     void _setChannels();
     void _setKeys();
@@ -27,6 +28,7 @@ class JOIN : public Command {
     void _addToChannel(Client* client, Channel& channel, const size_t& index);
     bool _channelIsInviteOnly(Channel& channel);
     bool _keyIsCorrect(Channel& channel, const size_t& index);
+    bool _userIsRegistered();
 };
 
 #endif
