@@ -1,7 +1,9 @@
 #include "MODE.hpp"
-#include <algorithm>
+#include <cctype>
 #include <cstddef>
+#include <cstdlib>
 #include <cstring>
+#include <sstream>
 #include <stdexcept>
 #include <vector>
 
@@ -35,7 +37,18 @@ void handleInvite(bool state, std::vector<std::string>& tmp, Channel& channel) {
 }
 
 void handleOperator(bool state, std::vector<std::string>& tmp,
-                    Channel& channel) {}
+                    Channel& channel) {
+    if (tmp.empty())
+        return (std::cout << "syntax error" << std::endl, (void)0);
+    Client *user = channel.getClient(tmp[0]);
+    if(!user)
+        return (std::cout << "No such nick" + tmp[0] << std::endl, (void)0);
+    tmp.erase(tmp.begin());
+    // if(!state && channel.flagIsSet(user, MEMBER_PERMISSION::OPERATOR))
+    //     channel.
+
+
+}
 
 void handleTopic(bool state, std::vector<std::string>& tmp, Channel& channel) {
     if (!state && channel.modeIsSet(CHANNEL_MODE::SET_TOPIC))
@@ -47,6 +60,13 @@ void handleTopic(bool state, std::vector<std::string>& tmp, Channel& channel) {
 void handleLimit(bool state, std::vector<std::string>& tmp, Channel& channel) {
     if (tmp.empty())
         return (std::cout << "syntax error" << std::endl, (void)0);
+    std::stringstream ss(tmp[0]);
+    tmp.erase(tmp.begin());
+    unsigned long limit;
+    ss >> limit;
+    if (!ss.eof()) {
+        return (std::cout << "LIMIT ERROR" << std::endl, (void)0);
+    }
 }
 
 void handleflags(std::string& mode, std::vector<std::string>& tmp,
