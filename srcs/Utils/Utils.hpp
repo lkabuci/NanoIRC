@@ -10,6 +10,7 @@ class Utils {
   public:
     static std::string join(const std::vector<std::string>& arr);
     static std::string toStr(int nbr);
+    static bool        isAllDigits(const char* str);
 
   private:
     Utils();

@@ -3,7 +3,7 @@
 #ifndef __COMMAND_HPP__
 #define __COMMAND_HPP__
 
-#include "../Utils.hpp"
+#include "../Utils/Utils.hpp"
 #include "../parser/Parser.hpp"
 #include "Channel.hpp"
 

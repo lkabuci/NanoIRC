@@ -17,7 +17,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-# Infos:
+# Info's:
 echo -e "${YELLOW}Running git hooks...${NC}"
 
 # echo -e "${YELLOW}+ Check if the local branch is behind its upstream ${NC}"
@@ -43,7 +43,7 @@ fi
 
 echo -e "${YELLOW}+ Checking formatter${NC}"
 is_formatted=0
-# Or check only for the staged files that are about to be commited
+# Or check only for the staged files that are about to be committed
 # for file in $(git diff --name-only --cached); do
 for file in $(find $PWD/srcs $PWD/include/ -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \)); do
     output=$($CLANG_FORMAT_PATH --dry-run -Werror "$file" 2>&1)
