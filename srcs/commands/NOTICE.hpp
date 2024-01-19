@@ -16,9 +16,6 @@ class NOTICE : public Command {
   private:
     NOTICE(const NOTICE&);
     NOTICE& operator=(const NOTICE&);
-
-    void _sendToChannel();
-    void _sendToUser(Client* client);
 };
 
 #endif
