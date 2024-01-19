@@ -28,6 +28,5 @@ int main(int argc, char* argv[]) {
         std::cerr << e.what() << '\n';
         return 1;
     }
-    (void)reactor;
     return 0;
 }
