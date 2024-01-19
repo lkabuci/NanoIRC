@@ -20,6 +20,8 @@ std::map<ERROR_CODES::CODES, std::string> Reply::_fillErrorMap() {
         "<target> :Duplicate recipients. No message delivered";
     ret[ERROR_CODES::ERR_NOSUCHNICK] = "<nickname> :No such nick/channel";
     ret[ERROR_CODES::ERR_NICKCOLLISION] = "<nick> :Nickname collision KILL";
+    ret[ERROR_CODES::ERR_UNKNOWNCOMMAND] = "<command> :Unknown command";
+    ret[ERROR_CODES::ERR_NOTREGISTERED] = ":You have not registered";
     return (ret);
 }
 
