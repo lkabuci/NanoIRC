@@ -70,7 +70,7 @@ void PRIVMSG::_sendToUser(const std::string& name) {
 }
 
 void PRIVMSG::_sendToChannel(const std::string& name) {
-    TChannels::channel(name).sendToAll(_textToSent);
+    TChannels::channel(name).sendToAll(_sender, _textToSent);
 }
 
 bool PRIVMSG::_userBelongToChannel(const std::string& name) {
