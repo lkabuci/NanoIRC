@@ -36,7 +36,7 @@ void Reply::success(int fd, SUCCESS_CODES::CODES code,
                     const std::string& servername, const std::string& message) {
 
     std::string msg = ":" + servername + " " + Utils::toStr(code) + " " +
-                      identifier + " " + _successReply[code];
+                      identifier + " " + _successReply[code] + message;
     send(fd, msg.c_str(), msg.size(), 0);
 }
 
