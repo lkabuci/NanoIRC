@@ -25,6 +25,8 @@ class JOIN : public Command {
     void _joinUser(Client* client);
     void _createChannel(Client* client, const size_t& index);
     void _addToChannel(Client* client, Channel& channel, const size_t& index);
+    bool _channelIsInviteOnly(Channel& channel);
+    bool _keyIsCorrect(Channel& channel, const size_t& index);
 };
 
 #endif

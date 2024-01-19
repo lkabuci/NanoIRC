@@ -16,9 +16,11 @@ JOIN& JOIN::operator=(const JOIN& join) {
 
 void JOIN::execute(Client* client, const std::vector<std::string>& parameters) {
     if (parameters.empty())
-        throw std::runtime_error("JOIN <channel>{,<channel>} [<key>{,<key>}]");
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NEEDMOREPARAMS,
+                     "JOIN", Reactor::getInstance().getServerIp());
     if (!client->getUserInfo().isRegistered())
-        throw std::runtime_error("client is not registered.");
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED, "",
+                     Reactor::getInstance().getServerIp());
 
     Parser::init(Utils::join(parameters));
     _setChannels();
@@ -50,15 +52,12 @@ void JOIN::_addToChannel(Client* client, Channel& channel,
                          const size_t& index) {
     if (channel.exist(client))
         return;
-    if (channel.modeIsSet(CHANNEL_MODE::SET_INVITE_ONLY) &&
-        !channel.isInvited(client))
-        throw std::runtime_error(
-            "472 ERR_INVITEONLYCHAN::Cannot join channel (+i).");
-    if (index < _keys.size()) {
-        if (channel.getPassword() != _keys[index])
-            throw std::runtime_error(
-                "475 ERR_BADCHANNELKEY:Cannot join channel (+k)");
-    }
+    if (_channelIsInviteOnly(channel) && !channel.isInvited(client))
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_INVITEONLYCHAN,
+                     channel.name(), Reactor::getInstance().getServerIp());
+    if (!_keyIsCorrect(channel, index))
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_BADCHANNELKEY,
+                     channel.name(), Reactor::getInstance().getServerIp());
     channel.add(client, MEMBER_PERMISSION::REGULAR);
     TChannels::add(_channels[index], channel);
     if (channel.isInvited(client))
@@ -76,6 +75,11 @@ void JOIN::_setChannels() {
     }
 }
 
+bool JOIN::_keyIsCorrect(Channel& channel, const size_t& index) {
+    return (index < _keys.size()) ? channel.getPassword() == _keys[index]
+                                  : false;
+}
+
 void JOIN::_setKeys() {
     if (Parser::isAtEnd())
         return;
@@ -87,4 +91,8 @@ void JOIN::_setKeys() {
             throw std::runtime_error("missing key.");
         _keys.push_back(Parser::advance().lexeme());
     }
+}
+
+bool JOIN::_channelIsInviteOnly(Channel& channel) {
+    return channel.modeIsSet(CHANNEL_MODE::SET_INVITE_ONLY);
 }
