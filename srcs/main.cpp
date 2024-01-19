@@ -1,8 +1,8 @@
-#include "include/IRC.h"
-#include "srcs/parser/Message.hpp"
-#include "srcs/server/Reactor.hpp"
-#include "srcs/server/Server.hpp"
-#include <iostream>
+#include "../include/IRC.h"
+#include "Utils/SignalHandler.hpp"
+#include "parser/Message.hpp"
+#include "server/Reactor.hpp"
+#include "server/Server.hpp"
 
 extern volatile sig_atomic_t serverIsRunning = 1;
 
@@ -20,8 +20,8 @@ int main(int argc, char* argv[]) {
         printUsage(argv[0]);
     }
     SignalHandler signalHandler;
-    Reactor& reactor = Reactor::getInstance();
-    Server   server(argv[1]);
+    Reactor&      reactor = Reactor::getInstance();
+    Server        server(argv[1], argv[2]);
     try {
         server.run();
     } catch (const std::exception& e) {
