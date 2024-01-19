@@ -103,6 +103,12 @@ JOIN #foo,#bar                  ; join channels #foo and #bar.
     Parameters: <receiver>{,<receiver>} <text to be sent>
 
 
+-----------------------------------------------------------------------------
+
+
+    Command: NOTICE
+    Parameters: <nickname> <text>
+
 
 -----------------------------------------------------------------------------
 The numeric reply must be sent as one message consisting of the sender prefix,
