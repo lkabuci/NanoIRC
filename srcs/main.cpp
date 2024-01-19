@@ -1,10 +1,8 @@
 #include "../include/IRC.h"
 #include "Utils/SignalHandler.hpp"
-#include "parser/Message.hpp"
-#include "server/Reactor.hpp"
 #include "server/Server.hpp"
 
-extern volatile sig_atomic_t serverIsRunning = 1;
+volatile sig_atomic_t serverIsRunning = 1;
 
 static void printUsage(const char* programName) {
     std::cerr << "Usage: " << programName << " <port> <password>\n";
@@ -19,9 +17,8 @@ int main(int argc, char* argv[]) {
         std::cerr << "Error: Port must be a valid number.\n";
         printUsage(argv[0]);
     }
-    SignalHandler signalHandler;
-    Reactor&      reactor = Reactor::getInstance();
-    Server        server(argv[1], argv[2]);
+    __attribute__((unused)) SignalHandler signalHandler;
+    Server                                server(argv[1], argv[2]);
     try {
         server.run();
     } catch (const std::exception& e) {

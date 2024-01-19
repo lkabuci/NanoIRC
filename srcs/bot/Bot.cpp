@@ -2,7 +2,7 @@
 #include "../server/Reactor.hpp"
 #include "../socket/AddressResolver.hpp"
 
-BOT::BOT(const char* port) : _port(port), _address(port) {
+BOT::BOT(const char* port) : _address(port) {
     int             botSockFd;
     const addrinfo* botInfo = _address.getAddresses();
     const addrinfo* p = botInfo;
