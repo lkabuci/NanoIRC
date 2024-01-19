@@ -3,7 +3,7 @@ project(IRC)
 
 set(CMAKE_CXX_STANDARD 98)
 file (GLOB_RECURSE IRC_SRCS
-        main.cpp
+        srcs/main.cpp
         srcs/*.cpp
         srcs/*/*.cpp
 )

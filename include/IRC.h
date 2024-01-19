@@ -11,7 +11,7 @@
 #include <csignal>
 extern volatile sig_atomic_t serverIsRunning;
 
-#include "../srcs/Utils.hpp"
+#include "../srcs/Utils/Utils.hpp"
 #include "../srcs/parser/TokenType.hpp"
 #include <arpa/inet.h>
 #include <cerrno>

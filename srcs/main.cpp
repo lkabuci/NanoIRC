@@ -6,12 +6,20 @@
 
 extern volatile sig_atomic_t serverIsRunning = 1;
 
+static void printUsage(const char* programName) {
+    std::cerr << "Usage: " << programName << " <port> <password>\n";
+    std::exit(EXIT_FAILURE);
+}
+
 int main(int argc, char* argv[]) {
     if (argc != 3) {
-        std::cerr << "Usage: " << argv[0] << " <port> <password>\n";
-        return 1;
+        printUsage(argv[0]);
     }
-
+    if (!Utils::isAllDigits(argv[1])) {
+        std::cerr << "Error: Port must be a valid number.\n";
+        printUsage(argv[0]);
+    }
+    SignalHandler signalHandler;
     Reactor& reactor = Reactor::getInstance();
     Server   server(argv[1]);
     try {

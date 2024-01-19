@@ -23,3 +23,9 @@ std::string Utils::toStr(int nbr) {
 
     return ss.str();
 }
+
+bool Utils::isAllDigits(const char* str) {
+    char* endptr;
+    std::strtol(str, &endptr, 10);
+    return *endptr == 0 && *str != 0;
+}
