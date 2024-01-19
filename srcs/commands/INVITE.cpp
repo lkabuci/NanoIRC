@@ -8,7 +8,7 @@ void INVITE::execute(Client*                         client,
     std::vector<std::string> tmp(parameters);
     if (tmp.size() != 2)
         throw std::runtime_error("invalid args");
-    Client* inv = Clients::get(tmp[0]);
+    Client* inv = ClientList::get(tmp[0]);
     if (!inv)
         throw std::runtime_error("Client makaynch");
     tmp.erase(tmp.begin());
