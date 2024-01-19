@@ -8,7 +8,7 @@ std::map<ERROR_CODES::CODES, std::string> Reply::_fillErrorMap() {
     std::map<ERROR_CODES::CODES, std::string> ret;
 
     ret[ERROR_CODES::ERR_ALREADYREGISTRED] = ":You may not reregister";
-    ret[ERROR_CODES::ERR_NEEDMOREPARAMS] = ":You may not reregister";
+    ret[ERROR_CODES::ERR_NEEDMOREPARAMS] = "<command> :Not enough parameters";
     ret[ERROR_CODES::ERR_NONICKNAMEGIVEN] = ":No nickname given";
     ret[ERROR_CODES::ERR_NICKNAMEINUSE] = ":Nickname is already in use";
     ret[ERROR_CODES::ERR_NOSUCHCHANNEL] = ":No such channel";
