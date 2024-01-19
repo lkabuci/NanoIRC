@@ -1,4 +1,5 @@
 #include "Socket.hpp"
+#include "../server/Reactor.hpp"
 #include "AddressResolver.hpp"
 
 Socket::Socket() : _sockfd(), _ip(), _port(), _addresses(NULL) {}
@@ -9,6 +10,7 @@ Socket::Socket(const char* port)
     _ip = const_cast<char*>(ServerHelper::GetIPAddressFromSockAddr(_sockfd));
     _port =
         const_cast<char*>(ServerHelper::GetPortAddressFromSockAddr(_sockfd));
+    Reactor::getInstance().setServerIp(const_cast<char*>(_ip));
     std::cout << "Successfully listening on " << _ip << ":" << _port << "\n";
 }
 
