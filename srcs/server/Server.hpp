@@ -15,7 +15,8 @@ class Server {
     void run();
 
   private:
-    Socket _sock;
+    Socket      _sock;
+    const char* _port;
 };
 
 #endif // IRC_SERVER_HPP
