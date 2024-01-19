@@ -12,6 +12,7 @@
 class Server {
   public:
     explicit Server(const char* port, const char* passwd);
+    ~Server();
     void        run();
     const char* getPasswd() const;
 

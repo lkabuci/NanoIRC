@@ -28,6 +28,7 @@ extern volatile sig_atomic_t serverIsRunning;
 #include <poll.h>
 #include <string>
 #include <sys/socket.h>
+#include <algorithm>
 #include <unistd.h>
 #include <vector>
 

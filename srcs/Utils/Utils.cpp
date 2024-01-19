@@ -1,4 +1,5 @@
 #include "Utils.hpp"
+#include <cstdlib>
 #include <sstream>
 
 std::string Utils::join(const std::vector<std::string>& arr) {
@@ -19,9 +20,11 @@ std::string Utils::join(const std::vector<std::string>& arr) {
 }
 
 std::string Utils::toStr(int nbr) {
-    std::stringstream ss(nbr);
-
-    return ss.str();
+    std::string        ret;
+    std::ostringstream convert;
+    convert << nbr;
+    ret = convert.str();
+    return ret;
 }
 
 bool Utils::isAllDigits(const char* str) {

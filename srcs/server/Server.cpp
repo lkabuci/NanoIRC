@@ -19,3 +19,7 @@ void Server::run() {
 const char* Server::getPasswd() const {
     return _passwd;
 }
+Server::~Server() {
+    std::cout << "Closing server\n";
+    close(_sock.getSocketFd());
+}
