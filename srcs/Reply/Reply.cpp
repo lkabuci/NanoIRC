@@ -31,24 +31,19 @@ std::map<SUCCESS_CODES::CODES, std::string> Reply::_fillSuccessMap() {
     return ret;
 }
 
-void Reply::success(int fd, const std::string& servername,
-                    const std::string&              nickname,
-                    const std::vector<std::string>& message) {
-    //      join #toast,#ircv3 mysecret
-    //      S <-   :alice!~a@localhost JOIN #toast
-    std::string reply = std::string(":") + nickname + "@" + servername + " " +
-                        Utils::join(message);
+void Reply::success(int fd, SUCCESS_CODES::CODES code,
+                    const std::string& identifier,
+                    const std::string& servername, const std::string& message) {
 
-    send(fd, reply.c_str(), reply.length(), 0);
+    std::string msg = ":" + servername + " " + Utils::toStr(code) + " " +
+                      identifier + " " + _successReply[code];
+    send(fd, msg.c_str(), msg.size(), 0);
 }
 
 void Reply::error(int fd, ERROR_CODES::CODES code,
-                  const std::string& servername, const std::string& nickname,
-                  std::vector<std::string>& parameters) {
-    //: irc.example.com 471 alice #test :Cannot join channel (+l)
-    std::string reply = std::string(":") + servername + " " +
-                        Utils::toStr(code) + nickname +
-                        Utils::join(parameters) + ":" + _errorReply[code];
-
-    send(fd, reply.c_str(), reply.length(), 0);
+                  const std::string& identifier,
+                  const std::string& servername) {
+    std::string msg = ":" + servername + " " + Utils::toStr(code) + " " +
+                      identifier + " " + _errorReply[code];
+    send(fd, msg.c_str(), msg.size(), 0);
 }
