@@ -9,6 +9,8 @@
 
 class UserInfo {
   public:
+    UserInfo();
+
     enum { PASSWORD_SET = 1, NICK_SET = 2, USER_SET = 4 };
 
     const std::string& getUsername() const;

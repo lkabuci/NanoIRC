@@ -4,6 +4,8 @@
 
 #include "UserInfo.hpp"
 
+UserInfo::UserInfo() : _flags(0) {}
+
 const std::string& UserInfo::getUsername() const {
     return _username;
 }
