@@ -40,14 +40,14 @@ void handleOperator(bool state, std::vector<std::string>& tmp,
                     Channel& channel) {
     if (tmp.empty())
         return (std::cout << "syntax error" << std::endl, (void)0);
-    Client *user = channel.getClient(tmp[0]);
-    if(!user)
+    Client* user = channel.getClient(tmp[0]);
+    if (!user)
         return (std::cout << "No such nick" + tmp[0] << std::endl, (void)0);
     tmp.erase(tmp.begin());
-    // if(!state && channel.flagIsSet(user, MEMBER_PERMISSION::OPERATOR))
-    //     channel.
-
-
+    if (!state && channel.flagIsSet(user, MEMBER_PERMISSION::OPERATOR))
+        channel.setPermission(user, MEMBER_PERMISSION::REGULAR);
+    if (state && !channel.flagIsSet(user, MEMBER_PERMISSION::OPERATOR))
+        channel.setPermission(user, MEMBER_PERMISSION::OPERATOR);
 }
 
 void handleTopic(bool state, std::vector<std::string>& tmp, Channel& channel) {
@@ -82,7 +82,7 @@ void handleflags(std::string& mode, std::vector<std::string>& tmp,
                     Channel& channel) = {&error,        &handleKey,
                                          &handleInvite, &handleOperator,
                                          &handleTopic,  &handleLimit};
-        int  index = (mode[i] == 'k') * 1 + (mode[i] == 'i') * 2 +
+        int index = (mode[i] == 'k') * 1 + (mode[i] == 'i') * 2 +
                     (mode[i] == 'o') * 3 + (mode[i] == 't') * 4 +
                     (mode[i] == 'l') * 5;
         (void)(*f[i])(state, tmp, channel);

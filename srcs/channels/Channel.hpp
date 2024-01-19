@@ -55,7 +55,11 @@ class Channel {
     void               eraseFromInviteeslist(Client* client);
     const std::string& getTopic() const;
     void               setTopic(const std::string& topic);
+<<<<<<< Updated upstream
     void setPermission(Client* client, MEMBER_PERMISSION::Flags flag);
+
+=======
+>>>>>>> Stashed changes
 
   private:
     std::string                                 _name;
