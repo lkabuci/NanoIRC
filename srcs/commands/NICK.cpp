@@ -15,18 +15,33 @@ NICK& NICK::operator=(const NICK& nick) {
 
 void NICK::execute(Client* client, const std::vector<std::string>& parameters) {
     if (parameters.empty() || parameters.size() > 2)
-        throw std::runtime_error("431 ERR_NONICKNAMEGIVEN:No nickname given.");
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NICKNAMEINUSE, "");
     if (!client->getUserInfo().isSet(UserInfo::PASSWORD_SET))
-        throw std::runtime_error("User must set a password first.");
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED, "");
     _nick = parameters[0];
     if (_isNicknameCollision(client)) {
         _removeInstances();
-        throw std::runtime_error(
-            "433 ERR_NICKNAMEINUSE:Nickname is already in use.");
+        _sendErrorReply(client);
     }
     client->getUserInfo().setNickname(_nick);
     if (!ClientList::exist(_nick))
         ClientList::add(client);
+    _sendSuccessReply(client);
+}
+
+void NICK::_sendErrorReply(Client* client) {
+    Reply::error(client->getSockfd(), ERROR_CODES::ERR_NICKNAMEINUSE,
+                 "*" + _nick);
+}
+
+void NICK::_sendSuccessReply(Client* client) {
+    std::string user = client->getUserInfo().getUsername();
+
+    if (user.empty())
+        user = _nick;
+    Reply::success(client->getSockfd(), SUCCESS_CODES::RPL_WELCOME, _nick,
+                   _nick + "!" + user + "@" +
+                       Reactor::getInstance().getServerIp());
 }
 
 void NICK::_removeInstances() {

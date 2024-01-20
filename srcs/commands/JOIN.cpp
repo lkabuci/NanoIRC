@@ -19,7 +19,7 @@ JOIN& JOIN::operator=(const JOIN& join) {
 void JOIN::execute(Client* client, const std::vector<std::string>& parameters) {
     if (parameters.empty()) {
         Reply::error(client->getSockfd(), ERROR_CODES::ERR_NEEDMOREPARAMS,
-                     "JOIN", Reactor::getInstance().getServerIp());
+                     "JOIN");
         return;
     }
     if (!_userIsRegistered())
@@ -33,8 +33,7 @@ void JOIN::execute(Client* client, const std::vector<std::string>& parameters) {
 
 bool JOIN::_userIsRegistered() {
     if (!_sender->getUserInfo().isRegistered()) {
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED, "",
-                     Reactor::getInstance().getServerIp());
+        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED, "");
         return false;
     }
     return true;
@@ -67,10 +66,10 @@ void JOIN::_addToChannel(Client* client, Channel& channel,
         return;
     if (_channelIsInviteOnly(channel) && !channel.isInvited(client))
         Reply::error(client->getSockfd(), ERROR_CODES::ERR_INVITEONLYCHAN,
-                     channel.name(), Reactor::getInstance().getServerIp());
+                     channel.name());
     if (!_keyIsCorrect(channel, index))
         Reply::error(client->getSockfd(), ERROR_CODES::ERR_BADCHANNELKEY,
-                     channel.name(), Reactor::getInstance().getServerIp());
+                     channel.name());
     channel.add(client, MEMBER_PERMISSION::REGULAR);
     TChannels::add(_channels[index], channel);
     if (channel.isInvited(client))
@@ -82,7 +81,7 @@ void JOIN::_setChannels() {
     // Parser::consume(TYPES::HASH, "channel must begin with #.");
     if (!Parser::match(TYPES::HASH)) {
         Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     "JOIN", Reactor::getInstance().getServerIp());
+                     "JOIN");
         throw std::exception();
     }
     _channels.push_back(Parser::advance().lexeme());
@@ -90,12 +89,12 @@ void JOIN::_setChannels() {
         // Parser::consume(TYPES::HASH, "channel must begin with #.");
         if (!Parser::match(TYPES::HASH)) {
             Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                         "JOIN", Reactor::getInstance().getServerIp());
+                         "JOIN");
             throw std::exception();
         }
         if (Parser::isAtEnd()) {
             Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                         "JOIN", Reactor::getInstance().getServerIp());
+                         "JOIN");
             throw std::exception();
         }
         _channels.push_back(Parser::advance().lexeme());
@@ -113,7 +112,7 @@ void JOIN::_setKeys() {
     // Parser::consume(TYPES::SPACE, "missing space.");
     if (Parser::match(TYPES::SPACE)) {
         Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     "JOIN", Reactor::getInstance().getServerIp());
+                     "JOIN");
         throw std::exception();
     }
     _keys.push_back(Parser::advance().lexeme());
@@ -121,12 +120,12 @@ void JOIN::_setKeys() {
         // Parser::consume(TYPES::COMMA, "keys must be separated by ,.");
         if (Parser::match(TYPES::COMMA)) {
             Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                         "JOIN", Reactor::getInstance().getServerIp());
+                         "JOIN");
             throw std::exception();
         }
         if (Parser::isAtEnd()) {
             Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                         "JOIN", Reactor::getInstance().getServerIp());
+                         "JOIN");
             throw std::exception();
         }
         _keys.push_back(Parser::advance().lexeme());

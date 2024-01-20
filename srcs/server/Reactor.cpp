@@ -3,6 +3,7 @@
 //
 
 #include "Reactor.hpp"
+#include "../bot/Bot.hpp"
 
 Reactor& Reactor::getInstance() {
     static Reactor instance;
@@ -13,10 +14,6 @@ Reactor::~Reactor() {
     for (std::vector<Client*>::iterator it = _clients.begin();
          it != _clients.end(); ++it) {
         delete *it;
-    }
-    for (std::vector<pollfd>::iterator it = _pollfds.begin();
-         it != _pollfds.end(); ++it) {
-        close(it->fd);
     }
     _clients.clear();
     _pollfds.clear();
@@ -40,7 +37,9 @@ void Reactor::removeClient(Client* client) {
     }
 }
 
-void Reactor::run() {
+void Reactor::run(const char* port) {
+    BOT bot(port);
+    bot.addToClients();
     while (serverIsRunning) {
         if (Demultiplexer::waitForEvents() == -1) {
             break;
@@ -63,4 +62,9 @@ void Reactor::setServerIp(char* ip) {
 
 const char* Reactor::getServerIp() {
     return _serverIp;
+}
+
+std::string Reactor::bot(Client* client) {
+    send(client->getSockfd(), "hhh", 3, 0);
+    return std::string("hhh");
 }

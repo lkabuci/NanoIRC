@@ -9,11 +9,9 @@ void SendMsg::sendMessage(Client*                         client,
                           const std::vector<std::string>& parameters) {
     if (parameters.empty())
         // TODO add parameter to Reply::error specific for the executed command
-        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NORECIPIENT, "",
-                     Reactor::getInstance().getServerIp());
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NORECIPIENT, "");
     if (!client->getUserInfo().isRegistered())
-        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED, "",
-                     Reactor::getInstance().getServerIp());
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED, "");
     _sender = client;
     Parser::init(Utils::join(parameters));
     _parseReceivers();
@@ -36,8 +34,7 @@ void SendMsg::_parseReceivers() {
 
 void SendMsg::_parseText() {
     if (Parser::isAtEnd())
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOTEXTTOSEND, "",
-                     Reactor::getInstance().getServerIp());
+        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOTEXTTOSEND, "");
     Parser::consume(TYPES::SEMICOLON, "missing semicolon.");
     Parser::advance();
     while (!Parser::isAtEnd())
@@ -67,31 +64,25 @@ void SendMsg::_sendToChannel(const std::string& name) {
 
 void SendMsg::_addChannel() {
     if (!Parser::check(TYPES::LETTER))
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NORECIPIENT, "",
-                     Reactor::getInstance().getServerIp());
+        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NORECIPIENT, "");
     if (!TChannels::exist(Parser::peek().lexeme()))
         Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOSUCHNICK,
-                     Parser::peek().lexeme(),
-                     Reactor::getInstance().getServerIp());
+                     Parser::peek().lexeme());
     if (_channelAlreadyExists(Parser::peek().lexeme()))
         Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_TOOMANYTARGETS,
-                     Parser::peek().lexeme(),
-                     Reactor::getInstance().getServerIp());
+                     Parser::peek().lexeme());
     _channels.push_back(Parser::advance().lexeme());
 }
 
 void SendMsg::_addUser() {
     if (!Parser::check(TYPES::LETTER))
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_TOOMANYTARGETS, "",
-                     Reactor::getInstance().getServerIp());
+        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_TOOMANYTARGETS, "");
     if (!ClientList::exist(Parser::peek().lexeme()))
         Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOSUCHNICK,
-                     Parser::peek().lexeme(),
-                     Reactor::getInstance().getServerIp());
+                     Parser::peek().lexeme());
     if (_userAlreadyExists(Parser::peek().lexeme()))
         Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_TOOMANYTARGETS,
-                     Parser::peek().lexeme(),
-                     Reactor::getInstance().getServerIp());
+                     Parser::peek().lexeme());
     if (Parser::peek().lexeme() != _sender->getUserInfo().getNickname())
         _users.push_back(Parser::peek().lexeme());
     Parser::advance();
