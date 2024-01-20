@@ -36,9 +36,8 @@ class Reply {
     static void success(int fd, SUCCESS_CODES::CODES code,
                         const std::string& identifier,
                         const std::string& message);
-    static void error(int fd, ERROR_CODES::CODES code,
-                      const std::string& identifier);
-    static void sendn(int fd, const std::string& message);
+    static void error(int fd, ERROR_CODES::CODES code, const std::string& s1,
+                      const std::string& s2);
 
   private:
     Reply();
