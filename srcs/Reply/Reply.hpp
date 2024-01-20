@@ -25,10 +25,12 @@ enum CODES {
     ERR_INVITEONLYCHAN = 473,
     ERR_BADCHANNELKEY = 475,
     ERR_NORECIPIENT = 411,
+    //:<server> 412 <nickname> :No text to send
     ERR_NOTEXTTOSEND = 412,
     ERR_TOOMANYTARGETS = 407,
     ERR_NOSUCHNICK = 401,
     ERR_NICKCOLLISION = 436,
+    //:<server> 421 <nickname> <command> :Unknown command
     ERR_UNKNOWNCOMMAND = 401,
     // :<server> 451 <nickname> :You have not registered
     ERR_NOTREGISTERED = 451,
