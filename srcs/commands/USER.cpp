@@ -16,30 +16,50 @@ USER& USER::operator=(const USER& user) {
 }
 
 void USER::execute(Client* client, const std::vector<std::string>& parameters) {
-    if (parameters.size() != 4) {
-        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NEEDMOREPARAMS,
-                     "USER");
+    if (_notEnoughParams(client, parameters))
         return;
-    }
-    if (ClientList::exist(_username)) {
-        Reply::error(client->getSockfd(), ERROR_CODES::ERR_ALREADYREGISTRED,
-                     "");
-        return;
-    }
-    if (!client->getUserInfo().isSet(UserInfo::PASSWORD_SET)) {
-        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NOTEXTTOSEND, "");
-        return;
-    }
+
     Parser::init(Utils::join(parameters));
 
     _username = Parser::advance().lexeme();
-    Parser::consume(TYPES::SPACE, "missing space.");
+    if (_userAlreadyExists(client) || !_userSetPassword(client))
+        return;
+    if (!Parser::match(TYPES::SPACE)) {
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
+                     client->getUserInfo().getNickname(), "USER");
+        return;
+    }
     _ignoreHostAndServerNames();
     _parseRealName();
-    client->getUserInfo().setUsername(_username);
-    client->getUserInfo().setRealname(_realname);
+    _setUserInfo(client);
     if (!ClientList::exist(client->getUserInfo().getNickname()))
         ClientList::add(client);
+}
+
+bool USER::_userAlreadyExists(Client* client) {
+    if (ClientList::exist(_username)) {
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_ALREADYREGISTRED,
+                     client->getUserInfo().getNickname(), "");
+        return true;
+    }
+    return false;
+}
+
+bool USER::_userSetPassword(Client* client) {
+    if (client->getUserInfo().isSet(UserInfo::PASSWORD_SET))
+        return true;
+    Reply::error(client->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED,
+                 client->getUserInfo().getNickname(), "");
+    return false;
+}
+
+bool USER::_notEnoughParams(Client*                         client,
+                            const std::vector<std::string>& parameters) {
+    if (parameters.size() == 4)
+        return true;
+    Reply::error(client->getSockfd(), ERROR_CODES::ERR_NEEDMOREPARAMS,
+                 client->getUserInfo().getNickname(), "USER");
+    return false;
 }
 
 void USER::_ignoreHostAndServerNames() {
@@ -50,15 +70,11 @@ void USER::_ignoreHostAndServerNames() {
 }
 
 void USER::_parseRealName() {
-    // Parser::consume(TYPES::SEMICOLON, "missing semicolon.");
     while (!Parser::isAtEnd())
         _realname.append(Parser::advance().lexeme());
 }
 
-const std::string& USER::getUsername() const {
-    return _username;
-}
-
-const std::string& USER::getRealname() const {
-    return _realname;
+void USER::_setUserInfo(Client* client) {
+    client->getUserInfo().setUsername(_username);
+    client->getUserInfo().setRealname(_realname);
 }

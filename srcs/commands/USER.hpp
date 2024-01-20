@@ -13,17 +13,20 @@ class USER : public Command {
 
     USER& operator=(const USER& user);
 
-    virtual void       execute(Client*                         client,
-                               const std::vector<std::string>& parameters);
-    const std::string& getUsername() const;
-    const std::string& getRealname() const;
+    virtual void execute(Client*                         client,
+                         const std::vector<std::string>& parameters);
 
   private:
     std::string _username;
     std::string _realname;
 
     void _parseRealName();
+    bool _notEnoughParams(Client*                         client,
+                          const std::vector<std::string>& parameters);
+    bool _userAlreadyExists(Client* client);
+    bool _userSetPassword(Client* client);
     void _ignoreHostAndServerNames();
+    void _setUserInfo(Client* client);
 };
 
 #endif
