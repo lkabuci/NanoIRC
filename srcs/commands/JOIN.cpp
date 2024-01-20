@@ -58,6 +58,7 @@ void JOIN::_createChannel(Client* client, const size_t& index) {
     }
     channel.add(client, MEMBER_PERMISSION::OPERATOR);
     TChannels::add(_channels[index], channel);
+    // 10:47 <channel> <nickname> has joined (~s1@freenode-obu.d75.6g0qj4.IP)
 }
 
 void JOIN::_addToChannel(Client* client, Channel& channel,
@@ -74,6 +75,7 @@ void JOIN::_addToChannel(Client* client, Channel& channel,
     TChannels::add(_channels[index], channel);
     if (channel.isInvited(client))
         channel.eraseFromInviteeslist(client);
+    // 10:47 <channel> <nickname> has joined (~<nickname>@<servername>)
 }
 
 void JOIN::_setChannels() {
