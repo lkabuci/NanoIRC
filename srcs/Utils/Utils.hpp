@@ -11,6 +11,7 @@ class Utils {
     static std::string join(const std::vector<std::string>& arr);
     static std::string toStr(int nbr);
     static bool        isAllDigits(const char* str);
+    static std::string getNickname(const std::string& str);
 
   private:
     Utils();
