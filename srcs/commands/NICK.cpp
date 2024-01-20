@@ -14,36 +14,31 @@ NICK& NICK::operator=(const NICK& nick) {
 }
 
 void NICK::execute(Client* client, const std::vector<std::string>& parameters) {
-    if (parameters.empty() || parameters.size() > 2)
-        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NICKNAMEINUSE, "");
-    if (!client->getUserInfo().isSet(UserInfo::PASSWORD_SET))
-        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED, "");
+    if (parameters.empty() || parameters.size() > 2) {
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NEEDMOREPARAMS,
+                     client->getUserInfo().getNickname(), "NICK");
+        return;
+    }
+    if (!client->getUserInfo().isSet(UserInfo::PASSWORD_SET)) {
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED,
+                     client->getUserInfo().getNickname(), "");
+        return;
+    }
     _nick = parameters[0];
     if (_isNicknameCollision(client)) {
         _removeInstances();
-        _sendErrorReply(client);
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NICKCOLLISION,
+                     client->getUserInfo().getNickname(),
+                     client->getUserInfo().getUsername());
+        return;
     }
     client->getUserInfo().setNickname(_nick);
     if (!ClientList::exist(_nick))
         ClientList::add(client);
-}
-
-void NICK::_sendErrorReply(Client* client) {
-    Reply::error(client->getSockfd(), ERROR_CODES::ERR_NICKNAMEINUSE,
-                 "*" + _nick);
-}
-
-void NICK::_sendSuccessReply(Client* client) {
-    std::string user = client->getUserInfo().getUsername();
-
-    if (user.empty())
-        user = _nick;
-
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      " 001 " + client->getUserInfo().getNickname() + " " +
-                      Reply::successReply[SUCCESS_CODES::RPL_WELCOME] + "\r\n";
-
-    send(client->getSockfd(), msg.c_str(), msg.length(), 0);
+    if (client->getUserInfo().isRegistered())
+        Reply::rpl_welcome(client->getSockfd(),
+                           client->getUserInfo().getNickname(),
+                           client->getUserInfo().getUsername());
 }
 
 void NICK::_removeInstances() {

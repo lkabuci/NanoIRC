@@ -15,7 +15,9 @@ enum CODES {
 
 namespace ERROR_CODES {
 enum CODES {
-    ERR_ALREADYREGISTRED = 462,
+    //:<server> 462 <nickname> :You may not reregisted
+    ERR_ALREADYREGISTRED = 462, 
+    //:<server> 461 <nickname> <command> :Not enough parameters
     ERR_NEEDMOREPARAMS = 461,
     ERR_NONICKNAMEGIVEN = 431,
     ERR_NICKNAMEINUSE = 433,
@@ -28,12 +30,10 @@ enum CODES {
     ERR_NOSUCHNICK = 401,
     ERR_NICKCOLLISION = 436,
     ERR_UNKNOWNCOMMAND = 401,
+    // :<server> 451 <nickname> :You have not registered
     ERR_NOTREGISTERED = 451,
 };
 }
-
-//:<server> 462 <nickname> :You may not reregister
-//:<server> 461 <nickname> <command> :Not enough parameters
 
 class Reply {
   public:
