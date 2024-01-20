@@ -40,7 +40,7 @@ void Reply::success(int fd, SUCCESS_CODES::CODES code,
                       " " + Utils::toStr(code) + " " + identifier + " " +
                       _successReply[code] + message;
     // send(fd, msg.c_str(), msg.size(), 0);
-    sendn(df, msg);
+    sendn(fd, msg);
 }
 
 void Reply::error(int fd, ERROR_CODES::CODES code,
@@ -49,10 +49,10 @@ void Reply::error(int fd, ERROR_CODES::CODES code,
                       " " + Utils::toStr(code) + " " + identifier + " " +
                       _errorReply[code];
     // send(fd, msg.c_str(), msg.size(), 0);
-    sendn(df, msg);
+    sendn(fd, msg);
 }
 
-void Reply::sendn(int fd, const int& message) {
+void Reply::sendn(int fd, const std::string& message) {
     int         numWritten;
     int         totWritten;
     int         len = static_cast<int>(message.length());
