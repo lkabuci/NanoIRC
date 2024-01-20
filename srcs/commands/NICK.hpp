@@ -23,7 +23,6 @@ class NICK : public Command {
 
     bool _isNicknameCollision(Client* client);
     void _removeInstances();
-    void _sendSuccessReply(Client* client);
     void _sendErrorReply(Client* client);
 };
 

@@ -26,22 +26,11 @@ void NICK::execute(Client* client, const std::vector<std::string>& parameters) {
     client->getUserInfo().setNickname(_nick);
     if (!ClientList::exist(_nick))
         ClientList::add(client);
-    _sendSuccessReply(client);
 }
 
 void NICK::_sendErrorReply(Client* client) {
     Reply::error(client->getSockfd(), ERROR_CODES::ERR_NICKNAMEINUSE,
                  "*" + _nick);
-}
-
-void NICK::_sendSuccessReply(Client* client) {
-    std::string user = client->getUserInfo().getUsername();
-
-    if (user.empty())
-        user = _nick;
-    Reply::success(client->getSockfd(), SUCCESS_CODES::RPL_WELCOME, _nick,
-                   _nick + "!" + user + "@" +
-                       Reactor::getInstance().getServerIp());
 }
 
 void NICK::_removeInstances() {
