@@ -17,7 +17,7 @@ PASS& PASS::operator=(const PASS& p) {
 void PASS::execute(Client* client, const std::vector<std::string>& parameters) {
     if (client->getUserInfo().isRegistered()) {
         Reply::error(client->getSockfd(), ERROR_CODES::ERR_ALREADYREGISTRED,
-                     "");
+                     client->getUserInfo().getNickname(), "");
         return;
     }
     if (!_validParameters(client, parameters))
@@ -29,21 +29,10 @@ void PASS::execute(Client* client, const std::vector<std::string>& parameters) {
 
 bool PASS::_validParameters(Client*                         client,
                             const std::vector<std::string>& parameters) {
-    if (parameters.empty()) {
-        _sendErrorReply(client);
-        return false;
-    }
     if (parameters.size() != 1) {
-        _sendErrorReply(client);
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NEEDMOREPARAMS,
+                     client->getUserInfo().getNickname(), "PASS");
         return false;
     }
     return true;
-}
-
-void PASS::_sendErrorReply(Client* client) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      " 461 " + client->getUserInfo().getNickname() +
-                      " PASS :Not enough parameters\r\n";
-
-    send(client->getSockfd(), msg.c_str(), msg.length(), 0);
 }
