@@ -32,18 +32,40 @@ std::map<SUCCESS_CODES::CODES, std::string> Reply::_fillSuccessMap() {
 }
 
 void Reply::success(int fd, SUCCESS_CODES::CODES code,
-                    const std::string& identifier,
-                    const std::string& servername, const std::string& message) {
+                    const std::string& identifier, const std::string& message) {
 
-    std::string msg = ":" + servername + " " + Utils::toStr(code) + " " +
-                      identifier + " " + _successReply[code] + message;
-    send(fd, msg.c_str(), msg.size(), 0);
+    std::string msg = ":" + Reactor::getInstance().getServerIp() + " " +
+                      Utils::toStr(code) + " " + identifier + " " +
+                      _successReply[code] + message;
+    // send(fd, msg.c_str(), msg.size(), 0);
+    sendn(df, msg);
 }
 
 void Reply::error(int fd, ERROR_CODES::CODES code,
-                  const std::string& identifier,
-                  const std::string& servername) {
-    std::string msg = ":" + servername + " " + Utils::toStr(code) + " " +
-                      identifier + " " + _errorReply[code];
-    send(fd, msg.c_str(), msg.size(), 0);
+                  const std::string& identifier) {
+    std::string msg = ":" + Reactor::getInstance().getServerIp() + " " +
+                      Utils::toStr(code) + " " + identifier + " " +
+                      _errorReply[code];
+    // send(fd, msg.c_str(), msg.size(), 0);
+    sendn(df, msg);
+}
+
+void Reply::sendn(int fd, const int& message) {
+    int         numWritten;
+    int         totWritten;
+    const char* buffer = message.c_str();
+
+    for (totWritten = 0; totWritten < message.length();) {
+        numWritten = send(fd, buffer, message.length() - totWritten, 0);
+
+        if (nbytes <= 0) {
+            if (nbytes == -1) {
+                std::perror("send");
+                throw std::exception();
+            }
+            return;
+        }
+        totWritten += numWritten;
+        buffer += numWritten;
+    }
 }
