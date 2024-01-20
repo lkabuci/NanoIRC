@@ -23,6 +23,25 @@ void Reply::error(int fd, ERROR_CODES::CODES code, const std::string& s1,
     send(fd, msg.c_str(), msg.length(), 0);
 }
 
+void Reply::rpl_welcome(int fd, const std::string& nickname,
+                        const std::string& username) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " 001 " + nickname + " :Welcome to the IRC network, " +
+                      nickname + "!" + username + "@" +
+                      Reactor::getInstance().getServerIp() + "\r\n";
+
+    send(fd, msg.c_str(), msg.length(), 0);
+}
+
+void Reply::rpl_topic(int fd, const std::string& nickname,
+                      const std::string& channel, const std::string& topic) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " 332 " + nickname + " " + channel + " :" + topic +
+                      "\r\n";
+
+    send(fd, msg.c_str(), msg.length(), 0);
+}
+
 std::map<ERROR_CODES::CODES, std::string> Reply::_fillErrorMap() {
     std::map<ERROR_CODES::CODES, std::string> ret;
 
