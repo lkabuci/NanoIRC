@@ -19,13 +19,17 @@ class NICK : public Command {
   private:
     std::string _nick;
 
-    bool _isNicknameCollision(Client* client);
-    void _removeInstances();
+    bool _nicknameAlreadyExists(Client* client);
     bool _notEnoughParams(Client*                         client,
                           const std::vector<std::string>& parameters);
     bool _userSetPassword(Client* client);
-    void _sendErrNicknameCollision(Client* client);
+    bool _setNickname(Client* client, const std::string& param);
     void _welcomeUser(Client* client);
 };
+
+//  <nick>       ::= <letter> { <letter> | <number> | <special> }
+//  <letter>     ::= 'a' ... 'z' | 'A' ... 'Z'
+//  <number>     ::= '0' ... '9'
+//  <special>    ::= '-' | '[' | ']' | '\' | '`' | '^' | '{' | '}'
 
 #endif

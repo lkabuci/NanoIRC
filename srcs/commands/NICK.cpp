@@ -14,16 +14,10 @@ NICK& NICK::operator=(const NICK& nick) {
 }
 
 void NICK::execute(Client* client, const std::vector<std::string>& parameters) {
-    if (_notEnoughParams(client, parameters))
+    if (_notEnoughParams(client, parameters) || !_userSetPassword(client))
         return;
-    if (!_userSetPassword(client))
+    if (!_setNickname(client, parameters[0]) || _nicknameAlreadyExists(client))
         return;
-    _nick = parameters[0];
-    if (_isNicknameCollision(client)) {
-        _removeInstances();
-        _sendErrNicknameCollision(client);
-        return;
-    }
     client->getUserInfo().setNickname(_nick);
     if (!ClientList::exist(_nick))
         ClientList::add(client);
@@ -31,10 +25,25 @@ void NICK::execute(Client* client, const std::vector<std::string>& parameters) {
         _welcomeUser(client);
 }
 
-void NICK::_sendErrNicknameCollision(Client* client) {
-    Reply::error(client->getSockfd(), ERROR_CODES::ERR_NICKCOLLISION,
-                 client->getUserInfo().getNickname(),
-                 client->getUserInfo().getUsername());
+bool NICK::_setNickname(Client* client, const std::string& param) {
+    try {
+        _nick = Utils::getNickname(param);
+    } catch (const std::exception& e) {
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_ERRONEUSNICKNAME,
+                     client->getUserInfo().getNickname(), "");
+        return false;
+    }
+    return true;
+}
+
+bool NICK::_nicknameAlreadyExists(Client* client) {
+    if (ClientList::exist(_nick) &&
+        _nick != client->getUserInfo().getNickname()) {
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NICKNAMEINUSE, _nick,
+                     "");
+        return false;
+    }
+    return true;
 }
 
 bool NICK::_notEnoughParams(Client*                         client,
@@ -53,16 +62,6 @@ bool NICK::_userSetPassword(Client* client) {
     Reply::error(client->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED,
                  client->getUserInfo().getNickname(), "");
     return false;
-}
-
-bool NICK::_isNicknameCollision(Client* client) {
-    return ClientList::exist(_nick) &&
-           _nick != client->getUserInfo().getNickname();
-}
-
-void NICK::_removeInstances() {
-    while (ClientList::exist(_nick))
-        ClientList::remove(_nick);
 }
 
 void NICK::_welcomeUser(Client* client) {
