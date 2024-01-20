@@ -20,22 +20,30 @@ void PASS::execute(Client* client, const std::vector<std::string>& parameters) {
                      "");
         return;
     }
-    if (!_validParameters(client->getSockfd(), parameters))
+    if (!_validParameters(client, parameters))
         return;
 
     _password = parameters[0];
     client->getUserInfo().setPassword(_password);
 }
 
-bool PASS::_validParameters(int                             fd,
+bool PASS::_validParameters(Client*                         client,
                             const std::vector<std::string>& parameters) {
     if (parameters.empty()) {
-        Reply::error(fd, ERROR_CODES::ERR_UNKNOWNCOMMAND, "PASS");
+        _sendErrorReply(client);
         return false;
     }
     if (parameters.size() != 1) {
-        Reply::error(fd, ERROR_CODES::ERR_NEEDMOREPARAMS, "PASS");
+        _sendErrorReply(client);
         return false;
     }
     return true;
+}
+
+void PASS::_sendErrorReply(Client* client) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " 461 " + client->getUserInfo().getNickname() +
+                      " PASS :Not enough parameters\r\n";
+
+    send(client->getSockfd(), msg.c_str(), msg.length(), 0);
 }

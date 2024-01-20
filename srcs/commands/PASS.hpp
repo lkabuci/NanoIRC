@@ -19,7 +19,9 @@ class PASS : public Command {
   private:
     std::string _password;
 
-    bool _validParameters(int fd, const std::vector<std::string>& parameters);
+    bool _validParameters(Client*                         client,
+                          const std::vector<std::string>& parameters);
+    void _sendErrorReply(Client* client);
 };
 
 #endif
