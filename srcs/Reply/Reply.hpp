@@ -7,7 +7,7 @@
 
 namespace SUCCESS_CODES {
 enum CODES {
-
+    RPL_WELCOME = 1,
 };
 }
 
@@ -34,11 +34,9 @@ class Reply {
   public:
     static void success(int fd, SUCCESS_CODES::CODES code,
                         const std::string& identifier,
-                        const std::string& servername,
                         const std::string& message);
     static void error(int fd, ERROR_CODES::CODES code,
-                      const std::string& identifier,
-                      const std::string& servername);
+                      const std::string& identifier);
     static void sendn(int fd, const std::string& message);
 
   private:

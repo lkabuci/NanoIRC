@@ -28,6 +28,8 @@ std::map<ERROR_CODES::CODES, std::string> Reply::_fillErrorMap() {
 std::map<SUCCESS_CODES::CODES, std::string> Reply::_fillSuccessMap() {
     std::map<SUCCESS_CODES::CODES, std::string> ret;
 
+    ret[SUCCESS_CODES::RPL_WELCOME] = "Welcome to the Internet Relay Network "
+                                      "<nick>!<user>@<host>";
     return ret;
 }
 
