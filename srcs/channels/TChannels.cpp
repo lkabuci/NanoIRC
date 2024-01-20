@@ -61,3 +61,13 @@ Channel& TChannels::get(const size_t& index) {
     std::advance(it, index);
     return it->second;
 }
+
+void TChannels::removeUserFromAll(const std::string& nick) {
+    std::map<std::string, Channel>::iterator it = _channels.begin();
+
+    for (; it != _channels.end(); ++it) {
+        if (it->second.exist(nick)) {
+            it->second.remove(nick);
+        }
+    }
+}

@@ -61,11 +61,11 @@ void Channel::sendToAll(Client* sender, const std::string& message) {
     }
 }
 
-void Channel::remove(const std::string& username) {
+void Channel::remove(const std::string& nick) {
     std::map<Client*, MEMBER_PERMISSION::Flags>::iterator it = _members.begin();
 
     for (; it != _members.end(); ++it) {
-        if (it->first->getUserInfo().getUsername() == username) {
+        if (it->first->getUserInfo().getNickname() == nick) {
             _members.erase(it);
             return;
         }

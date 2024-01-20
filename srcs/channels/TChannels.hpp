@@ -17,6 +17,7 @@ class TChannels {
                                  const std::string& nickname);
     static bool     exist(const std::string& name);
     static Channel& get(const size_t& index);
+    static void     removeUserFromAll(const std::string& nick);
 
   private:
     TChannels();
