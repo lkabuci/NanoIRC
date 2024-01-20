@@ -16,9 +16,26 @@ void Reply::success(int fd, SUCCESS_CODES::CODES code,
 
 void Reply::error(int fd, ERROR_CODES::CODES code, const std::string& s1,
                   const std::string& s2) {
+
+    if (code == ERROR_CODES::ERR_NICKCOLLISION) {
+        _err_nickCollision(fd, s1, s2);
+        return;
+    }
+
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       " " + Utils::toStr(code) + " " + s1 + " " + s2 +
                       _errorReply[code] + "\r\n";
+
+    send(fd, msg.c_str(), msg.length(), 0);
+}
+
+void Reply::_err_nickCollision(int fd, const std::string& nickname,
+                               const std::string& username) {
+
+    std::string msg =
+        std::string(":") + Reactor::getInstance().getServerIp() + " 436 " +
+        nickname + _errorReply[ERROR_CODES::ERR_NICKCOLLISION] + " " +
+        username + "@" + Reactor::getInstance().getServerIp() + "\r\n";
 
     send(fd, msg.c_str(), msg.length(), 0);
 }
@@ -57,7 +74,7 @@ std::map<ERROR_CODES::CODES, std::string> Reply::_fillErrorMap() {
     ret[ERROR_CODES::ERR_TOOMANYTARGETS] =
         ":Duplicate recipients. No message delivered";
     ret[ERROR_CODES::ERR_NOSUCHNICK] = ":No such nick/channel";
-    ret[ERROR_CODES::ERR_NICKCOLLISION] = ":Nickname collision KILL";
+    ret[ERROR_CODES::ERR_NICKCOLLISION] = ":Nickname collision KILL from";
     ret[ERROR_CODES::ERR_UNKNOWNCOMMAND] = ":Unknown command";
     ret[ERROR_CODES::ERR_NOTREGISTERED] = ":You have not registered";
     return (ret);
