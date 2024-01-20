@@ -28,22 +28,47 @@ std::map<ERROR_CODES::CODES, std::string> Reply::_fillErrorMap() {
 std::map<SUCCESS_CODES::CODES, std::string> Reply::_fillSuccessMap() {
     std::map<SUCCESS_CODES::CODES, std::string> ret;
 
+    ret[SUCCESS_CODES::RPL_WELCOME] = "Welcome to the Internet Relay Network "
+                                      "<nick>!<user>@<host>";
     return ret;
 }
 
 void Reply::success(int fd, SUCCESS_CODES::CODES code,
-                    const std::string& identifier,
-                    const std::string& servername, const std::string& message) {
+                    const std::string& identifier, const std::string& message) {
 
-    std::string msg = ":" + servername + " " + Utils::toStr(code) + " " +
-                      identifier + " " + _successReply[code] + message;
-    send(fd, msg.c_str(), msg.size(), 0);
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " " + Utils::toStr(code) + " " + identifier + " " +
+                      _successReply[code] + message;
+    // send(fd, msg.c_str(), msg.size(), 0);
+    sendn(df, msg);
 }
 
 void Reply::error(int fd, ERROR_CODES::CODES code,
-                  const std::string& identifier,
-                  const std::string& servername) {
-    std::string msg = ":" + servername + " " + Utils::toStr(code) + " " +
-                      identifier + " " + _errorReply[code];
-    send(fd, msg.c_str(), msg.size(), 0);
+                  const std::string& identifier) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " " + Utils::toStr(code) + " " + identifier + " " +
+                      _errorReply[code];
+    // send(fd, msg.c_str(), msg.size(), 0);
+    sendn(df, msg);
+}
+
+void Reply::sendn(int fd, const int& message) {
+    int         numWritten;
+    int         totWritten;
+    int         len = static_cast<int>(message.length());
+    const char* buffer = message.c_str();
+
+    for (totWritten = 0; totWritten < len;) {
+        numWritten = send(fd, buffer, len - totWritten, 0);
+
+        if (numWritten <= 0) {
+            if (numWritten == -1) {
+                std::perror("send");
+                throw std::exception();
+            }
+            return;
+        }
+        totWritten += numWritten;
+        buffer += numWritten;
+    }
 }
