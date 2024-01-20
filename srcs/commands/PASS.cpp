@@ -16,19 +16,26 @@ PASS& PASS::operator=(const PASS& p) {
 
 void PASS::execute(Client* client, const std::vector<std::string>& parameters) {
     if (client->getUserInfo().isRegistered()) {
-        // TODO sent ERR_ALREADYREGISTRED reply and ignore the command
-        throw std::runtime_error(
-            "462 ERR_ALREADYREGISTRED:You may not reregister");
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_ALREADYREGISTRED,
+                     "");
+        return;
     }
-    if (parameters.size() != 1) {
-        // TODO sent ERR_NEEDMOREPARAMS reply
-        throw std::runtime_error(
-            "462 ERR_NEEDMOREPARAMS:You may not reregister");
-    }
+    if (!_validParameters(client->getSockfd(), parameters))
+        return;
+
     _password = parameters[0];
     client->getUserInfo().setPassword(_password);
 }
 
-const std::string& PASS::getPassword() const {
-    return _password;
+bool PASS::_validParameters(int                             fd,
+                            const std::vector<std::string>& parameters) {
+    if (parameters.empty()) {
+        Reply::error(fd, ERROR_CODES::ERR_UNKNOWNCOMMAND, "PASS");
+        return false;
+    }
+    if (parameters.size() != 1) {
+        Reply::error(fd, ERROR_CODES::ERR_NEEDMOREPARAMS, "PASS");
+        return false;
+    }
+    return true;
 }
