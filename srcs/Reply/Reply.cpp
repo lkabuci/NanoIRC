@@ -56,8 +56,7 @@ void Reply::sendn(int fd, const int& message) {
     const char* buffer = message.c_str();
 
     for (totWritten = 0; totWritten < message.length();) {
-        numWritten =
-            send(fd, message.c_str(), message.length() - totWritten, 0);
+        numWritten = send(fd, buffer, message.length() - totWritten, 0);
 
         if (nbytes <= 0) {
             if (nbytes == -1) {
