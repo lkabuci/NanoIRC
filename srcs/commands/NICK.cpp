@@ -26,7 +26,6 @@ void NICK::execute(Client* client, const std::vector<std::string>& parameters) {
     client->getUserInfo().setNickname(_nick);
     if (!ClientList::exist(_nick))
         ClientList::add(client);
-    _sendSuccessReply(client);
 }
 
 void NICK::_sendErrorReply(Client* client) {
