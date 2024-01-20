@@ -8,7 +8,7 @@
 #include "../../include/IRC.h"
 #include "../client/Client.hpp"
 
-class   Reactor;
+class Reactor;
 
 class Dispatcher {
   public:

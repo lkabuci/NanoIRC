@@ -7,7 +7,7 @@
 
 #include "../../include/IRC.h"
 
-class   Reactor;
+class Reactor;
 
 class Demultiplexer {
   public:
