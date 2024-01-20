@@ -14,36 +14,45 @@ NICK& NICK::operator=(const NICK& nick) {
 }
 
 void NICK::execute(Client* client, const std::vector<std::string>& parameters) {
-    if (parameters.empty() || parameters.size() > 2) {
-        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NEEDMOREPARAMS,
-                     client->getUserInfo().getNickname(), "NICK");
+    if (_notEnoughParams(client, parameters))
         return;
-    }
-    if (!client->getUserInfo().isSet(UserInfo::PASSWORD_SET)) {
-        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED,
-                     client->getUserInfo().getNickname(), "");
+    if (!_userSetPassword(client))
         return;
-    }
     _nick = parameters[0];
     if (_isNicknameCollision(client)) {
         _removeInstances();
-        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NICKCOLLISION,
-                     client->getUserInfo().getNickname(),
-                     client->getUserInfo().getUsername());
+        _sendErrNicknameCollision(client);
         return;
     }
     client->getUserInfo().setNickname(_nick);
     if (!ClientList::exist(_nick))
         ClientList::add(client);
     if (client->getUserInfo().isRegistered())
-        Reply::rpl_welcome(client->getSockfd(),
-                           client->getUserInfo().getNickname(),
-                           client->getUserInfo().getUsername());
+        _welcomeUser(client);
 }
 
-void NICK::_removeInstances() {
-    while (ClientList::exist(_nick))
-        ClientList::remove(_nick);
+void NICK::_sendErrNicknameCollision(Client* client) {
+    Reply::error(client->getSockfd(), ERROR_CODES::ERR_NICKCOLLISION,
+                 client->getUserInfo().getNickname(),
+                 client->getUserInfo().getUsername());
+}
+
+bool NICK::_notEnoughParams(Client*                         client,
+                            const std::vector<std::string>& parameters) {
+    if (parameters.empty() || parameters.size() > 2) {
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NEEDMOREPARAMS,
+                     client->getUserInfo().getNickname(), "NICK");
+        return false;
+    }
+    return true;
+}
+
+bool NICK::_userSetPassword(Client* client) {
+    if (client->getUserInfo().isSet(UserInfo::PASSWORD_SET))
+        return true;
+    Reply::error(client->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED,
+                 client->getUserInfo().getNickname(), "");
+    return false;
 }
 
 bool NICK::_isNicknameCollision(Client* client) {
@@ -51,6 +60,12 @@ bool NICK::_isNicknameCollision(Client* client) {
            _nick != client->getUserInfo().getNickname();
 }
 
-const std::string& NICK::getNickname() const {
-    return _nick;
+void NICK::_removeInstances() {
+    while (ClientList::exist(_nick))
+        ClientList::remove(_nick);
+}
+
+void NICK::_welcomeUser(Client* client) {
+    Reply::rpl_welcome(client->getSockfd(), client->getUserInfo().getNickname(),
+                       client->getUserInfo().getUsername());
 }
