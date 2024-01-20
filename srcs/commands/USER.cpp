@@ -83,7 +83,7 @@ void USER::_parseRealName(Client* client) {
 void USER::_oneParam(Client* client) {
     _realname = Parser::advance().lexeme();
 
-    if (!Parser::isAtEnd() || !Parser::check(TYPES::SPACE)) {
+    if (!Parser::isAtEnd() && !Parser::check(TYPES::SPACE)) {
         Reply::error(client->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
                      client->getUserInfo().getNickname(), "USER");
         throw std::exception();
