@@ -9,6 +9,7 @@
 namespace SUCCESS_CODES {
 enum CODES {
     RPL_WELCOME = 1,
+    RPL_TOPIC = 332,
 };
 }
 
@@ -33,6 +34,9 @@ enum CODES {
 
 class Reply {
   public:
+    static std::map<SUCCESS_CODES::CODES, std::string> successReply;
+    static std::map<ERROR_CODES::CODES, std::string>   errorReply;
+
     static void success(int fd, SUCCESS_CODES::CODES code,
                         const std::string& identifier,
                         const std::string& message);
@@ -44,9 +48,6 @@ class Reply {
     Reply();
     static std::map<SUCCESS_CODES::CODES, std::string> _fillSuccessMap();
     static std::map<ERROR_CODES::CODES, std::string>   _fillErrorMap();
-
-    static std::map<SUCCESS_CODES::CODES, std::string> _successReply;
-    static std::map<ERROR_CODES::CODES, std::string>   _errorReply;
 };
 
 #endif

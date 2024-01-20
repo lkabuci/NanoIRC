@@ -22,16 +22,25 @@ void JOIN::execute(Client* client, const std::vector<std::string>& parameters) {
                      "JOIN");
         return;
     }
+    _sender = client;
     if (!_userIsRegistered())
         return;
-    _sender = client;
+    if (parameters.size() == 1 && parameters[0] == "0") {
+        _leaveAllChannels();
+        return;
+    }
     Parser::init(Utils::join(parameters));
     _setChannels();
     _setKeys();
     _joinUser();
 }
 
+void JOIN::_leaveAllChannels() {
+    TChannels::removeUserFromAll(_sender->getUserInfo().getNickname());
+}
+
 bool JOIN::_userIsRegistered() {
+    std::cout << "nick: " << _sender->getUserInfo().getNickname() << '\n';
     if (_sender->getUserInfo().isRegistered())
         return true;
     Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED, "");
@@ -61,11 +70,16 @@ void JOIN::_createChannel(const size_t& index) {
 }
 
 void JOIN::_sendSuccessReply(const std::string& name) {
-    std::string msg = name + " " + _sender->getUserInfo().getNickname() +
-                      " has joined (~" + _sender->getUserInfo().getNickname() +
-                      "@" + Reactor::getInstance().getServerIp() + ")";
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " 332 " + _sender->getUserInfo().getNickname() + " " +
+                      name + " :" + TChannels::channel(name).getTopic() +
+                      "\r\n";
 
     Reply::sendn(_sender->getSockfd(), msg);
+    //: server.example.com 332 yournickname #channelname :Channel topic goes
+    //: here server.example.com 333 yournickname #channelname setbywho
+    //: 1234567890 server.example.com 324 yournickname #channelname +nt
+    //: server.example.com 329 yournickname #channelname 1234567890
 }
 
 void JOIN::_addToChannel(Channel& channel, const size_t& index) {
@@ -94,7 +108,8 @@ void JOIN::_setChannels() {
                      "JOIN");
         throw std::exception();
     }
-    _channels.push_back(Parser::advance().lexeme());
+    _channels.push_back(Parser::previous().lexeme() +
+                        Parser::advance().lexeme());
     while (!Parser::isAtEnd() && Parser::match(TYPES::COMMA))
         _addChannel();
 }
@@ -110,7 +125,8 @@ void JOIN::_addChannel() {
                      "JOIN");
         throw std::exception();
     }
-    _channels.push_back(Parser::advance().lexeme());
+    _channels.push_back(Parser::previous().lexeme() +
+                        Parser::advance().lexeme());
 }
 
 bool JOIN::_keyIsCorrect(Channel& channel, const size_t& index) {

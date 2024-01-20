@@ -39,9 +39,12 @@ void NICK::_sendSuccessReply(Client* client) {
 
     if (user.empty())
         user = _nick;
-    Reply::success(client->getSockfd(), SUCCESS_CODES::RPL_WELCOME, _nick,
-                   _nick + "!" + user + "@" +
-                       Reactor::getInstance().getServerIp());
+
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " 001 " + client->getUserInfo().getNickname() + " " +
+                      Reply::successReply[SUCCESS_CODES::RPL_WELCOME] + "\r\n";
+
+    send(client->getSockfd(), msg.c_str(), msg.length(), 0);
 }
 
 void NICK::_removeInstances() {

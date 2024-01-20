@@ -3,6 +3,7 @@
 #ifndef __COMMAND_HPP__
 #define __COMMAND_HPP__
 
+#include "../../include/IRC.h"
 #include "../Utils/Utils.hpp"
 #include "../channels/TChannels.hpp"
 #include "../client/ClientList.hpp"
