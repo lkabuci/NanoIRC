@@ -4,6 +4,7 @@
 #define __REPLY_HPP__
 
 #include "../../include/IRC.h"
+#include "../server/Reactor.hpp"
 
 namespace SUCCESS_CODES {
 enum CODES {
