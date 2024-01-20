@@ -56,6 +56,10 @@ class Reply {
 
     static std::map<SUCCESS_CODES::CODES, std::string> _successReply;
     static std::map<ERROR_CODES::CODES, std::string>   _errorReply;
+
+    //:<server> 436 <nickname> :Nickname collision KILL from <user>@<host>
+    static void _err_nickCollision(int fd, const std::string& nickname,
+                                   const std::string& username);
 };
 
 #endif
