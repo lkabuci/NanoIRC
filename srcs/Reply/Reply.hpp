@@ -9,6 +9,7 @@
 namespace SUCCESS_CODES {
 enum CODES {
     RPL_WELCOME = 1,
+    RPL_TOPIC = 332,
 };
 }
 
@@ -38,6 +39,15 @@ class Reply {
                         const std::string& message);
     static void error(int fd, ERROR_CODES::CODES code, const std::string& s1,
                       const std::string& s2);
+
+    //: server.hostname 001 yournickname :Welcome to the IRC network,
+    //: yournickname!user@host
+    static void rpl_welcome(int fd, const std::string& nickname,
+                            const std::string& username);
+
+    //:<server> 332 <nickname> <channel> :<topic>
+    static void rpl_topic(int fd, const std::string& nickname,
+                          const std::string& channel, const std::string& topic);
 
   private:
     Reply();
