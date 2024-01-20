@@ -40,6 +40,17 @@ void USER::execute(Client* client, const std::vector<std::string>& parameters) {
     client->getUserInfo().setRealname(_realname);
     if (!ClientList::exist(client->getUserInfo().getNickname()))
         ClientList::add(client);
+    _sendSuccessReply(client);
+}
+
+void USER::_sendSuccessReply(Client* client) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " 001 " + client->getUserInfo().getNickname() +
+                      ":Welcome to IRC " + client->getUserInfo().getNickname() +
+                      "!" + _username + "@" +
+                      Reactor::getInstance().getServerIp() + "\r\n";
+
+    send(client->getSockfd(), msg.c_str(), msg.length(), 0);
 }
 
 void USER::_ignoreHostAndServerNames() {

@@ -24,6 +24,7 @@ class USER : public Command {
 
     void _parseRealName();
     void _ignoreHostAndServerNames();
+    void _sendSuccessReply(Client* client);
 };
 
 #endif
