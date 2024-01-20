@@ -2,24 +2,12 @@
 
 JOIN::JOIN() : _sender(NULL) {}
 
-JOIN::JOIN(const JOIN& join)
-    : _channels(join._channels), _keys(join._keys), _sender(join._sender) {}
-
 JOIN::~JOIN() {}
-
-JOIN& JOIN::operator=(const JOIN& join) {
-    if (this == &join)
-        return *this;
-    _channels = join._channels;
-    _keys = join._keys;
-    _sender = join._sender;
-    return *this;
-}
 
 void JOIN::execute(Client* client, const std::vector<std::string>& parameters) {
     if (parameters.empty()) {
         Reply::error(client->getSockfd(), ERROR_CODES::ERR_NEEDMOREPARAMS,
-                     "JOIN");
+                     client->getUserInfo().getNickname(), "JOIN");
         return;
     }
     _sender = client;
@@ -40,10 +28,10 @@ void JOIN::_leaveAllChannels() {
 }
 
 bool JOIN::_userIsRegistered() {
-    std::cout << "nick: " << _sender->getUserInfo().getNickname() << '\n';
     if (_sender->getUserInfo().isRegistered())
         return true;
-    Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED, "");
+    Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED,
+                 _sender->getUserInfo().getNickname(), "");
     return false;
 }
 
@@ -66,20 +54,8 @@ void JOIN::_createChannel(const size_t& index) {
     }
     channel.add(_sender, MEMBER_PERMISSION::OPERATOR);
     TChannels::add(_channels[index], channel);
-    _sendSuccessReply(_channels[index]);
-}
-
-void JOIN::_sendSuccessReply(const std::string& name) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      " 332 " + _sender->getUserInfo().getNickname() + " " +
-                      name + " :" + TChannels::channel(name).getTopic() +
-                      "\r\n";
-
-    Reply::sendn(_sender->getSockfd(), msg);
-    //: server.example.com 332 yournickname #channelname :Channel topic goes
-    //: here server.example.com 333 yournickname #channelname setbywho
-    //: 1234567890 server.example.com 324 yournickname #channelname +nt
-    //: server.example.com 329 yournickname #channelname 1234567890
+    Reply::rpl_topic(_sender->getSockfd(), _sender->getUserInfo().getNickname(),
+                     _channels[index], "");
 }
 
 void JOIN::_addToChannel(Channel& channel, const size_t& index) {
@@ -87,7 +63,7 @@ void JOIN::_addToChannel(Channel& channel, const size_t& index) {
         return;
     if (_channelIsInviteOnly(channel) && !channel.isInvited(_sender)) {
         Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_INVITEONLYCHAN,
-                     channel.name());
+                     _sender->getUserInfo().getNickname(), channel.name());
         return;
     }
     if (_channelHasKey(channel) && !_keyIsCorrect(channel, index))
@@ -105,7 +81,7 @@ void JOIN::_addClientToChannel(Channel&                 channel,
 void JOIN::_setChannels() {
     if (!Parser::match(TYPES::HASH)) {
         Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     "JOIN");
+                     _sender->getUserInfo().getNickname(), "JOIN");
         throw std::exception();
     }
     _channels.push_back(Parser::previous().lexeme() +
@@ -117,12 +93,12 @@ void JOIN::_setChannels() {
 void JOIN::_addChannel() {
     if (!Parser::match(TYPES::HASH)) {
         Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     "JOIN");
+                     _sender->getUserInfo().getNickname(), "JOIN");
         throw std::exception();
     }
     if (Parser::isAtEnd()) {
         Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     "JOIN");
+                     _sender->getUserInfo().getNickname(), "JOIN");
         throw std::exception();
     }
     _channels.push_back(Parser::previous().lexeme() +
@@ -133,7 +109,7 @@ bool JOIN::_keyIsCorrect(Channel& channel, const size_t& index) {
     if (index < _keys.size() && _keys[index] == channel.getPassword())
         return true;
     Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_BADCHANNELKEY,
-                 channel.name());
+                 _sender->getUserInfo().getNickname(), channel.name());
     return false;
 }
 
@@ -146,8 +122,7 @@ void JOIN::_setKeys() {
         return;
     if (Parser::match(TYPES::SPACE)) {
         Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     "JOIN");
-        throw std::exception();
+                     _sender->getUserInfo().getNickname(), "JOIN");
     }
     _keys.push_back(Parser::advance().lexeme());
     while (!Parser::isAtEnd())
@@ -157,13 +132,13 @@ void JOIN::_setKeys() {
 void JOIN::_addKey() {
     if (Parser::match(TYPES::COMMA)) {
         Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     "JOIN");
-        throw std::exception();
+                     _sender->getUserInfo().getNickname(), "JOIN");
+        return;
     }
     if (Parser::isAtEnd()) {
         Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     "JOIN");
-        throw std::exception();
+                     _sender->getUserInfo().getNickname(), "JOIN");
+        return;
     }
     _keys.push_back(Parser::advance().lexeme());
 }
