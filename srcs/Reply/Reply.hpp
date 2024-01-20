@@ -20,6 +20,9 @@ enum CODES {
     //:<server> 461 <nickname> <command> :Not enough parameters
     ERR_NEEDMOREPARAMS = 461,
     ERR_NONICKNAMEGIVEN = 431,
+    //:<server> 432 <nickname> :Erroneous nickname
+    ERR_ERRONEUSNICKNAME = 432,
+    //:<server> 433 <nickname> :Nickname is already in use
     ERR_NICKNAMEINUSE = 433,
     ERR_NOSUCHCHANNEL = 403,
     ERR_INVITEONLYCHAN = 473,
