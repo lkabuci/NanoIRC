@@ -68,14 +68,6 @@ void SendMsg::_sendToChannel(const std::string& name) {
 }
 
 void SendMsg::_addChannel() {
-    if (!Parser::check(TYPES::LETTER))
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NORECIPIENT, "");
-    if (!TChannels::exist(Parser::peek().lexeme()))
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOSUCHNICK,
-                     Parser::peek().lexeme());
-    if (_channelAlreadyExists(Parser::peek().lexeme()))
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_TOOMANYTARGETS,
-                     Parser::peek().lexeme());
     if (!Parser::check(TYPES::LETTER)) {
         Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NORECIPIENT, "");
         return;
@@ -94,14 +86,6 @@ void SendMsg::_addChannel() {
 }
 
 void SendMsg::_addUser() {
-    if (!Parser::check(TYPES::LETTER))
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_TOOMANYTARGETS, "");
-    if (!ClientList::exist(Parser::peek().lexeme()))
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOSUCHNICK,
-                     Parser::peek().lexeme());
-    if (_userAlreadyExists(Parser::peek().lexeme()))
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_TOOMANYTARGETS,
-                     Parser::peek().lexeme());
     if (!Parser::check(TYPES::LETTER)) {
         Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_TOOMANYTARGETS, "");
         return;
