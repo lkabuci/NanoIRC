@@ -32,22 +32,24 @@ enum CODES {
 };
 }
 
+//:<server> 462 <nickname> :You may not reregister
+//:<server> 461 <nickname> <command> :Not enough parameters
+
 class Reply {
   public:
-    static std::map<SUCCESS_CODES::CODES, std::string> successReply;
-    static std::map<ERROR_CODES::CODES, std::string>   errorReply;
-
     static void success(int fd, SUCCESS_CODES::CODES code,
                         const std::string& identifier,
                         const std::string& message);
-    static void error(int fd, ERROR_CODES::CODES code,
-                      const std::string& identifier);
-    static void sendn(int fd, const std::string& message);
+    static void error(int fd, ERROR_CODES::CODES code, const std::string& s1,
+                      const std::string& s2);
 
   private:
     Reply();
     static std::map<SUCCESS_CODES::CODES, std::string> _fillSuccessMap();
     static std::map<ERROR_CODES::CODES, std::string>   _fillErrorMap();
+
+    static std::map<SUCCESS_CODES::CODES, std::string> _successReply;
+    static std::map<ERROR_CODES::CODES, std::string>   _errorReply;
 };
 
 #endif

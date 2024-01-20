@@ -1,8 +1,27 @@
 #include "Reply.hpp"
 
-std::map<SUCCESS_CODES::CODES, std::string> Reply::successReply =
+std::map<SUCCESS_CODES::CODES, std::string> Reply::_successReply =
     _fillSuccessMap();
-std::map<ERROR_CODES::CODES, std::string> Reply::errorReply = _fillErrorMap();
+std::map<ERROR_CODES::CODES, std::string> Reply::_errorReply = _fillErrorMap();
+
+void Reply::success(int fd, SUCCESS_CODES::CODES code,
+                    const std::string& identifier, const std::string& message) {
+
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " " + Utils::toStr(code) + " " + identifier + " " +
+                      _successReply[code] + message;
+
+    send(fd, msg.c_str(), msg.size(), 0);
+}
+
+void Reply::error(int fd, ERROR_CODES::CODES code, const std::string& s1,
+                  const std::string& s2) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " " + Utils::toStr(code) + " " + s1 + " " + s2 +
+                      _errorReply[code] + "\r\n";
+
+    send(fd, msg.c_str(), msg.length(), 0);
+}
 
 std::map<ERROR_CODES::CODES, std::string> Reply::_fillErrorMap() {
     std::map<ERROR_CODES::CODES, std::string> ret;
@@ -14,7 +33,7 @@ std::map<ERROR_CODES::CODES, std::string> Reply::_fillErrorMap() {
     ret[ERROR_CODES::ERR_NOSUCHCHANNEL] = ":No such channel";
     ret[ERROR_CODES::ERR_INVITEONLYCHAN] = ":Cannot join channel (+i)";
     ret[ERROR_CODES::ERR_BADCHANNELKEY] = ":Cannot join channel (+k)";
-    ret[ERROR_CODES::ERR_NORECIPIENT] = ":No recipient given";
+    ret[ERROR_CODES::ERR_NORECIPIENT] = ":No recipient given (PRIVMSG/NOTICE)";
     ret[ERROR_CODES::ERR_NOTEXTTOSEND] = ":No text to send";
     ret[ERROR_CODES::ERR_TOOMANYTARGETS] =
         ":Duplicate recipients. No message delivered";
@@ -31,44 +50,4 @@ std::map<SUCCESS_CODES::CODES, std::string> Reply::_fillSuccessMap() {
     ret[SUCCESS_CODES::RPL_WELCOME] = "Welcome to the Internet Relay Network";
     ret[SUCCESS_CODES::RPL_TOPIC] = "";
     return ret;
-}
-
-void Reply::success(int fd, SUCCESS_CODES::CODES code,
-                    const std::string& identifier, const std::string& message) {
-
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      " " + Utils::toStr(code) + " " + identifier + " " +
-                      successReply[code] + message;
-    // send(fd, msg.c_str(), msg.size(), 0);
-    sendn(fd, msg);
-}
-
-void Reply::error(int fd, ERROR_CODES::CODES code,
-                  const std::string& identifier) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      " " + Utils::toStr(code) + " " + identifier + " " +
-                      errorReply[code];
-    // send(fd, msg.c_str(), msg.size(), 0);
-    sendn(fd, msg);
-}
-
-void Reply::sendn(int fd, const std::string& message) {
-    int         numWritten;
-    int         totWritten;
-    int         len = static_cast<int>(message.length());
-    const char* buffer = message.c_str();
-
-    for (totWritten = 0; totWritten < len;) {
-        numWritten = send(fd, buffer, len - totWritten, 0);
-
-        if (numWritten <= 0) {
-            if (numWritten == -1) {
-                std::perror("send");
-                throw std::exception();
-            }
-            return;
-        }
-        totWritten += numWritten;
-        buffer += numWritten;
-    }
 }
