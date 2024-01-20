@@ -39,6 +39,7 @@ class Reply {
     static void error(int fd, ERROR_CODES::CODES code,
                       const std::string& identifier,
                       const std::string& servername);
+    static void sendn(int fd, const std::string& message);
 
   private:
     Reply();
