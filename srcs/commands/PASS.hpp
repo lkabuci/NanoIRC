@@ -13,13 +13,13 @@ class PASS : public Command {
 
     PASS& operator=(const PASS& p);
 
-    virtual void       execute(Client*                         client,
-                               const std::vector<std::string>& parameters);
+    virtual void execute(Client*                         client,
+                         const std::vector<std::string>& parameters);
 
   private:
     std::string _password;
 
-    bool    _validParameters(int fd, const std::vector<std::string>& parameters);
+    bool _validParameters(int fd, const std::vector<std::string>& parameters);
 };
 
 #endif

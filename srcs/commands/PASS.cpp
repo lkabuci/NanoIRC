@@ -27,7 +27,8 @@ void PASS::execute(Client* client, const std::vector<std::string>& parameters) {
     client->getUserInfo().setPassword(_password);
 }
 
-bool PASS::_validParameters(int fd, const std::vector<std::string>& parameters) {
+bool PASS::_validParameters(int                             fd,
+                            const std::vector<std::string>& parameters) {
     if (parameters.empty()) {
         Reply::error(fd, ERROR_CODES::ERR_UNKNOWNCOMMAND, "PASS");
         return false;
