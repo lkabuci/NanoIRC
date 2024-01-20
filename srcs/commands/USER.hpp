@@ -20,13 +20,15 @@ class USER : public Command {
     std::string _username;
     std::string _realname;
 
-    void _parseRealName();
+    void _parseRealName(Client* client);
     bool _notEnoughParams(Client*                         client,
                           const std::vector<std::string>& parameters);
     bool _userAlreadyExists(Client* client);
     bool _userSetPassword(Client* client);
     void _ignoreHostAndServerNames();
     void _setUserInfo(Client* client);
+    void _welcomeUser(Client* client);
+    void _oneParam(Client* client);
 };
 
 #endif
