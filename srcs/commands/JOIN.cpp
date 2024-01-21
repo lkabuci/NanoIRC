@@ -54,8 +54,9 @@ void JOIN::_createChannel(const size_t& index) {
     }
     channel.add(_sender, MEMBER_PERMISSION::OPERATOR);
     TChannels::add(_channels[index], channel);
-    Reply::rpl_topic(_sender->getSockfd(), _sender->getUserInfo().getNickname(),
-                     _channels[index], "");
+    Reply::rpl_channelModeIs(_sender->getSockfd(),
+                             _sender->getUserInfo().getNickname(),
+                             _channels[index], "+i");
 }
 
 void JOIN::_addToChannel(Channel& channel, const size_t& index) {
