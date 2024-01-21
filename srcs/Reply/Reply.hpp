@@ -12,15 +12,15 @@ enum CODES {
     RPL_TOPIC = 332,
 
     //:<server> 324 <nickname> <channel> <mode> <mode-parameters>
+    //<#ch1> nick1 has joined (~nick1@freenode-obu.d75.6g0qj4.IP)
     RPL_CHANNELMODEIS = 324,
 };
 }
 
-static void rpl_channelModeIs(const std::string& nickname,
-                            const std::string& channel, const std::string& mode);
-
 namespace ERROR_CODES {
 enum CODES {
+    //:<server> 462 <nickname> :You may not reregisted
+    ERR_ALREADYREGISTRED = 462,
 
     //:<server> 461 <nickname> <command> :Not enough parameters
     ERR_NEEDMOREPARAMS = 461,
@@ -79,6 +79,10 @@ class Reply {
     //:<server> 332 <nickname> <channel> :<topic>
     static void rpl_topic(int fd, const std::string& nickname,
                           const std::string& channel, const std::string& topic);
+
+    static void rpl_channelModeIs(int fd, const std::string& nickname,
+                                  const std::string& channel,
+                                  const std::string& mode);
 
   private:
     Reply();
