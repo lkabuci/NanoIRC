@@ -38,14 +38,17 @@ class Message {
     std::vector<std::string> _parameters;
     static std::string       _password;
     Command*                 _cmdfunc;
+    static uint8_t           _nbrOfParams;
 
     TYPES::TokenType _whichCommand();
 
-    void _command();
-    void _params();
-    bool _nospcrlfcl();
-    void _trailing();
-    void _middle();
+    std::string _getMessage(const std::string& message);
+    void        _command();
+    void        _params();
+    bool        _nospcrlfcl();
+    void        _trailing();
+    void        _middle();
+    void        _crlf();
 
     void _skipSpaces();
     bool _isCommand();

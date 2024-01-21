@@ -23,7 +23,6 @@ class USER : public Command {
     void _parseRealName(Client* client);
     bool _notEnoughParams(Client*                         client,
                           const std::vector<std::string>& parameters);
-    bool _userAlreadyExists(Client* client);
     bool _userSetPassword(Client* client);
     void _ignoreHostAndServerNames();
     void _setUserInfo(Client* client);

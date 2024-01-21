@@ -46,5 +46,5 @@ bool UserInfo::isSet(int flag) {
 }
 
 bool UserInfo::isRegistered() {
-    return _flags & (PASSWORD_SET | NICK_SET | USER_SET);
+    return _flags == (PASSWORD_SET | NICK_SET | USER_SET);
 }

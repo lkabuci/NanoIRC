@@ -7,6 +7,7 @@
 #include "../commands/USER.hpp"
 
 std::string Message::_password;
+uint8_t     Message::_nbrOfParams;
 
 TYPES::TokenType Message::_commandTypes[] = {
     TYPES::PASS,   TYPES::NICK,  TYPES::USER, TYPES::JOIN,    TYPES::KICK,
@@ -18,30 +19,51 @@ std::string Message::_commandsStr[] = {"PASS",    "NICK",   "USER",  "JOIN",
 
 Message::Message() : _client(NULL), _cmdfunc(NULL) {}
 
-Message::Message(const std::string& message) : _client(NULL), _cmdfunc(NULL) {
-    if (message.length() >= MAX_MSG_LEN)
-        throw std::runtime_error("message too large.");
-}
+Message::Message(const std::string& message) : _client(NULL), _cmdfunc(NULL) {}
 
 Message::~Message() {
     delete _cmdfunc;
 }
 
 void Message::parse(Client* client) {
+    _nbrOfParams = 0;
     _client = client;
     _message = _client->getMessage();
     if (_message.empty())
         return;
+
     std::string msg(_message);
-    size_t      crfl_pos = _message.rfind("\r\n");
-    if (crfl_pos == std::string::npos) {
-        size_t lf_pos = msg.rfind("\n");
-        msg.insert(lf_pos, "\r");
+    std::string temp;
+    do {
+        temp = _getMessage(msg);
+        Parser::init(temp);
+        _command();
+        _params();
+        _crlf();
+        msg = msg.substr(temp.length());
+        execute("");
+    } while (!msg.empty());
+}
+
+void Message::_crlf() {
+    if (!Parser::match(TYPES::CRLF)) {
+        Reply::error(_client->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
+                     _client->getUserInfo().getNickname(), "");
+        throw std::exception();
     }
-    Parser::init(msg);
-    _command();
-    _params();
-    Parser::consume(TYPES::CRLF, "messing CRLF at end.");
+}
+
+std::string Message::_getMessage(const std::string& message) {
+    std::string msg(message);
+    size_t      crlf_pos;
+
+    crlf_pos = message.find(CR_LF);
+    if (crlf_pos == std::string::npos) {
+        size_t lf_pos = message.find("\n");
+        msg.insert(lf_pos, "\r");
+        return msg.substr(0, lf_pos + 2);
+    }
+    return msg.substr(0, crlf_pos + 2);
 }
 
 void Message::execute(const std::string& password) {
@@ -88,16 +110,23 @@ TYPES::TokenType Message::_whichCommand() {
 
 void Message::_command() {
     if (!_isCommand()) {
+        Reply::error(_client->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
+                     _client->getUserInfo().getNickname(), "");
         throw std::exception();
     }
     _cmd = Parser::advance().lexeme();
 }
 
 void Message::_params() {
-    if (Parser::check(TYPES::CRLF))
+    if (Parser::check(TYPES::CRLF) || _nbrOfParams >= MAX_PARAMS)
         return;
-    Parser::consume(TYPES::SPACE, "missing space.");
+    if (!Parser::match(TYPES::SPACE)) {
+        Reply::error(_client->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
+                     _client->getUserInfo().getNickname(), "");
+        throw std::exception();
+    }
     _skipSpaces();
+    ++_nbrOfParams;
     if (Parser::match(TYPES::SEMICOLON)) {
         _parameters.push_back(Parser::previous().lexeme());
         _trailing();

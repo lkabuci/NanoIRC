@@ -61,7 +61,6 @@ void ClientHandler::handleClientInput(Client*& pClient) {
 
         try {
             msg.parse(pClient);
-            msg.execute("");
         } catch (const std::exception& e) {
             std::cout << e.what() << std::endl;
         }

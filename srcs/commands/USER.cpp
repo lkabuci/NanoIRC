@@ -22,7 +22,7 @@ void USER::execute(Client* client, const std::vector<std::string>& parameters) {
     Parser::init(Utils::join(parameters));
 
     _username = Parser::advance().lexeme();
-    if (_userAlreadyExists(client) || !_userSetPassword(client))
+    if (!_userSetPassword(client))
         return;
     if (!Parser::match(TYPES::SPACE)) {
         Reply::error(client->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
@@ -38,15 +38,6 @@ void USER::execute(Client* client, const std::vector<std::string>& parameters) {
         _welcomeUser(client);
 }
 
-bool USER::_userAlreadyExists(Client* client) {
-    if (ClientList::exist(_username)) {
-        Reply::error(client->getSockfd(), ERROR_CODES::ERR_ALREADYREGISTRED,
-                     client->getUserInfo().getNickname(), "");
-        return true;
-    }
-    return false;
-}
-
 bool USER::_userSetPassword(Client* client) {
     if (client->getUserInfo().isSet(UserInfo::PASSWORD_SET))
         return true;
@@ -57,10 +48,11 @@ bool USER::_userSetPassword(Client* client) {
 
 bool USER::_notEnoughParams(Client*                         client,
                             const std::vector<std::string>& parameters) {
-    if (parameters.size() < 4)
+    if (parameters.size() < 4) {
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NEEDMOREPARAMS,
+                     client->getUserInfo().getNickname(), "USER");
         return true;
-    Reply::error(client->getSockfd(), ERROR_CODES::ERR_NEEDMOREPARAMS,
-                 client->getUserInfo().getNickname(), "USER");
+    }
     return false;
 }
 

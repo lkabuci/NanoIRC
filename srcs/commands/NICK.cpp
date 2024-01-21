@@ -41,9 +41,9 @@ bool NICK::_nicknameAlreadyExists(Client* client) {
         _nick != client->getUserInfo().getNickname()) {
         Reply::error(client->getSockfd(), ERROR_CODES::ERR_NICKNAMEINUSE, _nick,
                      "");
-        return false;
+        return true;
     }
-    return true;
+    return false;
 }
 
 bool NICK::_notEnoughParams(Client*                         client,
@@ -51,9 +51,9 @@ bool NICK::_notEnoughParams(Client*                         client,
     if (parameters.empty() || parameters.size() > 2) {
         Reply::error(client->getSockfd(), ERROR_CODES::ERR_NEEDMOREPARAMS,
                      client->getUserInfo().getNickname(), "NICK");
-        return false;
+        return true;
     }
-    return true;
+    return false;
 }
 
 bool NICK::_userSetPassword(Client* client) {
