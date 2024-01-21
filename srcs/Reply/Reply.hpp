@@ -10,13 +10,17 @@ namespace SUCCESS_CODES {
 enum CODES {
     RPL_WELCOME = 1,
     RPL_TOPIC = 332,
+
+    //:<server> 324 <nickname> <channel> <mode> <mode-parameters>
+    RPL_CHANNELMODEIS = 324,
 };
 }
 
+static void rpl_channelModeIs(const std::string& nickname,
+                            const std::string& channel, const std::string& mode);
+
 namespace ERROR_CODES {
 enum CODES {
-    //:<server> 462 <nickname> :You may not reregisted
-    ERR_ALREADYREGISTRED = 462,
 
     //:<server> 461 <nickname> <command> :Not enough parameters
     ERR_NEEDMOREPARAMS = 461,

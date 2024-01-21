@@ -84,8 +84,10 @@ void JOIN::_setChannels() {
                      _sender->getUserInfo().getNickname(), "JOIN");
         throw std::exception();
     }
-    _channels.push_back(Parser::previous().lexeme() +
-                        Parser::advance().lexeme());
+    std::string hash = Parser::previous().lexeme();
+    std::string channel = hash + Parser::advance().lexeme();
+
+    _channels.push_back(channel);
     while (!Parser::isAtEnd() && Parser::match(TYPES::COMMA))
         _addChannel();
 }

@@ -32,8 +32,7 @@ void Reply::error(int fd, ERROR_CODES::CODES code, const std::string& s1,
 void Reply::_err_nickCollision(int fd, const std::string& nickname,
                                const std::string& username) {
 
-    std::string msg =
-        std::string(":") + Reactor::getInstance().getServerIp() + " 436 " +
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() + " 436 " +
         nickname + _errorReply[ERROR_CODES::ERR_NICKCOLLISION] + " " +
         username + "@" + Reactor::getInstance().getServerIp() + "\r\n";
 
