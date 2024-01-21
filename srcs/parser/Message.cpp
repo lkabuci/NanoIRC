@@ -4,18 +4,20 @@
 #include "../commands/NOTICE.hpp"
 #include "../commands/PASS.hpp"
 #include "../commands/PRIVMSG.hpp"
+#include "../commands/QUIT.hpp"
 #include "../commands/USER.hpp"
 
 std::string Message::_password;
 uint8_t     Message::_nbrOfParams;
 
 TYPES::TokenType Message::_commandTypes[] = {
-    TYPES::PASS,   TYPES::NICK,  TYPES::USER, TYPES::JOIN,    TYPES::KICK,
-    TYPES::INVITE, TYPES::TOPIC, TYPES::MODE, TYPES::PRIVMSG, TYPES::NOTICE};
+    TYPES::PASS,    TYPES::NICK,   TYPES::USER,  TYPES::JOIN,
+    TYPES::KICK,    TYPES::INVITE, TYPES::TOPIC, TYPES::MODE,
+    TYPES::PRIVMSG, TYPES::NOTICE, TYPES::QUIT};
 
 std::string Message::_commandsStr[] = {"PASS",    "NICK",   "USER",  "JOIN",
                                        "KICK",    "INVITE", "TOPIC", "MODE",
-                                       "PRIVMSG", "NOTICE"};
+                                       "PRIVMSG", "NOTICE", "QUIT"};
 
 Message::Message() : _client(NULL), _cmdfunc(NULL) {}
 
@@ -86,6 +88,9 @@ void Message::execute(const std::string& password) {
         break;
     case TYPES::NOTICE:
         _cmdfunc = new NOTICE();
+        break;
+    case TYPES::QUIT:
+        _cmdfunc = new QUIT();
         break;
     default:
         break;
@@ -189,6 +194,7 @@ bool Message::_isCommand() {
     case TYPES::MODE:
     case TYPES::PRIVMSG:
     case TYPES::NOTICE:
+    case TYPES::QUIT:
         return true;
     default:
         break;

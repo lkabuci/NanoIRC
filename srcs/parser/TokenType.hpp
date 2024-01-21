@@ -16,6 +16,7 @@ enum TokenType {
     MODE,
     PRIVMSG,
     NOTICE,
+    QUIT,
 
     // separators
     CRLF,

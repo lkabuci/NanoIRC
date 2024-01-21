@@ -120,5 +120,6 @@ std::map<std::string, TYPES::TokenType> Lexer::_init() {
     m["MODE"] = TYPES::MODE;
     m["PRIVMSG"] = TYPES::PRIVMSG;
     m["NOTICE"] = TYPES::NOTICE;
+    m["QUIT"] = TYPES::QUIT;
     return m;
 }
