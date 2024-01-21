@@ -23,6 +23,8 @@ class USER : public Command {
     std::string _realname;
 
     void _parseRealName();
+    void _ignoreHostAndServerNames();
+    void _sendSuccessReply(Client* client);
 };
 
 #endif

@@ -19,12 +19,21 @@ class JOIN : public Command {
   private:
     std::vector<std::string> _channels;
     std::vector<std::string> _keys;
+    Client*                  _sender;
 
     void _setChannels();
+    void _addChannel();
     void _setKeys();
-    void _joinUser(Client* client);
-    void _createChannel(Client* client, const size_t& index);
-    void _addToChannel(Client* client, Channel& channel, const size_t& index);
+    void _addKey();
+    void _joinUser();
+    void _createChannel(const size_t& index);
+    void _addToChannel(Channel& channel, const size_t& index);
+    bool _channelIsInviteOnly(Channel& channel);
+    bool _keyIsCorrect(Channel& channel, const size_t& index);
+    bool _channelHasKey(Channel& channel);
+    void _addClientToChannel(Channel& channel, MEMBER_PERMISSION::Flags flag);
+    bool _userIsRegistered();
+    void _sendSuccessReply(const std::string& name);
 };
 
 #endif

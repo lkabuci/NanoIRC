@@ -56,6 +56,14 @@ void Reactor::addPfds(pollfd pfd) {
     _pollfds.push_back(pfd);
 }
 
+void Reactor::setServerIp(char* ip) {
+    _serverIp = ip;
+}
+
+const char* Reactor::getServerIp() {
+    return _serverIp;
+}
+
 std::string Reactor::bot(Client* client) {
     send(client->getSockfd(), "hhh", 3, 0);
     return std::string("hhh");

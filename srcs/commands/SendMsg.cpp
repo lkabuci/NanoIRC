@@ -7,12 +7,14 @@ Client*                  SendMsg::_sender = NULL;
 
 void SendMsg::sendMessage(Client*                         client,
                           const std::vector<std::string>& parameters) {
-    if (parameters.empty())
-        throw std::runtime_error(
-            "411 ERR_NORECIPIENT: No recipient given NOTICE");
-    if (!client->getUserInfo().isRegistered())
-        throw std::runtime_error(
-            "451 ERR_NOTREGISTERED :You have not registered");
+    if (parameters.empty()) {
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NORECIPIENT, "");
+        return;
+    }
+    if (!client->getUserInfo().isRegistered()) {
+        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED, "");
+        return;
+    }
     _sender = client;
     Parser::init(Utils::join(parameters));
     _parseReceivers();
@@ -34,8 +36,10 @@ void SendMsg::_parseReceivers() {
 }
 
 void SendMsg::_parseText() {
-    if (Parser::isAtEnd())
-        throw std::runtime_error("412 ERR_NOTEXTTOSEND:No text to send");
+    if (Parser::isAtEnd()) {
+        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOTEXTTOSEND, "");
+        return;
+    }
     Parser::consume(TYPES::SEMICOLON, "missing semicolon.");
     Parser::advance();
     while (!Parser::isAtEnd())
@@ -64,28 +68,38 @@ void SendMsg::_sendToChannel(const std::string& name) {
 }
 
 void SendMsg::_addChannel() {
-    if (!Parser::check(TYPES::LETTER))
-        throw std::runtime_error(
-            "411 ERR_NORECIPIENT::No recipient given (<command>)");
-    if (!TChannels::exist(Parser::peek().lexeme()))
-        throw std::runtime_error(
-            "401 ERR_NOSUCHNICK:<nickname> :No such nick/channel");
-    if (_channelAlreadyExists(Parser::peek().lexeme()))
-        throw std::runtime_error("407 ERR_TOOMANYTARGETS:<target> :Duplicate "
-                                 "recipients. No message delivered");
+    if (!Parser::check(TYPES::LETTER)) {
+        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NORECIPIENT, "");
+        return;
+    }
+    if (!TChannels::exist(Parser::peek().lexeme())) {
+        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOSUCHNICK,
+                     Parser::peek().lexeme());
+        return;
+    }
+    if (_channelAlreadyExists(Parser::peek().lexeme())) {
+        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_TOOMANYTARGETS,
+                     Parser::peek().lexeme());
+        return;
+    }
     _channels.push_back(Parser::advance().lexeme());
 }
 
 void SendMsg::_addUser() {
-    if (!Parser::check(TYPES::LETTER))
-        throw std::runtime_error(
-            "411 ERR_NORECIPIENT::No recipient given (<command>)");
-    if (!ClientList::exist(Parser::peek().lexeme()))
-        throw std::runtime_error(
-            "401 ERR_NOSUCHNICK:<nickname> :No such nick/channel");
-    if (_userAlreadyExists(Parser::peek().lexeme()))
-        throw std::runtime_error("407 ERR_TOOMANYTARGETS:<target> :Duplicate "
-                                 "recipients. No message delivered");
+    if (!Parser::check(TYPES::LETTER)) {
+        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_TOOMANYTARGETS, "");
+        return;
+    }
+    if (!ClientList::exist(Parser::peek().lexeme())) {
+        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOSUCHNICK,
+                     Parser::peek().lexeme());
+        return;
+    }
+    if (_userAlreadyExists(Parser::peek().lexeme())) {
+        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_TOOMANYTARGETS,
+                     Parser::peek().lexeme());
+        return;
+    }
     if (Parser::peek().lexeme() != _sender->getUserInfo().getNickname())
         _users.push_back(Parser::peek().lexeme());
     Parser::advance();

@@ -51,6 +51,7 @@ void handleOperator(bool state, std::vector<std::string>& tmp,
 }
 
 void handleTopic(bool state, std::vector<std::string>& tmp, Channel& channel) {
+    (void)tmp;
     if (!state && channel.modeIsSet(CHANNEL_MODE::SET_TOPIC))
         channel.unsetMode(CHANNEL_MODE::SET_TOPIC);
     if (state && !channel.modeIsSet(CHANNEL_MODE::SET_TOPIC))
