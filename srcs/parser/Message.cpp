@@ -57,7 +57,7 @@ void Message::_reset() {
 void Message::_crlf() {
     if (!Parser::match(TYPES::CRLF)) {
         Reply::error(_client->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     _client->getUserInfo().getNickname(), "");
+                     _client->getUserInfo().getNickname(), _cmd);
         throw std::exception();
     }
 }
@@ -123,7 +123,8 @@ TYPES::TokenType Message::_whichCommand() {
 void Message::_command() {
     if (!_isCommand()) {
         Reply::error(_client->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     _client->getUserInfo().getNickname(), "");
+                     _client->getUserInfo().getNickname(),
+                     Parser::peek().lexeme());
         throw std::exception();
     }
     _cmd = Parser::advance().lexeme();
@@ -134,7 +135,7 @@ void Message::_params() {
         return;
     if (!Parser::skipSpaces()) {
         Reply::error(_client->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     _client->getUserInfo().getNickname(), "");
+                     _client->getUserInfo().getNickname(), _cmd);
         throw std::exception();
     }
     ++_nbrOfParams;
