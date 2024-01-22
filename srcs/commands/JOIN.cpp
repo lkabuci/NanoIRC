@@ -54,7 +54,7 @@ void JOIN::_createChannel(const size_t& index) {
     }
     channel.add(_sender, MEMBER_PERMISSION::OPERATOR);
     TChannels::add(_channels[index], channel);
-    _createChannelReply(_channels[index]);
+    _channelReply(_channels[index]);
 }
 
 void JOIN::_addToChannel(Channel& channel, const size_t& index) {
@@ -68,6 +68,17 @@ void JOIN::_addToChannel(Channel& channel, const size_t& index) {
     if (_channelHasKey(channel) && !_keyIsCorrect(channel, index))
         return;
     _addClientToChannel(channel, MEMBER_PERMISSION::REGULAR);
+    _channelReply(channel.name());
+    _tellMembers(channel);
+}
+
+void JOIN::_tellMembers(Channel& channel) {
+    std::string msg = ":" + _sender->getUserInfo().getNickname() + "!~" +
+                      _sender->getUserInfo().getUsername() + "@" +
+                      Reactor::getInstance().getServerIp() + " JOIN " +
+                      channel.name() + CR_LF;
+
+    channel.sendToAll(_sender, msg);
 }
 
 void JOIN::_addClientToChannel(Channel&                 channel,
@@ -152,7 +163,7 @@ bool JOIN::_channelIsInviteOnly(Channel& channel) {
 //: euroserv.fr.quakenet.org 353 nick1 = #ch1 :@nick1
 //: euroserv.fr.quakenet.org 366 nick1 #ch1 :End of /NAMES list.
 
-void JOIN::_createChannelReply(const std::string& channel) {
+void JOIN::_channelReply(const std::string& channel) {
     std::string msg1;
     std::string msg2;
     std::string msg3;
@@ -161,11 +172,11 @@ void JOIN::_createChannelReply(const std::string& channel) {
            _sender->getUserInfo().getUsername() + "@" +
            Reactor::getInstance().getServerIp() + " JOIN " + channel + CR_LF;
 
-    msg3 = ":localhost 366 " + _sender->getUserInfo().getNickname() + " " +
-           channel + " :End of /NAMES list.\r\n";
-
     msg2 = ":localhost 353 " + _sender->getUserInfo().getNickname() + " = " +
            channel + " :@" + _sender->getUserInfo().getNickname() + CR_LF;
+
+    msg3 = ":localhost 366 " + _sender->getUserInfo().getNickname() + " " +
+           channel + " :End of /NAMES list.\r\n";
 
     send(_sender->getSockfd(), msg1.c_str(), msg1.length(), 0);
     send(_sender->getSockfd(), msg2.c_str(), msg2.length(), 0);
