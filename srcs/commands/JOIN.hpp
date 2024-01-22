@@ -7,7 +7,7 @@
 
 class JOIN : public Command {
   public:
-    JOIN();
+    explicit JOIN();
     virtual ~JOIN();
 
     virtual void execute(Client*                         client,
