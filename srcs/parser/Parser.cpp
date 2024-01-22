@@ -71,24 +71,13 @@ bool Parser::channel(const std::string& source, std::string& target) {
     return target.length() == source.length();
 }
 
-bool Parser::nick(const std::string& source, std::string& target) {
+bool Parser::name(const std::string& source, std::string& target) {
     size_t i = 0;
 
     if (!std::isalpha(source[i]))
         return false;
     while (std::isalnum(source[i]) || _special(source[i]))
         i++;
-    target = source.substr(0, i);
-    return target.length() == source.length();
-}
-
-bool Parser::user(const std::string& source, std::string& target) {
-    size_t i = 0;
-
-    if (!_nonwhite(source[i]))
-        return false;
-    while (_nonwhite(source[++i]))
-        ;
     target = source.substr(0, i);
     return target.length() == source.length();
 }

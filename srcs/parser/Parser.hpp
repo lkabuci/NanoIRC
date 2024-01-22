@@ -20,8 +20,8 @@ class Parser {
 
     // special for parsing targets
     static bool channel(const std::string& source, std::string& target);
-    static bool nick(const std::string& source, std::string& target);
-    static bool user(const std::string& source, std::string& target);
+    static bool name(const std::string& source, std::string& target);
+    // static bool user(const std::string& source, std::string& target);
 
   private:
     Parser();
