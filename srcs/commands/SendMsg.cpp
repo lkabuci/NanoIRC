@@ -27,7 +27,7 @@ void SendMsg::sendMessage(Client*                         client,
 
 void SendMsg::_parseReceivers() {
     while (!Parser::isAtEnd()) {
-        if (Parser::match(TYPES::HASH))
+        if (Parser::check(TYPES::HASH))
             _addChannel();
         else
             _addUser();
@@ -43,15 +43,20 @@ void SendMsg::_parseText() {
                      _sender->getUserInfo().getNickname(), "");
         throw std::exception();
     }
-    if (!Parser::match(TYPES::SEMICOLON)) {
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     _sender->getUserInfo().getNickname(),
-                     _sender->getUserInfo().getUsername());
-        throw std::exception();
-    }
-    Parser::advance(); // skip space
-    while (!Parser::isAtEnd())
+    if (Parser::match(TYPES::COLON)) {
+        Parser::advance(); // skip space
+        while (!Parser::isAtEnd())
+            _textToSend.append(Parser::advance().lexeme());
+    } else {
         _textToSend.append(Parser::advance().lexeme());
+        if (!Parser::isAtEnd()) {
+            Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
+                         _sender->getUserInfo().getNickname(),
+                         _sender->getUserInfo().getUsername());
+            throw std::exception();
+        }
+    }
+    _textToSend.append(CR_LF);
 }
 
 void SendMsg::_sendText() {
@@ -76,45 +81,41 @@ void SendMsg::_sendToChannel(const std::string& name) {
 }
 
 void SendMsg::_addChannel() {
-    if (!Parser::check(TYPES::LETTER)) {
+    std::string channel;
+
+    if (!Parser::channel(Parser::peek().lexeme(), channel) ||
+        !TChannels::exist(channel)) {
         Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOSUCHCHANNEL,
                      _sender->getUserInfo().getNickname(),
                      Parser::peek().lexeme());
         throw std::exception();
     }
-    if (!TChannels::exist(Parser::peek().lexeme())) {
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOSUCHNICK,
-                     _sender->getUserInfo().getNickname(),
-                     Parser::peek().lexeme());
-        throw std::exception();
-    }
-    if (_channelAlreadyExists(Parser::peek().lexeme())) {
+    if (_channelAlreadyExists(channel)) {
         Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_TOOMANYTARGETS,
                      _sender->getUserInfo().getNickname(), "(PRIVMSG/NOTICE)");
         throw std::exception();
     }
-    _channels.push_back(Parser::advance().lexeme());
+    _channels.push_back(channel);
+    Parser::advance();
 }
 
 void SendMsg::_addUser() {
-    if (!Parser::check(TYPES::LETTER)) {
+    std::string nick;
+
+    if (!Parser::nick(Parser::peek().lexeme(), nick) ||
+        !ClientList::exist(nick)) {
         Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOSUCHNICK,
                      _sender->getUserInfo().getNickname(),
                      Parser::peek().lexeme());
         throw std::exception();
     }
-    if (!ClientList::exist(Parser::peek().lexeme())) {
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_TOOMANYTARGETS,
-                     _sender->getUserInfo().getNickname(), "(PRIVMSG/NOTICE)");
-        throw std::exception();
-    }
-    if (_userAlreadyExists(Parser::peek().lexeme())) {
+    if (_userAlreadyExists(nick)) {
         Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_TOOMANYTARGETS,
                      _sender->getUserInfo().getNickname(), "(PRIVMSG/NOTICE)");
         throw std::exception();
     }
     if (Parser::peek().lexeme() != _sender->getUserInfo().getNickname())
-        _users.push_back(Parser::peek().lexeme());
+        _users.push_back(nick);
     Parser::advance();
 }
 

@@ -13,7 +13,7 @@ void QUIT::execute(Client* client, const std::vector<std::string>& parameters) {
 }
 
 void QUIT::_setQuitMessage() {
-    if (!Parser::match(TYPES::SEMICOLON)) {
+    if (!Parser::match(TYPES::COLON)) {
         _oneParam();
     } else {
         Parser::skipSpaces();

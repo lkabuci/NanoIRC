@@ -21,8 +21,9 @@ void USER::execute(Client* client, const std::vector<std::string>& parameters) {
 
     Parser::init(Utils::join(parameters));
 
-    _username = Parser::advance().lexeme();
-    if (!_userSetPassword(client))
+    //_username = Parser::advance().lexeme();
+    if (!Parser::user(Parser::advance().lexeme(), _username) ||
+        !_userSetPassword(client))
         return;
     if (!Parser::match(TYPES::SPACE)) {
         Reply::error(client->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
@@ -64,7 +65,7 @@ void USER::_ignoreHostAndServerNames() {
 }
 
 void USER::_parseRealName(Client* client) {
-    if (!Parser::match(TYPES::SEMICOLON)) {
+    if (!Parser::match(TYPES::COLON)) {
         _oneParam(client);
     } else {
         while (!Parser::isAtEnd())

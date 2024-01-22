@@ -17,12 +17,21 @@ class Parser {
     static bool         isAtEnd();
     static bool         skipSpaces();
 
+    // special for parsing targets
+    static bool channel(const std::string& source, std::string& target);
+    static bool nick(const std::string& source, std::string& target);
+    static bool user(const std::string& source, std::string& target);
+
   private:
     Parser();
 
     static Lexer _lexer;
     static Token _token;
     static Token _prev;
+
+    static bool _chstring(char c);
+    static bool _special(char c);
+    static bool _nonwhite(char c);
 };
 
 #endif

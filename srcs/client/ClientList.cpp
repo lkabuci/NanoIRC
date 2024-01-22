@@ -1,4 +1,5 @@
 #include "ClientList.hpp"
+#include "../channels/TChannels.hpp"
 
 std::map<std::string, Client*> ClientList::_clients;
 
@@ -27,6 +28,7 @@ void ClientList::remove(const std::string& nickname) {
     if (it == _clients.end())
         throw std::runtime_error("no such client.");
     _clients.erase(it);
+    TChannels::removeUserFromAll(it->first);
 }
 
 size_t ClientList::numberOfClients() {

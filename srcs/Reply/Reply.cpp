@@ -1,4 +1,5 @@
 #include "Reply.hpp"
+#include "../Utils/Utils.hpp"
 
 std::map<SUCCESS_CODES::CODES, std::string> Reply::_successReply =
     _fillSuccessMap();
@@ -7,9 +8,14 @@ std::map<ERROR_CODES::CODES, std::string> Reply::_errorReply = _fillErrorMap();
 void Reply::success(int fd, SUCCESS_CODES::CODES code,
                     const std::string& identifier, const std::string& message) {
 
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      " " + Utils::toStr(code) + " " + identifier + " " +
-                      _successReply[code] + message + CR_LF;
+    // std::string msg = std::string(":") + Reactor::getInstance().getServerIp()
+    // +
+    //                   " " + Utils::toStr(code) + " " + identifier + " " +
+    //                   _successReply[code] + message + CR_LF;
+
+    std::string msg = std::string(":") + "localhost " + Utils::toStr(code) +
+                      " " + identifier + " " + _successReply[code] + message +
+                      CR_LF;
 
     send(fd, msg.c_str(), msg.size(), 0);
 }
@@ -22,8 +28,13 @@ void Reply::error(int fd, ERROR_CODES::CODES code, const std::string& s1,
         return;
     }
 
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      " " + Utils::toStr(code) + " " + s1 + " " + s2 +
+    // std::string msg = std::string(":") + Reactor::getInstance().getServerIp()
+    // +
+    //                   " " + Utils::toStr(code) + " " + s1 + " " + s2 + " " +
+    //                   _errorReply[code] + CR_LF;
+
+    std::string msg = std::string(":") + "localhost" + " " +
+                      Utils::toStr(code) + " " + s1 + " " + s2 + " " +
                       _errorReply[code] + CR_LF;
 
     send(fd, msg.c_str(), msg.length(), 0);
@@ -42,10 +53,15 @@ void Reply::_err_nickCollision(int fd, const std::string& nickname,
 
 void Reply::rpl_welcome(int fd, const std::string& nickname,
                         const std::string& username) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      " 001 " + nickname + " :Welcome to the IRC network, " +
-                      nickname + "!" + username + "@" +
-                      Reactor::getInstance().getServerIp() + CR_LF;
+    // std::string msg = std::string(":") + Reactor::getInstance().getServerIp()
+    // +
+    //                   " 001 " + nickname + " :Welcome to the IRC network, " +
+    //                   nickname + "!" + username + "@" +
+    //                   Reactor::getInstance().getServerIp() + CR_LF;
+
+    std::string msg = std::string(":") + "localhost 001 " + nickname +
+                      " :Welcome to the IRC network, " + nickname + "!" +
+                      username + "@localhost\r\n";
 
     send(fd, msg.c_str(), msg.length(), 0);
 }

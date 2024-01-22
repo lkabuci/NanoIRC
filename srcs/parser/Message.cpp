@@ -13,11 +13,11 @@ uint8_t     Message::_nbrOfParams;
 TYPES::TokenType Message::_commandTypes[] = {
     TYPES::PASS,    TYPES::NICK,   TYPES::USER,  TYPES::JOIN,
     TYPES::KICK,    TYPES::INVITE, TYPES::TOPIC, TYPES::MODE,
-    TYPES::PRIVMSG, TYPES::NOTICE, TYPES::QUIT};
+    TYPES::PRIVMSG, TYPES::NOTICE, TYPES::QUIT,  TYPES::PONG};
 
 std::string Message::_commandsStr[] = {"PASS",    "NICK",   "USER",  "JOIN",
                                        "KICK",    "INVITE", "TOPIC", "MODE",
-                                       "PRIVMSG", "NOTICE", "QUIT"};
+                                       "PRIVMSG", "NOTICE", "QUIT",  "PONG"};
 
 Message::Message() : _client(NULL), _cmdfunc(NULL) {}
 
@@ -28,7 +28,6 @@ Message::~Message() {
 }
 
 void Message::parse(Client* client) {
-    _nbrOfParams = 0;
     _client = client;
     _message = _client->getMessage();
     if (_message.empty())
@@ -44,7 +43,15 @@ void Message::parse(Client* client) {
         _crlf();
         msg = msg.substr(temp.length());
         execute("");
+        _reset();
     } while (!msg.empty());
+}
+
+void Message::_reset() {
+    _nbrOfParams = 0;
+    _parameters.clear();
+    delete _cmdfunc;
+    _cmdfunc = NULL;
 }
 
 void Message::_crlf() {
@@ -55,13 +62,12 @@ void Message::_crlf() {
     }
 }
 
-std::string Message::_getMessage(const std::string& message) {
-    std::string msg(message);
-    size_t      crlf_pos;
+std::string Message::_getMessage(std::string& msg) {
+    size_t crlf_pos;
 
-    crlf_pos = message.find(CR_LF);
+    crlf_pos = msg.find(CR_LF);
     if (crlf_pos == std::string::npos) {
-        size_t lf_pos = message.find("\n");
+        size_t lf_pos = msg.find("\n");
         msg.insert(lf_pos, "\r");
         return msg.substr(0, lf_pos + 2);
     }
@@ -92,6 +98,8 @@ void Message::execute(const std::string& password) {
     case TYPES::QUIT:
         _cmdfunc = new QUIT();
         break;
+    case TYPES::PONG:
+        throw std::exception();
     default:
         break;
     }
@@ -99,8 +107,7 @@ void Message::execute(const std::string& password) {
         return;
     try {
         _cmdfunc->execute(_client, _parameters);
-    } catch (const std::exception& e) {
-        std::cout << e.what() << std::endl;
+    } catch (...) {
     }
     _client->finish();
 }
@@ -125,14 +132,13 @@ void Message::_command() {
 void Message::_params() {
     if (Parser::check(TYPES::CRLF) || _nbrOfParams >= MAX_PARAMS)
         return;
-    if (!Parser::match(TYPES::SPACE)) {
+    if (!Parser::skipSpaces()) {
         Reply::error(_client->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
                      _client->getUserInfo().getNickname(), "");
         throw std::exception();
     }
-    _skipSpaces();
     ++_nbrOfParams;
-    if (Parser::match(TYPES::SEMICOLON)) {
+    if (Parser::match(TYPES::COLON)) {
         _parameters.push_back(Parser::previous().lexeme());
         _trailing();
     } else if (_nospcrlfcl()) {
@@ -142,17 +148,12 @@ void Message::_params() {
 }
 
 void Message::_trailing() {
-    Parser::skipSpaces();
-    if (!_nospcrlfcl())
+    if (Parser::isAtEnd() || Parser::check(TYPES::CRLF))
         return;
     std::string param;
     do {
         param.append(Parser::advance().lexeme());
-        if (Parser::skipSpaces() && !Parser::check(TYPES::CRLF) &&
-            !Parser::isAtEnd())
-            param.append(Parser::previous().lexeme());
-    } while (_nospcrlfcl());
-    Parser::skipSpaces();
+    } while (_nospcrlfcl() || Parser::check(TYPES::SPACE));
     _parameters.push_back(param);
 }
 
@@ -168,7 +169,7 @@ bool Message::_nospcrlfcl() {
     case TYPES::CR:
     case TYPES::LF:
     case TYPES::SPACE:
-    case TYPES::SEMICOLON:
+    case TYPES::COLON:
     case TYPES::CRLF:
         return false;
     default:
@@ -195,6 +196,7 @@ bool Message::_isCommand() {
     case TYPES::PRIVMSG:
     case TYPES::NOTICE:
     case TYPES::QUIT:
+    case TYPES::PONG:
         return true;
     default:
         break;

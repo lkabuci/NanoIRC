@@ -47,6 +47,7 @@ void ClientHandler::handleClientInput(Client*& pClient) {
         return;
     } else if (bytesRead == 0) {
         std::cout << "Hangup\n";
+        ClientList::remove(pClient->getUserInfo().getNickname());
         Reactor::getInstance().removeClient(pClient);
         return;
     } else if (bytesRead > MAX_MSG_LEN) {

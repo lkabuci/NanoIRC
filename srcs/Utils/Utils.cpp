@@ -32,12 +32,3 @@ bool Utils::isAllDigits(const char* str) {
     std::strtol(str, &endptr, 10);
     return *endptr == 0 && *str != 0;
 }
-
-std::string Utils::getNickname(const std::string& str) {
-    if (!std::isalpha(str[0]))
-        throw std::exception();
-    if (str.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV"
-                              "WXYZ0123456789-[]\\`^{}") != std::string::npos)
-        throw std::exception();
-    return std::string(str);
-}

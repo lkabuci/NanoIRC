@@ -26,14 +26,20 @@ void NICK::execute(Client* client, const std::vector<std::string>& parameters) {
 }
 
 bool NICK::_setNickname(Client* client, const std::string& param) {
-    try {
-        _nick = Utils::getNickname(param);
-    } catch (const std::exception& e) {
+    if (!Parser::nick(param, _nick)) {
         Reply::error(client->getSockfd(), ERROR_CODES::ERR_ERRONEUSNICKNAME,
                      client->getUserInfo().getNickname(), "");
         return false;
     }
     return true;
+    // try {
+    //     _nick = Utils::getNickname(param);
+    // } catch (const std::exception& e) {
+    //     Reply::error(client->getSockfd(), ERROR_CODES::ERR_ERRONEUSNICKNAME,
+    //                  client->getUserInfo().getNickname(), "");
+    //     return false;
+    // }
+    // return true;
 }
 
 bool NICK::_nicknameAlreadyExists(Client* client) {
