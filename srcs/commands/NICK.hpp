@@ -7,29 +7,25 @@
 
 class NICK : public Command {
   public:
-    NICK();
-    NICK(const NICK& nick);
+    explicit NICK();
     ~NICK();
-
-    NICK& operator=(const NICK& nick);
 
     virtual void execute(Client*                         client,
                          const std::vector<std::string>& parameters);
 
   private:
+    NICK(const NICK& nick);
+    NICK& operator=(const NICK& nick);
+
     std::string _nick;
 
-    bool _nicknameAlreadyExists(Client* client);
+    bool _nicknameAlreadyInUse(Client* client);
     bool _notEnoughParams(Client*                         client,
                           const std::vector<std::string>& parameters);
     bool _userSetPassword(Client* client);
-    bool _setNickname(Client* client, const std::string& param);
-    void _welcomeUser(Client* client);
+    void _welcome(Client* client);
+    void _errNoNicknameGiven(Client* client);
+    void _errNicknameAlreadyInUse(Client* client);
 };
-
-//  <nick>       ::= <letter> { <letter> | <number> | <special> }
-//  <letter>     ::= 'a' ... 'z' | 'A' ... 'Z'
-//  <number>     ::= '0' ... '9'
-//  <special>    ::= '-' | '[' | ']' | '\' | '`' | '^' | '{' | '}'
 
 #endif

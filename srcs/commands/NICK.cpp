@@ -2,51 +2,26 @@
 
 NICK::NICK() {}
 
-NICK::NICK(const NICK& nick) : _nick(nick._nick) {}
-
 NICK::~NICK() {}
-
-NICK& NICK::operator=(const NICK& nick) {
-    if (this == &nick)
-        return *this;
-    _nick = nick._nick;
-    return *this;
-}
 
 void NICK::execute(Client* client, const std::vector<std::string>& parameters) {
     if (_notEnoughParams(client, parameters) || !_userSetPassword(client))
         return;
-    if (!_setNickname(client, parameters[0]) || _nicknameAlreadyExists(client))
+    if (_nicknameAlreadyInUse(client))
         return;
+    Parser::nick(parameters[0], _nick);
     client->getUserInfo().setNickname(_nick);
     if (!ClientList::exist(_nick))
         ClientList::add(client);
     if (client->getUserInfo().isRegistered())
-        _welcomeUser(client);
+        _welcome(client);
 }
 
-bool NICK::_setNickname(Client* client, const std::string& param) {
-    if (!Parser::nick(param, _nick)) {
-        Reply::error(client->getSockfd(), ERROR_CODES::ERR_ERRONEUSNICKNAME,
-                     client->getUserInfo().getNickname(), "");
-        return false;
-    }
-    return true;
-    // try {
-    //     _nick = Utils::getNickname(param);
-    // } catch (const std::exception& e) {
-    //     Reply::error(client->getSockfd(), ERROR_CODES::ERR_ERRONEUSNICKNAME,
-    //                  client->getUserInfo().getNickname(), "");
-    //     return false;
-    // }
-    // return true;
-}
-
-bool NICK::_nicknameAlreadyExists(Client* client) {
+bool NICK::_nicknameAlreadyInUse(Client* client) {
     if (ClientList::exist(_nick) &&
         _nick != client->getUserInfo().getNickname()) {
-        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NICKNAMEINUSE, _nick,
-                     "");
+        //: euroserv.fr.quakenet.org 433 * n1 :Nickname is already in use.
+        _errNicknameAlreadyInUse(client);
         return true;
     }
     return false;
@@ -54,9 +29,9 @@ bool NICK::_nicknameAlreadyExists(Client* client) {
 
 bool NICK::_notEnoughParams(Client*                         client,
                             const std::vector<std::string>& parameters) {
-    if (parameters.empty() || parameters.size() > 2) {
-        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NEEDMOREPARAMS,
-                     client->getUserInfo().getNickname(), "NICK");
+    if (parameters.empty()) {
+        //: underworld2.no.quakenet.org 431 i1 :No nickname given
+        _errNoNicknameGiven(client);
         return true;
     }
     return false;
@@ -65,12 +40,46 @@ bool NICK::_notEnoughParams(Client*                         client,
 bool NICK::_userSetPassword(Client* client) {
     if (client->getUserInfo().isSet(UserInfo::PASSWORD_SET))
         return true;
-    Reply::error(client->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED,
-                 client->getUserInfo().getNickname(), "");
+    std::string reply = ":localhost 451 ";
+
+    if (client->getUserInfo().getNickname().empty()) {
+        //: atw.hu.quakenet.org 451 *  :Register first.
+        reply.append("*  ");
+    } else {
+        //: atw.hu.quakenet.org 451 i1 i1 :Register first.
+        reply.append(client->getUserInfo().getNickname() + " " +
+                     client->getUserInfo().getUsername());
+    }
+    reply.append(" :You have not registered\r\n");
+    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
     return false;
 }
 
-void NICK::_welcomeUser(Client* client) {
-    Reply::rpl_welcome(client->getSockfd(), client->getUserInfo().getNickname(),
-                       client->getUserInfo().getUsername());
+void NICK::_welcome(Client* client) {
+    std::string msg = std::string(":") + "localhost 001 " + _nick +
+                      " :Welcome to the IRCServer network, " + _nick + "!" +
+                      client->getUserInfo().getUsername() + "@localhost\r\n";
+
+    send(client->getSockfd(), msg.c_str(), msg.length(), 0);
+}
+
+void NICK::_errNoNicknameGiven(Client* client) {
+    std::string nick = _nick.empty() ? "*" : _nick;
+    std::string reply = ":localhost 431 " + nick + " :No nickname given\r\n";
+
+    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
+}
+
+void NICK::_errNicknameAlreadyInUse(Client* client) {
+    std::string reply = ":localhost 433 ";
+
+    if (client->getUserInfo().getNickname().empty()) {
+        reply.append("*");
+    } else {
+        //: euroserv.fr.quakenet.org 433 i1 n1 :Nickname is already in use.
+        reply.append(client->getUserInfo().getNickname() + " " +
+                     client->getUserInfo().getUsername());
+    }
+    reply.append(" :Nickname is already in use\r\n");
+    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
 }
