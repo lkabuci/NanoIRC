@@ -37,6 +37,8 @@ class JOIN : public Command {
 
     void _channelReply(const std::string& channel);
     void _tellMembers(Channel& channel);
+    void _errNotEnoughParams(Client* client);
+    void _errNoSuchChannel(const std::string& name);
 };
 
 #endif

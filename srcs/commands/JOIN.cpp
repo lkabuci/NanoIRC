@@ -6,8 +6,8 @@ JOIN::~JOIN() {}
 
 void JOIN::execute(Client* client, const std::vector<std::string>& parameters) {
     if (parameters.empty()) {
-        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NEEDMOREPARAMS,
-                     client->getUserInfo().getNickname(), "JOIN");
+        //: adrift.sg.quakenet.org 461 i1 JOIN :Not enough parameters
+        _errNotEnoughParams(client);
         return;
     }
     _sender = client;
@@ -18,9 +18,20 @@ void JOIN::execute(Client* client, const std::vector<std::string>& parameters) {
         return;
     }
     Parser::init(Utils::join(parameters));
-    _setChannels();
-    _setKeys();
-    _joinUser();
+    try {
+        _setChannels();
+        _setKeys();
+        _joinUser();
+    } catch (const std::exception& e) {
+    }
+}
+
+void JOIN::_errNotEnoughParams(Client* client) {
+    std::string reply = ":localhost 461 " +
+                        client->getUserInfo().getNickname() +
+                        " JOIN :Not enough parameters\r\n";
+
+    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
 }
 
 void JOIN::_leaveAllChannels() {
@@ -30,8 +41,18 @@ void JOIN::_leaveAllChannels() {
 bool JOIN::_userIsRegistered() {
     if (_sender->getUserInfo().isRegistered())
         return true;
-    Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED,
-                 _sender->getUserInfo().getNickname(), "");
+    std::string reply = ":localhost 451 ";
+
+    if (_sender->getUserInfo().getNickname().empty()) {
+        //: atw.hu.quakenet.org 451 *  :Register first.
+        reply.append("*  ");
+    } else {
+        //: atw.hu.quakenet.org 451 i1 i1 :Register first.
+        reply.append(_sender->getUserInfo().getNickname() + " " +
+                     _sender->getUserInfo().getUsername());
+    }
+    reply.append(" :You have not registered\r\n");
+    send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
     return false;
 }
 
@@ -90,8 +111,8 @@ void JOIN::_addClientToChannel(Channel&                 channel,
 
 void JOIN::_setChannels() {
     if (!Parser::match(TYPES::HASH)) {
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     _sender->getUserInfo().getNickname(), "JOIN");
+        //: adrift.sg.quakenet.org 403 i1 h :No such channel
+        _errNoSuchChannel(Parser::peek().lexeme());
         throw std::exception();
     }
     std::string hash = Parser::previous().lexeme();
@@ -102,17 +123,17 @@ void JOIN::_setChannels() {
         _addChannel();
 }
 
+void JOIN::_errNoSuchChannel(const std::string& name) {
+    std::string reply = ":localhost 403 " +
+                        _sender->getUserInfo().getNickname() + " " + name +
+                        " :No such channel\r\n";
+
+    send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
+}
+
 void JOIN::_addChannel() {
-    if (!Parser::match(TYPES::HASH)) {
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     _sender->getUserInfo().getNickname(), "JOIN");
-        throw std::exception();
-    }
-    if (Parser::isAtEnd()) {
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     _sender->getUserInfo().getNickname(), "JOIN");
-        throw std::exception();
-    }
+    if (Parser::isAtEnd())
+        return;
     _channels.push_back(Parser::previous().lexeme() +
                         Parser::advance().lexeme());
 }
@@ -132,10 +153,6 @@ bool JOIN::_channelHasKey(Channel& channel) {
 void JOIN::_setKeys() {
     if (Parser::isAtEnd())
         return;
-    if (Parser::match(TYPES::SPACE)) {
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     _sender->getUserInfo().getNickname(), "JOIN");
-    }
     _keys.push_back(Parser::advance().lexeme());
     while (!Parser::isAtEnd())
         _addKey();
