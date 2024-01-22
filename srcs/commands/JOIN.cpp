@@ -54,9 +54,7 @@ void JOIN::_createChannel(const size_t& index) {
     }
     channel.add(_sender, MEMBER_PERMISSION::OPERATOR);
     TChannels::add(_channels[index], channel);
-    Reply::rpl_channelModeIs(_sender->getSockfd(),
-                             _sender->getUserInfo().getNickname(),
-                             _channels[index], "+i");
+    _createChannelReply(_channels[index]);
 }
 
 void JOIN::_addToChannel(Channel& channel, const size_t& index) {
@@ -148,4 +146,28 @@ void JOIN::_addKey() {
 
 bool JOIN::_channelIsInviteOnly(Channel& channel) {
     return channel.modeIsSet(CHANNEL_MODE::SET_INVITE_ONLY);
+}
+
+//: nick1!~nick1@197.230.30.146 JOIN #ch1
+//: euroserv.fr.quakenet.org 353 nick1 = #ch1 :@nick1
+//: euroserv.fr.quakenet.org 366 nick1 #ch1 :End of /NAMES list.
+
+void JOIN::_createChannelReply(const std::string& channel) {
+    std::string msg1;
+    std::string msg2;
+    std::string msg3;
+
+    msg1 = ":" + _sender->getUserInfo().getNickname() + "!" +
+           _sender->getUserInfo().getUsername() + "@" +
+           Reactor::getInstance().getServerIp() + " JOIN " + channel + CR_LF;
+
+    msg3 = ":localhost 366 " + _sender->getUserInfo().getNickname() + " " +
+           channel + " :End of /NAMES list.\r\n";
+
+    msg2 = ":localhost 353 " + _sender->getUserInfo().getNickname() + " = " +
+           channel + " :@" + _sender->getUserInfo().getNickname() + CR_LF;
+
+    send(_sender->getSockfd(), msg1.c_str(), msg1.length(), 0);
+    send(_sender->getSockfd(), msg2.c_str(), msg2.length(), 0);
+    send(_sender->getSockfd(), msg3.c_str(), msg3.length(), 0);
 }

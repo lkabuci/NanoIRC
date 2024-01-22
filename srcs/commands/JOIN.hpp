@@ -34,6 +34,8 @@ class JOIN : public Command {
     void _addClientToChannel(Channel& channel, MEMBER_PERMISSION::Flags flag);
     bool _userIsRegistered();
     void _leaveAllChannels();
+
+    void _createChannelReply(const std::string& channel);
 };
 
 #endif
