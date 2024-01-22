@@ -38,6 +38,12 @@ const Token& Parser::peek() {
     return _token;
 }
 
+const Token& Parser::end() {
+    while (!isAtEnd())
+        advance();
+    return _prev;
+}
+
 bool Parser::check(const TYPES::TokenType& type) {
     return _token.type() == type;
 }

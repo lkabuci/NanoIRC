@@ -1,15 +1,18 @@
 #include "SendMsg.hpp"
 
+std::string              SendMsg::_cmd;
 std::string              SendMsg::_textToSend;
 std::vector<std::string> SendMsg::_users;
 std::vector<std::string> SendMsg::_channels;
 Client*                  SendMsg::_sender = NULL;
 
 void SendMsg::sendMessage(Client*                         client,
-                          const std::vector<std::string>& parameters) {
+                          const std::vector<std::string>& parameters,
+                          const std::string&              command) {
+    _cmd = command;
     if (parameters.empty()) {
-        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NORECIPIENT,
-                     client->getUserInfo().getNickname(), "");
+        //: stockholm.se.quakenet.org 411 i2 :No recipient given (PRIVMSG)
+        _errNoRecipent(client);
         return;
     }
     if (!client->getUserInfo().isRegistered()) {
@@ -19,9 +22,12 @@ void SendMsg::sendMessage(Client*                         client,
     }
     _sender = client;
     Parser::init(Utils::join(parameters));
-    _parseReceivers();
-    _parseText();
-    _sendText();
+    try {
+        _parseReceivers();
+        _parseText();
+        _sendText();
+    } catch (const std::exception& e) {
+    }
     _clear();
 }
 
@@ -38,31 +44,21 @@ void SendMsg::_parseReceivers() {
 }
 
 void SendMsg::_parseText() {
-    if (Parser::isAtEnd()) {
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOTEXTTOSEND,
-                     _sender->getUserInfo().getNickname(), "");
-        throw std::exception();
-    }
+    if (Parser::isAtEnd())
+        _errNoTextToSend();
     if (Parser::match(TYPES::COLON)) {
         Parser::advance(); // skip space
         while (!Parser::isAtEnd())
             _textToSend.append(Parser::advance().lexeme());
     } else {
-        _textToSend.append(Parser::advance().lexeme());
-        if (!Parser::isAtEnd()) {
-            Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                         _sender->getUserInfo().getNickname(),
-                         _sender->getUserInfo().getUsername());
-            throw std::exception();
-        }
+        //: i2!~u2@197.230.30.146 PRIVMSG i1 :you
+        _textToSend.append(Parser::end().lexeme());
     }
     _textToSend.append(CR_LF);
 }
 
 void SendMsg::_sendText() {
     for (size_t i = 0; i < _users.size(); ++i) {
-        if (_userBelongToChannel(_users[i]))
-            continue;
         _sendToUser(_users[i]);
     }
     for (size_t i = 0; i < _channels.size(); ++i) {
@@ -71,69 +67,52 @@ void SendMsg::_sendText() {
 }
 
 void SendMsg::_sendToUser(const std::string& name) {
-    Client* receiver = ClientList::get(name);
+    Client*     receiver = ClientList::get(name);
+    std::string msg = ":" + _sender->getUserInfo().getNickname() + "!~" +
+                      _sender->getUserInfo().getUsername() + "@localhost " +
+                      _cmd + " " + name + " :" + _textToSend;
 
-    send(receiver->getSockfd(), _textToSend.c_str(), _textToSend.length(), 0);
+    //: i2!~u2@197.230.30.146 PRIVMSG i1 :hi
+    send(receiver->getSockfd(), msg.c_str(), msg.length(), 0);
 }
 
 void SendMsg::_sendToChannel(const std::string& name) {
-    TChannels::channel(name).sendToAll(_sender, _textToSend);
+    Channel& channel = TChannels::channel(name);
+
+    channel.sendToAll(_sender, _textToSend);
+    _sendChannelReply(channel);
+}
+
+//: i1!~u1@197.230.30.146 PRIVMSG #ch1 :  hello
+void SendMsg::_sendChannelReply(Channel& channel) {
+    std::string msg = ":" + _sender->getUserInfo().getNickname() + "!~" +
+                      _sender->getUserInfo().getUsername() + "@" +
+                      Reactor::getInstance().getServerIp() + " " + _cmd + " " +
+                      channel.name() + " " + _textToSend + CR_LF;
+
+    channel.sendToAll(_sender, msg);
 }
 
 void SendMsg::_addChannel() {
-    std::string channel;
+    std::string channel = Parser::peek().lexeme();
 
-    if (!Parser::channel(Parser::peek().lexeme(), channel) ||
-        !TChannels::exist(channel)) {
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOSUCHCHANNEL,
-                     _sender->getUserInfo().getNickname(),
-                     Parser::peek().lexeme());
-        throw std::exception();
-    }
-    if (_channelAlreadyExists(channel)) {
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_TOOMANYTARGETS,
-                     _sender->getUserInfo().getNickname(), "(PRIVMSG/NOTICE)");
-        throw std::exception();
+    if (!TChannels::exist(channel)) {
+        _errNoSuch(channel, "No such channel");
     }
     _channels.push_back(channel);
     Parser::advance();
 }
 
 void SendMsg::_addUser() {
-    std::string nick;
+    std::string nick = Parser::peek().lexeme();
 
-    if (!Parser::nick(Parser::peek().lexeme(), nick) ||
-        !ClientList::exist(nick)) {
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_NOSUCHNICK,
-                     _sender->getUserInfo().getNickname(),
-                     Parser::peek().lexeme());
-        throw std::exception();
-    }
-    if (_userAlreadyExists(nick)) {
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_TOOMANYTARGETS,
-                     _sender->getUserInfo().getNickname(), "(PRIVMSG/NOTICE)");
-        throw std::exception();
+    if (!ClientList::exist(nick)) {
+        //: stockholm.se.quakenet.org 401 i2 i414 :No such nick
+        _errNoSuch(nick, "No such nick");
     }
     if (Parser::peek().lexeme() != _sender->getUserInfo().getNickname())
         _users.push_back(nick);
     Parser::advance();
-}
-
-bool SendMsg::_channelAlreadyExists(const std::string& name) {
-    return std::find(_channels.begin(), _channels.end(), name) !=
-           _channels.end();
-}
-
-bool SendMsg::_userAlreadyExists(const std::string& name) {
-    return std::find(_users.begin(), _users.end(), name) != _users.end();
-}
-
-bool SendMsg::_userBelongToChannel(const std::string& name) {
-    for (size_t i = 0; i < _channels.size(); ++i) {
-        if (TChannels::channel(_channels[i]).exist(name))
-            return true;
-    }
-    return false;
 }
 
 void SendMsg::_clear() {
@@ -141,4 +120,32 @@ void SendMsg::_clear() {
     _users.clear();
     _channels.clear();
     _sender = NULL;
+}
+
+void SendMsg::_errNoRecipent(Client* client) {
+    std::string reply = ":localhost 411 " +
+                        client->getUserInfo().getNickname() +
+                        " :No recipent given (" + _cmd + ")\r\n";
+
+    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
+}
+
+//: stockholm.se.quakenet.org 412 i2 :No text to send
+void SendMsg::_errNoTextToSend() {
+    std::string msg = std::string(":localhost") + " 412 " +
+                      _sender->getUserInfo().getNickname() +
+                      " :No text to send\r\n";
+
+    send(_sender->getSockfd(), msg.c_str(), msg.length(), 0);
+    throw std::exception();
+}
+
+void SendMsg::_errNoSuch(const std::string& name,
+                         const std::string& description) {
+    std::string reply = ":localhost 403 " +
+                        _sender->getUserInfo().getNickname() + " " + name +
+                        " :" + description + CR_LF;
+
+    send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
+    throw std::exception();
 }

@@ -8,11 +8,13 @@
 class SendMsg {
   public:
     static void sendMessage(Client*                         client,
-                            const std::vector<std::string>& parameters);
+                            const std::vector<std::string>& parameters,
+                            const std::string&              command);
 
   private:
     SendMsg();
 
+    static std::string              _cmd;
     static std::string              _textToSend;
     static std::vector<std::string> _users;
     static std::vector<std::string> _channels;
@@ -25,10 +27,12 @@ class SendMsg {
     static void _sendText();
     static void _sendToUser(const std::string& name);
     static void _sendToChannel(const std::string& name);
-    static bool _userAlreadyExists(const std::string& name);
-    static bool _channelAlreadyExists(const std::string& name);
-    static bool _userBelongToChannel(const std::string& user);
     static void _clear();
+    static void _sendChannelReply(Channel& channel);
+    static void _errNoRecipent(Client* client);
+    static void _errNoTextToSend();
+    static void _errNoSuch(const std::string& name,
+                           const std::string& description);
 };
 
 #endif

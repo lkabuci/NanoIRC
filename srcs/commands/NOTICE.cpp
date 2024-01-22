@@ -7,5 +7,5 @@ NOTICE::~NOTICE() {}
 
 void NOTICE::execute(Client*                         client,
                      const std::vector<std::string>& parameters) {
-    SendMsg::sendMessage(client, parameters);
+    SendMsg::sendMessage(client, parameters, "NOTICE");
 }

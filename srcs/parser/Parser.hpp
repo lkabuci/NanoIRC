@@ -13,6 +13,7 @@ class Parser {
     static const Token& advance();
     static const Token& previous();
     static const Token& peek();
+    static const Token& end();
     static bool         check(const TYPES::TokenType& type);
     static bool         isAtEnd();
     static bool         skipSpaces();

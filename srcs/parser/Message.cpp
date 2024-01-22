@@ -24,7 +24,7 @@ Message::Message() : _client(NULL), _cmdfunc(NULL) {}
 Message::Message(const std::string& message) : _client(NULL), _cmdfunc(NULL) {}
 
 Message::~Message() {
-    delete _cmdfunc;
+    _reset();
 }
 
 void Message::parse(Client* client) {
@@ -99,7 +99,7 @@ void Message::execute(const std::string& password) {
         _cmdfunc = new QUIT();
         break;
     case TYPES::PONG:
-        throw std::exception();
+        return;
     default:
         break;
     }
@@ -154,13 +154,14 @@ void Message::_trailing() {
     std::string param;
     do {
         param.append(Parser::advance().lexeme());
-    } while (_nospcrlfcl() || Parser::check(TYPES::SPACE));
+    } while (_nospcrlfcl() || Parser::check(TYPES::SPACE) ||
+             Parser::check(TYPES::COLON));
     _parameters.push_back(param);
 }
 
 void Message::_middle() {
     std::string param;
-    while (_nospcrlfcl())
+    while (_nospcrlfcl() || Parser::check(TYPES::COLON))
         param.append(Parser::advance().lexeme());
     _parameters.push_back(param);
 }

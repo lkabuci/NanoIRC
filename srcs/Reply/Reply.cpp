@@ -20,6 +20,7 @@ void Reply::success(int fd, SUCCESS_CODES::CODES code,
     send(fd, msg.c_str(), msg.size(), 0);
 }
 
+//: stockholm.se.quakenet.org 411 i2 :No recipient given (PRIVMSG)
 void Reply::error(int fd, ERROR_CODES::CODES code, const std::string& s1,
                   const std::string& s2) {
 
@@ -99,7 +100,7 @@ std::map<ERROR_CODES::CODES, std::string> Reply::_fillErrorMap() {
     ret[ERROR_CODES::ERR_NOTEXTTOSEND] = ":No text to send";
     ret[ERROR_CODES::ERR_TOOMANYTARGETS] =
         ":Duplicate recipients. No message delivered";
-    ret[ERROR_CODES::ERR_NOSUCHNICK] = ":No such nick/channel";
+    ret[ERROR_CODES::ERR_NOSUCHNICK] = ":No such nick";
     ret[ERROR_CODES::ERR_NICKCOLLISION] = ":Nickname collision KILL from";
     ret[ERROR_CODES::ERR_UNKNOWNCOMMAND] = ":Unknown command";
     ret[ERROR_CODES::ERR_NOTREGISTERED] = ":You have not registered";

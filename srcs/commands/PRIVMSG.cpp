@@ -7,5 +7,5 @@ PRIVMSG::~PRIVMSG() {}
 
 void PRIVMSG::execute(Client*                         client,
                       const std::vector<std::string>& parameters) {
-    SendMsg::sendMessage(client, parameters);
+    SendMsg::sendMessage(client, parameters, "PRIVMSG");
 }
