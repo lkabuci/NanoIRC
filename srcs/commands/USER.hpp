@@ -7,16 +7,16 @@
 
 class USER : public Command {
   public:
-    USER();
-    USER(const USER& user);
+    explicit USER();
     virtual ~USER();
-
-    USER& operator=(const USER& user);
 
     virtual void execute(Client*                         client,
                          const std::vector<std::string>& parameters);
 
   private:
+    USER(const USER&);
+    USER& operator=(const USER&);
+
     std::string _username;
     std::string _realname;
 
@@ -26,8 +26,9 @@ class USER : public Command {
     bool _userSetPassword(Client* client);
     void _ignoreHostAndServerNames();
     void _setUserInfo(Client* client);
-    void _welcomeUser(Client* client);
-    void _oneParam(Client* client);
+    void _welcome(Client* client);
+    void _errNotEnoughParams(Client* client);
+    void _errErroneousNickname(Client* client, const std::string& name);
 };
 
 #endif
