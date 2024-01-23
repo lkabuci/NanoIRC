@@ -60,11 +60,7 @@ void ClientHandler::handleClientInput(Client*& pClient) {
         pClient->setIsDoneReading(true);
         Message msg;
 
-        try {
-            msg.parse(pClient);
-        } catch (const std::exception& e) {
-            // std::cout << e.what() << std::endl;
-        }
+        msg.run(pClient);
     }
 }
 
