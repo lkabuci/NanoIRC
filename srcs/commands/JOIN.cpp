@@ -126,7 +126,7 @@ void JOIN::_addChannel() {
     if (!Parser::isAtEnd() && !Parser::check(TYPES::COMMA)) {
         channel.append(Parser::advance().lexeme());
     }
-    _channels.push_back(Utils::strToLower(channel));
+    _channels.push_back(channel);
 }
 
 bool JOIN::_keyIsCorrect(Channel& channel, const size_t& index) {
