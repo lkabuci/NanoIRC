@@ -15,7 +15,8 @@ class Message {
     Message(const std::string& message);
     ~Message();
 
-    void parse(Client* client);
+    void run(Client* client);
+    void parse(const std::string& message);
     void execute(const std::string& password);
 
     const std::string&              getCommand() const;

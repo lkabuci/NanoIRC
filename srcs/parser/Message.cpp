@@ -27,31 +27,30 @@ Message::~Message() {
     _reset();
 }
 
-void Message::parse(Client* client) {
+void Message::run(Client* client) {
     _client = client;
     _message = _client->getMessage();
     if (_message.empty())
         return;
-
-    std::string msg(_message);
-    std::string temp;
-    do {
-        temp = _getMessage(msg);
-        Parser::init(temp);
-        _command();
-        _params();
-        _crlf();
-        msg = msg.substr(temp.length());
-        execute("");
-        _reset();
-    } while (!msg.empty());
+    std::string temp(_message);
+    std::string msg;
+    try {
+        do {
+            msg = _getMessage(temp);
+            parse(msg);
+            execute("");
+            _reset();
+            temp = temp.substr(temp.length());
+        } while (!temp.empty());
+    } catch (const std::exception& e) {
+    }
 }
 
-void Message::_reset() {
-    _nbrOfParams = 0;
-    _parameters.clear();
-    delete _cmdfunc;
-    _cmdfunc = NULL;
+void Message::parse(const std::string& message) {
+    Parser::init(message);
+    _command();
+    _params();
+    _crlf();
 }
 
 void Message::_crlf() {
@@ -72,52 +71,6 @@ std::string Message::_getMessage(std::string& msg) {
         return msg.substr(0, lf_pos + 2);
     }
     return msg.substr(0, crlf_pos + 2);
-}
-
-void Message::execute(const std::string& password) {
-    _password = password;
-    switch (_whichCommand()) {
-    case TYPES::PASS:
-        _cmdfunc = new PASS();
-        break;
-    case TYPES::NICK:
-        _cmdfunc = new NICK();
-        break;
-    case TYPES::USER:
-        _cmdfunc = new USER();
-        break;
-    case TYPES::JOIN:
-        _cmdfunc = new JOIN();
-        break;
-    case TYPES::PRIVMSG:
-        _cmdfunc = new PRIVMSG();
-        break;
-    case TYPES::NOTICE:
-        _cmdfunc = new NOTICE();
-        break;
-    case TYPES::QUIT:
-        _cmdfunc = new QUIT();
-        break;
-    case TYPES::PONG:
-        return;
-    default:
-        break;
-    }
-    if (!_cmdfunc)
-        return;
-    try {
-        _cmdfunc->execute(_client, _parameters);
-    } catch (...) {
-    }
-    _client->finish();
-}
-
-TYPES::TokenType Message::_whichCommand() {
-    for (int i = 0; i < CMDS_NBR; ++i) {
-        if (_cmd == _commandsStr[i])
-            return _commandTypes[i];
-    }
-    return TYPES::END;
 }
 
 void Message::_command() {
@@ -216,4 +169,57 @@ const std::vector<std::string>& Message::getParameters() const {
 
 const std::string& Message::getPassword() {
     return _password;
+}
+
+void Message::execute(const std::string& password) {
+    _password = password;
+    switch (_whichCommand()) {
+    case TYPES::PASS:
+        _cmdfunc = new PASS();
+        break;
+    case TYPES::NICK:
+        _cmdfunc = new NICK();
+        break;
+    case TYPES::USER:
+        _cmdfunc = new USER();
+        break;
+    case TYPES::JOIN:
+        _cmdfunc = new JOIN();
+        break;
+    case TYPES::PRIVMSG:
+        _cmdfunc = new PRIVMSG();
+        break;
+    case TYPES::NOTICE:
+        _cmdfunc = new NOTICE();
+        break;
+    case TYPES::QUIT:
+        _cmdfunc = new QUIT();
+        break;
+    case TYPES::PONG:
+        return;
+    default:
+        break;
+    }
+    if (!_cmdfunc)
+        return;
+    try {
+        _cmdfunc->execute(_client, _parameters);
+    } catch (...) {
+    }
+    _client->finish();
+}
+
+TYPES::TokenType Message::_whichCommand() {
+    for (int i = 0; i < CMDS_NBR; ++i) {
+        if (_cmd == _commandsStr[i])
+            return _commandTypes[i];
+    }
+    return TYPES::END;
+}
+
+void Message::_reset() {
+    _nbrOfParams = 0;
+    _parameters.clear();
+    delete _cmdfunc;
+    _cmdfunc = NULL;
 }
