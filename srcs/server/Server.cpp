@@ -9,6 +9,7 @@ std::string Server::_passwd;
 
 Server::Server(const char* port, const char* passwd)
     : _sock(port), _port(port) {
+    _passwd = passwd;
     Utils::isAllDigits(port);
     pollfd serverPollfd = {_sock.getSocketFd(), POLLIN, 0};
     Reactor::getInstance().addPfds(serverPollfd);
