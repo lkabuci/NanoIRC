@@ -26,14 +26,6 @@ void JOIN::execute(Client* client, const std::vector<std::string>& parameters) {
     }
 }
 
-void JOIN::_errNotEnoughParams(Client* client) {
-    std::string reply = ":localhost 461 " +
-                        client->getUserInfo().getNickname() +
-                        " JOIN :Not enough parameters\r\n";
-
-    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
-}
-
 void JOIN::_leaveAllChannels() {
     TChannels::removeUserFromAll(_sender->getUserInfo().getNickname());
 }
@@ -83,10 +75,10 @@ bool JOIN::_validChannel(const std::string& channel) {
 void JOIN::_createChannel(const size_t& index) {
     Channel channel(_channels[index]);
 
-    if (index < _keys.size()) {
-        channel.setPassword(_keys[index]);
-        channel.setMode(CHANNEL_MODE::SET_KEY);
-    }
+    // if (index < _keys.size()) {
+    //     channel.setPassword(_keys[index]);
+    //     channel.setMode(CHANNEL_MODE::SET_KEY);
+    // }
     channel.add(_sender, MEMBER_PERMISSION::OPERATOR);
     TChannels::add(_channels[index], channel);
     _channelReply(_channels[index]);
@@ -96,8 +88,11 @@ void JOIN::_addToChannel(Channel& channel, const size_t& index) {
     if (channel.exist(_sender))
         return;
     if (_channelIsInviteOnly(channel) && !channel.isInvited(_sender)) {
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_INVITEONLYCHAN,
-                     _sender->getUserInfo().getNickname(), channel.name());
+        _errInviteOnlyChan(channel.name());
+        return;
+    }
+    if (index >= channel.getLimit()) {
+        _errChannelIsFull(channel.name());
         return;
     }
     if (_channelHasKey(channel) && !_keyIsCorrect(channel, index))
@@ -141,8 +136,14 @@ void JOIN::_addChannel() {
 bool JOIN::_keyIsCorrect(Channel& channel, const size_t& index) {
     if (index < _keys.size() && _keys[index] == channel.getPassword())
         return true;
-    Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_BADCHANNELKEY,
-                 _sender->getUserInfo().getNickname(), channel.name());
+    //: hostsailor.ro.quakenet.org 475 i1 #ch2 :Cannot join channel, you need
+    //: the correct key (+k)
+    std::string reply =
+        ":localhost 475 " + _sender->getUserInfo().getNickname() + " " +
+        channel.name() +
+        " :Cannot join channel, you need the correct key (+k)\r\n";
+
+    send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
     return false;
 }
 
@@ -200,4 +201,32 @@ void JOIN::_errNoSuchChannel(const std::string& name) {
                         " :No such channel\r\n";
 
     send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
+}
+
+void JOIN::_errNotEnoughParams(Client* client) {
+    std::string reply = ":localhost 461 " +
+                        client->getUserInfo().getNickname() +
+                        " JOIN :Not enough parameters\r\n";
+
+    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
+}
+
+void JOIN::_errInviteOnlyChan(const std::string& name) {
+    //: hostsailor.ro.quakenet.org 473 i1 #ch3 :Cannot join channel, you must be
+    //: invited (+i)
+    std::string reply = ":localhost 473 " +
+                        _sender->getUserInfo().getNickname() + " " + name +
+                        " :Cannot join channel, you must be invited (+i)\r\n";
+
+    send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
+}
+
+void JOIN::_errChannelIsFull(const std::string& name) {
+    //: hostsailor.ro.quakenet.org 471 i1 #ch1 :Cannot join channel, Channel is
+    //: full (+l)
+    std::string msg = ":localhost 471 " + _sender->getUserInfo().getNickname() +
+                      " " + name +
+                      " :Cannot join channel, Channel is full (+l)\r\n";
+
+    send(_sender->getSockfd(), msg.c_str(), msg.length(), 0);
 }

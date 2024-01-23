@@ -40,6 +40,8 @@ class JOIN : public Command {
     void _tellMembers(Channel& channel);
     void _errNotEnoughParams(Client* client);
     void _errNoSuchChannel(const std::string& name);
+    void _errChannelIsFull(const std::string& name);
+    void _errInviteOnlyChan(const std::string& name);
 };
 
 #endif
