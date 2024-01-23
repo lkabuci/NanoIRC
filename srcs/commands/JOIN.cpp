@@ -75,10 +75,6 @@ bool JOIN::_validChannel(const std::string& channel) {
 void JOIN::_createChannel(const size_t& index) {
     Channel channel(_channels[index]);
 
-    // if (index < _keys.size()) {
-    //     channel.setPassword(_keys[index]);
-    //     channel.setMode(CHANNEL_MODE::SET_KEY);
-    // }
     channel.add(_sender, MEMBER_PERMISSION::OPERATOR);
     TChannels::add(_channels[index], channel);
     _channelReply(_channels[index]);
@@ -130,7 +126,7 @@ void JOIN::_addChannel() {
     if (!Parser::isAtEnd() && !Parser::check(TYPES::COMMA)) {
         channel.append(Parser::advance().lexeme());
     }
-    _channels.push_back(channel);
+    _channels.push_back(Utils::strToLower(channel));
 }
 
 bool JOIN::_keyIsCorrect(Channel& channel, const size_t& index) {
