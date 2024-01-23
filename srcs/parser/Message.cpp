@@ -55,10 +55,17 @@ void Message::parse(const std::string& message) {
 
 void Message::_crlf() {
     if (!Parser::match(TYPES::CRLF)) {
-        Reply::error(_client->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     _client->getUserInfo().getNickname(), _cmd);
+        _errUnknownCommand(_cmd);
         throw std::exception();
     }
+}
+
+void Message::_errUnknownCommand(const std::string& cmd) {
+    std::string reply = ":localhost 421 " +
+                        _client->getUserInfo().getNickname() + " " + cmd +
+                        " :Unknown command\r\n";
+
+    send(_client->getSockfd(), reply.c_str(), reply.length(), 0);
 }
 
 std::string Message::_getMessage(std::string& msg) {
@@ -75,9 +82,7 @@ std::string Message::_getMessage(std::string& msg) {
 
 void Message::_command() {
     if (!_isCommand()) {
-        Reply::error(_client->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     _client->getUserInfo().getNickname(),
-                     Parser::peek().lexeme());
+        _errUnknownCommand(Parser::peek().lexeme());
         throw std::exception();
     }
     _cmd = Parser::advance().lexeme();
@@ -87,8 +92,7 @@ void Message::_params() {
     if (Parser::check(TYPES::CRLF) || _nbrOfParams >= MAX_PARAMS)
         return;
     if (!Parser::skipSpaces()) {
-        Reply::error(_client->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     _client->getUserInfo().getNickname(), _cmd);
+        _errUnknownCommand(_cmd);
         throw std::exception();
     }
     ++_nbrOfParams;

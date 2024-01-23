@@ -47,6 +47,7 @@ class Message {
     void        _trailing();
     void        _middle();
     void        _crlf();
+    void        _errUnknownCommand(const std::string& cmd);
 
     void _skipSpaces();
     bool _isCommand();
