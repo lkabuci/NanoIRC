@@ -78,29 +78,25 @@ void SendMsg::_sendToUser(const std::string& name) {
 
 void SendMsg::_sendToChannel(const std::string& name) {
     Channel& channel = TChannels::channel(name);
-
-    channel.sendToAll(_sender, _textToSend);
-    _sendChannelReply(channel);
-}
-
-//: i1!~u1@197.230.30.146 PRIVMSG #ch1 :  hello
-void SendMsg::_sendChannelReply(Channel& channel) {
+    //: i1!~u1@197.230.30.146 PRIVMSG #ch1 :  hello
     std::string msg = ":" + _sender->getUserInfo().getNickname() + "!~" +
                       _sender->getUserInfo().getUsername() + "@" +
                       Reactor::getInstance().getServerIp() + " " + _cmd + " " +
-                      channel.name() + " " + _textToSend + CR_LF;
+                      name + " :" + _textToSend + CR_LF;
 
     channel.sendToAll(_sender, msg);
 }
 
 void SendMsg::_addChannel() {
-    std::string channel = Parser::peek().lexeme();
+    std::string channel = Parser::advance().lexeme();
 
+    if (!Parser::isAtEnd() && !Parser::check(TYPES::COMMA))
+        channel.append(Parser::advance().lexeme());
     if (!TChannels::exist(channel)) {
         _errNoSuch(channel, "No such channel");
+        return;
     }
     _channels.push_back(channel);
-    Parser::advance();
 }
 
 void SendMsg::_addUser() {
@@ -109,6 +105,7 @@ void SendMsg::_addUser() {
     if (!ClientList::exist(nick)) {
         //: stockholm.se.quakenet.org 401 i2 i414 :No such nick
         _errNoSuch(nick, "No such nick");
+        return;
     }
     if (Parser::peek().lexeme() != _sender->getUserInfo().getNickname())
         _users.push_back(nick);
