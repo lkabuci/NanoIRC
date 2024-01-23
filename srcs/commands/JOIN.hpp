@@ -17,10 +17,9 @@ class JOIN : public Command {
     JOIN(const JOIN& join);
     JOIN& operator=(const JOIN& join);
 
-    std::vector<std::string>                         _channels;
-    std::vector<std::string>                         _keys;
-    std::vector<std::pair<std::string, std::string>> _pairs;
-    Client*                                          _sender;
+    std::vector<std::string> _channels;
+    std::vector<std::string> _keys;
+    Client*                  _sender;
 
     void _setChannels();
     void _addChannel();
