@@ -17,9 +17,10 @@ class JOIN : public Command {
     JOIN(const JOIN& join);
     JOIN& operator=(const JOIN& join);
 
-    std::vector<std::string> _channels;
-    std::vector<std::string> _keys;
-    Client*                  _sender;
+    std::vector<std::string>                         _channels;
+    std::vector<std::string>                         _keys;
+    std::vector<std::pair<std::string, std::string>> _pairs;
+    Client*                                          _sender;
 
     void _setChannels();
     void _addChannel();
@@ -34,6 +35,7 @@ class JOIN : public Command {
     void _addClientToChannel(Channel& channel, MEMBER_PERMISSION::Flags flag);
     bool _userIsRegistered();
     void _leaveAllChannels();
+    bool _validChannel(const std::string& channel);
 
     void _channelReply(const std::string& channel);
     void _tellMembers(Channel& channel);

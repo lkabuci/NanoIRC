@@ -57,13 +57,27 @@ bool JOIN::_userIsRegistered() {
 }
 
 void JOIN::_joinUser() {
+    if (_channels.empty()) {
+        _errNotEnoughParams(_sender);
+        return;
+    }
     for (size_t i = 0; i < _channels.size(); ++i) {
+        if (!_validChannel(_channels[i]))
+            continue;
         if (!TChannels::exist(_channels[i]))
             _createChannel(i);
         else {
             _addToChannel(TChannels::channel(_channels[i]), i);
         }
     }
+}
+
+bool JOIN::_validChannel(const std::string& channel) {
+    if (channel[0] == '#') {
+        return true;
+    }
+    _errNoSuchChannel(channel);
+    return false;
 }
 
 void JOIN::_createChannel(const size_t& index) {
@@ -110,32 +124,18 @@ void JOIN::_addClientToChannel(Channel&                 channel,
 }
 
 void JOIN::_setChannels() {
-    if (!Parser::match(TYPES::HASH)) {
-        //: adrift.sg.quakenet.org 403 i1 h :No such channel
-        _errNoSuchChannel(Parser::peek().lexeme());
-        throw std::exception();
-    }
-    std::string hash = Parser::previous().lexeme();
-    std::string channel = hash + Parser::advance().lexeme();
-
-    _channels.push_back(channel);
-    while (!Parser::isAtEnd() && Parser::match(TYPES::COMMA))
+    do {
         _addChannel();
-}
-
-void JOIN::_errNoSuchChannel(const std::string& name) {
-    std::string reply = ":localhost 403 " +
-                        _sender->getUserInfo().getNickname() + " " + name +
-                        " :No such channel\r\n";
-
-    send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
+    } while (!Parser::isAtEnd() && Parser::match(TYPES::COMMA));
 }
 
 void JOIN::_addChannel() {
-    if (Parser::isAtEnd())
-        return;
-    _channels.push_back(Parser::previous().lexeme() +
-                        Parser::advance().lexeme());
+    std::string channel = Parser::advance().lexeme();
+
+    if (!Parser::isAtEnd() && !Parser::check(TYPES::COMMA)) {
+        channel.append(Parser::advance().lexeme());
+    }
+    _channels.push_back(channel);
 }
 
 bool JOIN::_keyIsCorrect(Channel& channel, const size_t& index) {
@@ -153,23 +153,17 @@ bool JOIN::_channelHasKey(Channel& channel) {
 void JOIN::_setKeys() {
     if (Parser::isAtEnd())
         return;
-    _keys.push_back(Parser::advance().lexeme());
-    while (!Parser::isAtEnd())
+    do {
         _addKey();
+    } while (!Parser::isAtEnd() && Parser::match(TYPES::COMMA));
 }
 
 void JOIN::_addKey() {
-    if (Parser::match(TYPES::COMMA)) {
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     _sender->getUserInfo().getNickname(), "JOIN");
-        return;
+    if (Parser::check(TYPES::COMMA)) {
+        _keys.push_back("");
+    } else {
+        _keys.push_back(Parser::advance().lexeme());
     }
-    if (Parser::isAtEnd()) {
-        Reply::error(_sender->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     _sender->getUserInfo().getNickname(), "JOIN");
-        return;
-    }
-    _keys.push_back(Parser::advance().lexeme());
 }
 
 bool JOIN::_channelIsInviteOnly(Channel& channel) {
@@ -198,4 +192,12 @@ void JOIN::_channelReply(const std::string& channel) {
     send(_sender->getSockfd(), msg1.c_str(), msg1.length(), 0);
     send(_sender->getSockfd(), msg2.c_str(), msg2.length(), 0);
     send(_sender->getSockfd(), msg3.c_str(), msg3.length(), 0);
+}
+
+void JOIN::_errNoSuchChannel(const std::string& name) {
+    std::string reply = ":localhost 403 " +
+                        _sender->getUserInfo().getNickname() + " " + name +
+                        " :No such channel\r\n";
+
+    send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
 }
