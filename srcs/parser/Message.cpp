@@ -7,8 +7,7 @@
 #include "../commands/QUIT.hpp"
 #include "../commands/USER.hpp"
 
-std::string Message::_password;
-uint8_t     Message::_nbrOfParams;
+uint8_t Message::_nbrOfParams = 0;
 
 TYPES::TokenType Message::_commandTypes[] = {
     TYPES::PASS,    TYPES::NICK,   TYPES::USER,  TYPES::JOIN,
@@ -21,24 +20,22 @@ std::string Message::_commandsStr[] = {"PASS",    "NICK",   "USER",  "JOIN",
 
 Message::Message() : _client(NULL), _cmdfunc(NULL) {}
 
-Message::Message(const std::string& message) : _client(NULL), _cmdfunc(NULL) {}
-
 Message::~Message() {
     _reset();
 }
 
 void Message::run(Client* client) {
+    if (client->getMessage().empty() || client->getMessage() == CR_LF)
+        return;
     _client = client;
     _message = _client->getMessage();
-    if (_message.empty())
-        return;
     std::string temp(_message);
     std::string msg;
     try {
         do {
             msg = _getMessage(temp);
-            parse(msg);
-            execute("");
+            _parse(msg);
+            _execute();
             _reset();
             temp = temp.substr(temp.length());
         } while (!temp.empty());
@@ -46,7 +43,9 @@ void Message::run(Client* client) {
     }
 }
 
-void Message::parse(const std::string& message) {
+void Message::_parse(const std::string& message) {
+    if (message.empty() || message == CR_LF)
+        return;
     Parser::init(message);
     _command();
     _params();
@@ -137,11 +136,6 @@ bool Message::_nospcrlfcl() {
     return true;
 }
 
-void Message::_skipSpaces() {
-    while (Parser::check(TYPES::SPACE))
-        Parser::advance();
-}
-
 bool Message::_isCommand() {
     switch (Parser::peek().type()) {
     case TYPES::PASS:
@@ -163,12 +157,9 @@ bool Message::_isCommand() {
     return false;
 }
 
-const std::string& Message::getPassword() {
-    return _password;
-}
-
-void Message::execute(const std::string& password) {
-    _password = password;
+void Message::_execute() {
+    if (_message.empty() || _message == CR_LF)
+        return;
     switch (_whichCommand()) {
     case TYPES::PASS:
         _cmdfunc = new PASS();

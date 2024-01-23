@@ -16,10 +16,6 @@ class Message {
     ~Message();
 
     void run(Client* client);
-    void parse(const std::string& message);
-    void execute(const std::string& password);
-
-    static const std::string& getPassword();
 
   private:
     Message(const Message&);
@@ -30,11 +26,13 @@ class Message {
     static TYPES::TokenType _commandTypes[CMDS_NBR];
     static std::string      _commandsStr[CMDS_NBR];
 
+    void _parse(const std::string& message);
+    void _execute();
+
     Client*                  _client;
     std::string              _message;
     std::string              _cmd;
     std::vector<std::string> _parameters;
-    static std::string       _password;
     Command*                 _cmdfunc;
     static uint8_t           _nbrOfParams;
 
@@ -49,7 +47,6 @@ class Message {
     void        _crlf();
     void        _errUnknownCommand(const std::string& cmd);
 
-    void _skipSpaces();
     bool _isCommand();
 
     void _reset();
