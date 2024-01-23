@@ -28,7 +28,8 @@ class SendMsg {
     static void _sendToUser(const std::string& name);
     static void _sendToChannel(const std::string& name);
     static void _clear();
-    static void _errNoRecipent(Client* client);
+    static void _errNotRegistered();
+    static void _errNoRecipent();
     static void _errNoTextToSend();
     static void _errNoSuch(const std::string& name,
                            const std::string& description);

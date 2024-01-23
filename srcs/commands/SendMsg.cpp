@@ -10,17 +10,17 @@ void SendMsg::sendMessage(Client*                         client,
                           const std::vector<std::string>& parameters,
                           const std::string&              command) {
     _cmd = command;
+    _sender = client;
     if (parameters.empty()) {
         //: stockholm.se.quakenet.org 411 i2 :No recipient given (PRIVMSG)
-        _errNoRecipent(client);
+        _errNoRecipent();
         return;
     }
     if (!client->getUserInfo().isRegistered()) {
-        Reply::error(client->getSockfd(), ERROR_CODES::ERR_NOTREGISTERED,
-                     client->getUserInfo().getNickname(), "");
+        //: stockholm.se.quakenet.org 451 *  :Register first
+        _errNotRegistered();
         return;
     }
-    _sender = client;
     Parser::init(Utils::join(parameters));
     try {
         _parseReceivers();
@@ -119,16 +119,20 @@ void SendMsg::_clear() {
     _sender = NULL;
 }
 
-void SendMsg::_errNoRecipent(Client* client) {
+void SendMsg::_errNoRecipent() {
+    if (_cmd == "NOTICE")
+        return;
     std::string reply = ":localhost 411 " +
-                        client->getUserInfo().getNickname() +
+                        _sender->getUserInfo().getNickname() +
                         " :No recipent given (" + _cmd + ")\r\n";
 
-    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
+    send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
 }
 
 //: stockholm.se.quakenet.org 412 i2 :No text to send
 void SendMsg::_errNoTextToSend() {
+    if (_cmd == "NOTICE")
+        throw std::exception();
     std::string msg = std::string(":localhost") + " 412 " +
                       _sender->getUserInfo().getNickname() +
                       " :No text to send\r\n";
@@ -139,10 +143,28 @@ void SendMsg::_errNoTextToSend() {
 
 void SendMsg::_errNoSuch(const std::string& name,
                          const std::string& description) {
+    if (_cmd == "NOTICE")
+        throw std::exception();
     std::string reply = ":localhost 403 " +
                         _sender->getUserInfo().getNickname() + " " + name +
                         " :" + description + CR_LF;
 
     send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
     throw std::exception();
+}
+
+void SendMsg::_errNotRegistered() {
+    if (_cmd == "NOTICE")
+        return;
+    std::string reply = ":localhost 451 ";
+
+    if (_sender->getUserInfo().getNickname().empty()) {
+        reply.append("*");
+    } else {
+        reply.append(_sender->getUserInfo().getNickname() + " " +
+                     _sender->getUserInfo().getUsername());
+    }
+    reply.append(" :You have not regisetred\r\n");
+
+    send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
 }
