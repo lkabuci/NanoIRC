@@ -32,3 +32,11 @@ bool Utils::isAllDigits(const char* str) {
     std::strtol(str, &endptr, 10);
     return *endptr == 0 && *str != 0;
 }
+
+std::string Utils::strToLower(const std::string& str) {
+    std::string lower;
+
+    for (size_t i = 0; i < str.length(); ++i)
+        lower += (std::isupper(str[i]) ? std::tolower(str[i]) : str[i]);
+    return lower;
+}
