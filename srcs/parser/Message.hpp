@@ -19,9 +19,6 @@ class Message {
     void parse(const std::string& message);
     void execute(const std::string& password);
 
-    const std::string&              getCommand() const;
-    const std::vector<std::string>& getParameters() const;
-
     static const std::string& getPassword();
 
   private:

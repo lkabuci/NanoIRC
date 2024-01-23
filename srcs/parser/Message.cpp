@@ -159,14 +159,6 @@ bool Message::_isCommand() {
     return false;
 }
 
-const std::string& Message::getCommand() const {
-    return _cmd;
-}
-
-const std::vector<std::string>& Message::getParameters() const {
-    return _parameters;
-}
-
 const std::string& Message::getPassword() {
     return _password;
 }
