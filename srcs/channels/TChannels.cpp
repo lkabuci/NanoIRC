@@ -8,7 +8,7 @@ size_t TChannels::size() {
 
 void TChannels::remove(const std::string& name) {
     std::map<std::string, Channel>::const_iterator channel_pos =
-        _channels.find(name);
+        _channels.find(Utils::strToLower(name));
 
     if (channel_pos == _channels.end())
         throw std::runtime_error("No such channel.");
@@ -16,7 +16,8 @@ void TChannels::remove(const std::string& name) {
 }
 
 Channel& TChannels::channel(const std::string& name) {
-    std::map<std::string, Channel>::iterator channel_pos = _channels.find(name);
+    std::map<std::string, Channel>::iterator channel_pos =
+        _channels.find(Utils::strToLower(name));
 
     if (channel_pos == _channels.end())
         throw std::runtime_error("No such channel.");
@@ -28,11 +29,11 @@ void TChannels::create(const std::string& name, Client* client,
     Channel channel(name);
 
     channel.add(client, premission);
-    _channels[name] = channel;
+    _channels[Utils::strToLower(name)] = channel;
 }
 
 void TChannels::add(const std::string& name, Channel channel) {
-    _channels[name] = channel;
+    _channels[Utils::strToLower(name)] = channel;
 }
 
 void TChannels::removeMember(const std::string& channel_name,
@@ -48,7 +49,8 @@ void TChannels::removeMember(const std::string& channel_name,
 }
 
 bool TChannels::exist(const std::string& name) {
-    std::map<std::string, Channel>::const_iterator it = _channels.find(name);
+    std::map<std::string, Channel>::const_iterator it =
+        _channels.find(Utils::strToLower(name));
 
     return it != _channels.end();
 }
