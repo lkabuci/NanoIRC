@@ -25,7 +25,8 @@ Message::~Message() {
 }
 
 void Message::run(Client* client) {
-    if (client->getMessage().empty() || client->getMessage() == CR_LF)
+    if (client->getMessage().empty() || client->getMessage() == CR_LF ||
+        client->getMessage() == "\n")
         return;
     _client = client;
     _message = _client->getMessage();
