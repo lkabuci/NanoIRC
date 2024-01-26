@@ -57,7 +57,7 @@ void ClientHandler::handleClientInput(Client*& pClient) {
     pClient->appendMessage(buffer);
 
     if (hasEndOfMessage(pClient->getMessage())) {
-        pClient->setIsDoneReading(true);
+        // pClient->setIsDoneReading(true);
         Message msg;
 
         msg.run(pClient);
