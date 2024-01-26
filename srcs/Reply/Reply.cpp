@@ -4,6 +4,61 @@ std::map<SUCCESS_CODES::CODES, std::string> Reply::_successReply =
     _fillSuccessMap();
 std::map<ERROR_CODES::CODES, std::string> Reply::_errorReply = _fillErrorMap();
 
+void Reply::success(int fd, SUCCESS_CODES::CODES code,
+                    const std::string& identifier, const std::string& message) {
+
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " " + Utils::toStr(code) + " " + identifier + " " +
+                      _successReply[code] + message;
+
+    send(fd, msg.c_str(), msg.size(), 0);
+}
+
+void Reply::error(int fd, ERROR_CODES::CODES code, const std::string& s1,
+                  const std::string& s2) {
+
+    if (code == ERROR_CODES::ERR_NICKCOLLISION) {
+        _err_nickCollision(fd, s1, s2);
+        return;
+    }
+
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " " + Utils::toStr(code) + " " + s1 + " " + s2 +
+                      _errorReply[code] + "\r\n";
+
+    send(fd, msg.c_str(), msg.length(), 0);
+}
+
+void Reply::_err_nickCollision(int fd, const std::string& nickname,
+                               const std::string& username) {
+
+    std::string msg =
+        std::string(":") + Reactor::getInstance().getServerIp() + " 436 " +
+        nickname + _errorReply[ERROR_CODES::ERR_NICKCOLLISION] + " " +
+        username + "@" + Reactor::getInstance().getServerIp() + "\r\n";
+
+    send(fd, msg.c_str(), msg.length(), 0);
+}
+
+void Reply::rpl_welcome(int fd, const std::string& nickname,
+                        const std::string& username) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " 001 " + nickname + " :Welcome to the IRC network, " +
+                      nickname + "!" + username + "@" +
+                      Reactor::getInstance().getServerIp() + "\r\n";
+
+    send(fd, msg.c_str(), msg.length(), 0);
+}
+
+void Reply::rpl_topic(int fd, const std::string& nickname,
+                      const std::string& channel, const std::string& topic) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " 332 " + nickname + " " + channel + " :" + topic +
+                      "\r\n";
+
+    send(fd, msg.c_str(), msg.length(), 0);
+}
+
 std::map<ERROR_CODES::CODES, std::string> Reply::_fillErrorMap() {
     std::map<ERROR_CODES::CODES, std::string> ret;
 
@@ -14,12 +69,12 @@ std::map<ERROR_CODES::CODES, std::string> Reply::_fillErrorMap() {
     ret[ERROR_CODES::ERR_NOSUCHCHANNEL] = ":No such channel";
     ret[ERROR_CODES::ERR_INVITEONLYCHAN] = ":Cannot join channel (+i)";
     ret[ERROR_CODES::ERR_BADCHANNELKEY] = ":Cannot join channel (+k)";
-    ret[ERROR_CODES::ERR_NORECIPIENT] = ":No recipient given (<command>)";
+    ret[ERROR_CODES::ERR_NORECIPIENT] = ":No recipient given (PRIVMSG/NOTICE)";
     ret[ERROR_CODES::ERR_NOTEXTTOSEND] = ":No text to send";
     ret[ERROR_CODES::ERR_TOOMANYTARGETS] =
         ":Duplicate recipients. No message delivered";
     ret[ERROR_CODES::ERR_NOSUCHNICK] = ":No such nick/channel";
-    ret[ERROR_CODES::ERR_NICKCOLLISION] = ":Nickname collision KILL";
+    ret[ERROR_CODES::ERR_NICKCOLLISION] = ":Nickname collision KILL from";
     ret[ERROR_CODES::ERR_UNKNOWNCOMMAND] = ":Unknown command";
     ret[ERROR_CODES::ERR_NOTREGISTERED] = ":You have not registered";
     ret[ERROR_CODES::ERR_NOTONCHANNEL] = ":You're not on that channel";
@@ -31,30 +86,11 @@ std::map<ERROR_CODES::CODES, std::string> Reply::_fillErrorMap() {
 std::map<SUCCESS_CODES::CODES, std::string> Reply::_fillSuccessMap() {
     std::map<SUCCESS_CODES::CODES, std::string> ret;
 
-    ret[SUCCESS_CODES::RPL_WELCOME] = "Welcome to the Internet Relay Network "
-                                      "<nick>!<user>@<host>";
+    ret[SUCCESS_CODES::RPL_WELCOME] = "Welcome to the Internet Relay Network";
     return ret;
 }
 
-void Reply::success(int fd, SUCCESS_CODES::CODES code,
-                    const std::string& identifier, const std::string& message) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      " " + Utils::toStr(code) + " " + identifier + " " +
-                      _successReply[code] + message + "\r\n";
-    // send(fd, msg.c_str(), msg.size(), 0);
-    sendn(fd, msg);
-}
-
-void Reply::error(int fd, ERROR_CODES::CODES code,
-                  const std::string& identifier) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      " " + Utils::toStr(code) + " " + identifier + " " +
-                      _errorReply[code];
-    // send(fd, msg.c_str(), msg.size(), 0);
-    sendn(fd, msg);
-}
-
-void Reply::sendn(int fd, const std::string& message) {
+void sendn(int fd, const std::string& message) {
     int         numWritten;
     int         totWritten;
     int         len = static_cast<int>(message.length());

@@ -10,12 +10,7 @@ namespace SUCCESS_CODES {
 enum CODES {
 
     RPL_WELCOME = 1,
-    RPL_INVITING = 341,
     RPL_TOPIC = 332,
-    RPL_NOTOPIC = 331,
-    RPL_UMODEIS = 221,
-    RPL_CHANNELMODEIS = 324,
-
 };
 }
 
@@ -51,9 +46,17 @@ class Reply {
     static void success(int fd, SUCCESS_CODES::CODES code,
                         const std::string& identifier,
                         const std::string& message);
-    static void error(int fd, ERROR_CODES::CODES code,
-                      const std::string& identifier);
-    static void sendn(int fd, const std::string& message);
+    static void error(int fd, ERROR_CODES::CODES code, const std::string& s1,
+                      const std::string& s2);
+
+    //: server.hostname 001 yournickname :Welcome to the IRC network,
+    //: yournickname!user@host
+    static void rpl_welcome(int fd, const std::string& nickname,
+                            const std::string& username);
+
+    //:<server> 332 <nickname> <channel> :<topic>
+    static void rpl_topic(int fd, const std::string& nickname,
+                          const std::string& channel, const std::string& topic);
 
   private:
     Reply();
@@ -62,6 +65,10 @@ class Reply {
 
     static std::map<SUCCESS_CODES::CODES, std::string> _successReply;
     static std::map<ERROR_CODES::CODES, std::string>   _errorReply;
+
+    //:<server> 436 <nickname> :Nickname collision KILL from <user>@<host>
+    static void _err_nickCollision(int fd, const std::string& nickname,
+                                   const std::string& username);
 };
 
 #endif
