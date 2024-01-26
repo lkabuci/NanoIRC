@@ -38,7 +38,7 @@ void Message::run(Client* client) {
             _parse(msg);
             _execute();
             _reset();
-            temp = temp.substr(temp.length());
+            temp = temp.substr(msg.length());
         } while (!temp.empty());
     } catch (const std::exception& e) {
     }
