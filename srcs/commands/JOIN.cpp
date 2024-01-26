@@ -75,6 +75,7 @@ bool JOIN::_validChannel(const std::string& channel) {
 void JOIN::_createChannel(const size_t& index) {
     Channel channel(_channels[index]);
 
+    channel.setLimit(4);
     channel.add(_sender, MEMBER_PERMISSION::OPERATOR);
     TChannels::add(_channels[index], channel);
     _channelReply(_channels[index]);
