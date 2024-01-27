@@ -4,3 +4,9 @@ kick :
     <!---->: 
     
     <!---->: 
+:i1!~u1@197.230.30.146 MODE #ch +l 2 // i w t b7alha 7ayd a 2
+:i1!~u1@197.230.30.146 MODE #ch -l
+:i1!~u1@197.230.30.146 MODE #ch +k zab
+:i1!~u1@197.230.30.146 MODE #ch -k zab
+:i1!~u1@197.230.30.146 MODE #ch +o i2
+:i1!~u1@197.230.30.146 MODE #ch -o i2
