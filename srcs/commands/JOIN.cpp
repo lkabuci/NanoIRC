@@ -136,8 +136,8 @@ bool JOIN::_keyIsCorrect(Channel& channel, const size_t& index) {
     //: hostsailor.ro.quakenet.org 475 i1 #ch2 :Cannot join channel, you need
     //: the correct key (+k)
     std::string reply =
-        ":localhost 475 " + _sender->getUserInfo().getNickname() + " " +
-        channel.name() +
+        std::string(":") + Reactor::getInstance().getServerIp() + " 475 " +
+        _sender->getUserInfo().getNickname() + " " + channel.name() +
         " :Cannot join channel, you need the correct key (+k)\r\n";
 
     send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
@@ -181,11 +181,13 @@ void JOIN::_channelReply(const std::string& channel) {
            _sender->getUserInfo().getUsername() + "@" +
            Reactor::getInstance().getServerIp() + " JOIN " + channel + CR_LF;
 
-    msg2 = ":localhost 353 " + _sender->getUserInfo().getNickname() + " = " +
-           channel + " :@" + _sender->getUserInfo().getNickname() + CR_LF;
+    msg2 = std::string(":") + Reactor::getInstance().getServerIp() + " 353 " +
+           _sender->getUserInfo().getNickname() + " = " + channel + " :@" +
+           _sender->getUserInfo().getNickname() + CR_LF;
 
-    msg3 = ":localhost 366 " + _sender->getUserInfo().getNickname() + " " +
-           channel + " :End of /NAMES list.\r\n";
+    msg3 = std::string(":") + Reactor::getInstance().getServerIp() + " 366 " +
+           _sender->getUserInfo().getNickname() + " " + channel +
+           " :End of /NAMES list.\r\n";
 
     send(_sender->getSockfd(), msg1.c_str(), msg1.length(), 0);
     send(_sender->getSockfd(), msg2.c_str(), msg2.length(), 0);
@@ -193,7 +195,8 @@ void JOIN::_channelReply(const std::string& channel) {
 }
 
 void JOIN::_errNoSuchChannel(const std::string& name) {
-    std::string reply = ":localhost 403 " +
+    std::string reply = std::string(":") +
+                        Reactor::getInstance().getServerIp() + " 403 " +
                         _sender->getUserInfo().getNickname() + " " + name +
                         " :No such channel\r\n";
 
@@ -201,7 +204,8 @@ void JOIN::_errNoSuchChannel(const std::string& name) {
 }
 
 void JOIN::_errNotEnoughParams(Client* client) {
-    std::string reply = ":localhost 461 " +
+    std::string reply = std::string(":") +
+                        Reactor::getInstance().getServerIp() + " 461 " +
                         client->getUserInfo().getNickname() +
                         " JOIN :Not enough parameters\r\n";
 
@@ -211,7 +215,8 @@ void JOIN::_errNotEnoughParams(Client* client) {
 void JOIN::_errInviteOnlyChan(const std::string& name) {
     //: hostsailor.ro.quakenet.org 473 i1 #ch3 :Cannot join channel, you must be
     //: invited (+i)
-    std::string reply = ":localhost 473 " +
+    std::string reply = std::string(":") +
+                        Reactor::getInstance().getServerIp() + " 473 " +
                         _sender->getUserInfo().getNickname() + " " + name +
                         " :Cannot join channel, you must be invited (+i)\r\n";
 
@@ -221,9 +226,9 @@ void JOIN::_errInviteOnlyChan(const std::string& name) {
 void JOIN::_errChannelIsFull(const std::string& name) {
     //: hostsailor.ro.quakenet.org 471 i1 #ch1 :Cannot join channel, Channel is
     //: full (+l)
-    std::string msg = ":localhost 471 " + _sender->getUserInfo().getNickname() +
-                      " " + name +
-                      " :Cannot join channel, Channel is full (+l)\r\n";
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " 471 " + _sender->getUserInfo().getNickname() + " " +
+                      name + " :Cannot join channel, Channel is full (+l)\r\n";
 
     send(_sender->getSockfd(), msg.c_str(), msg.length(), 0);
 }
