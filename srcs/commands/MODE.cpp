@@ -17,6 +17,7 @@ void error(bool state, char c, std::vector<std::string>& tmp, Channel& channel,
                       std::string(" 472 ") +
                       client->getUserInfo().getNickname() + " " +
                       std::string(1, c) + " :is unknown mode char to me\r\n";
+    send(client->getSockfd(), msg.c_str(), msg.size(), 0);
 }
 
 void sendErr1(int fd, const std::string& nick) {
@@ -88,6 +89,7 @@ void handleKey(bool state, char c, std::vector<std::string>& tmp,
                           Reactor::getInstance().getServerIp() + " MODE " +
                           channel.name() + " -k " + pass + CR_LF;
         channel.sendToAll(client, msg);
+        send(client->getSockfd(), msg.c_str(), msg.size(), 0);
     } else if (state && !channel.modeIsSet(CHANNEL_MODE::SET_KEY)) {
         channel.setPassword(pass);
         channel.setMode(CHANNEL_MODE::SET_KEY);
@@ -96,6 +98,7 @@ void handleKey(bool state, char c, std::vector<std::string>& tmp,
                           Reactor::getInstance().getServerIp() + " MODE " +
                           channel.name() + " +k " + pass + CR_LF;
         channel.sendToAll(client, msg);
+        send(client->getSockfd(), msg.c_str(), msg.size(), 0);
     }
 }
 
@@ -108,6 +111,7 @@ void handleInvite(bool state, char c, std::vector<std::string>& tmp,
                           Reactor::getInstance().getServerIp() + " MODE " +
                           channel.name() + " -i\r\n";
         channel.sendToAll(client, msg);
+        send(client->getSockfd(), msg.c_str(), msg.size(), 0);
     } else if (state && !channel.modeIsSet(CHANNEL_MODE::SET_INVITE_ONLY)) {
         channel.setMode(CHANNEL_MODE::SET_INVITE_ONLY);
         std::string msg = ":" + client->getUserInfo().getNickname() + "!~" +
@@ -115,6 +119,7 @@ void handleInvite(bool state, char c, std::vector<std::string>& tmp,
                           Reactor::getInstance().getServerIp() + " MODE " +
                           channel.name() + " +i\r\n";
         channel.sendToAll(client, msg);
+        send(client->getSockfd(), msg.c_str(), msg.size(), 0);
     }
 }
 
@@ -139,6 +144,7 @@ void handleOperator(bool state, char c, std::vector<std::string>& tmp,
                           channel.name() + " -o " +
                           user->getUserInfo().getNickname() + CR_LF;
         channel.sendToAll(client, msg);
+        send(client->getSockfd(), msg.c_str(), msg.size(), 0);
     }
 
     else if (state && !channel.flagIsSet(user, MEMBER_PERMISSION::OPERATOR)) {
@@ -149,6 +155,7 @@ void handleOperator(bool state, char c, std::vector<std::string>& tmp,
                           channel.name() + " +o " +
                           user->getUserInfo().getNickname() + CR_LF;
         channel.sendToAll(client, msg);
+        send(client->getSockfd(), msg.c_str(), msg.size(), 0);
     }
 }
 
@@ -162,6 +169,7 @@ void handleTopic(bool state, char c, std::vector<std::string>& tmp,
                           Reactor::getInstance().getServerIp() + " MODE " +
                           channel.name() + " -t\r\n";
         channel.sendToAll(client, msg);
+        send(client->getSockfd(), msg.c_str(), msg.size(), 0);
     } else if (state && !channel.modeIsSet(CHANNEL_MODE::SET_TOPIC)) {
         channel.setMode(CHANNEL_MODE::SET_TOPIC);
         std::string msg = ":" + client->getUserInfo().getNickname() + "!~" +
@@ -169,6 +177,7 @@ void handleTopic(bool state, char c, std::vector<std::string>& tmp,
                           Reactor::getInstance().getServerIp() + " MODE " +
                           channel.name() + " +t\r\n";
         channel.sendToAll(client, msg);
+        send(client->getSockfd(), msg.c_str(), msg.size(), 0);
     }
 }
 
@@ -190,6 +199,7 @@ void handleLimit(bool state, char c, std::vector<std::string>& tmp,
                           Reactor::getInstance().getServerIp() + " MODE " +
                           channel.name() + " +l " + Utils::toStr(limit) + CR_LF;
         channel.sendToAll(client, msg);
+        send(client->getSockfd(), msg.c_str(), msg.size(), 0);
     } else {
         channel.unsetMode(CHANNEL_MODE::SET_LIMIT);
         std::string msg = ":" + client->getUserInfo().getNickname() + "!~" +
@@ -197,6 +207,7 @@ void handleLimit(bool state, char c, std::vector<std::string>& tmp,
                           Reactor::getInstance().getServerIp() + " MODE " +
                           channel.name() + " -l\r\n";
         channel.sendToAll(client, msg);
+        send(client->getSockfd(), msg.c_str(), msg.size(), 0);
     }
 }
 
@@ -216,7 +227,7 @@ void handleflags(std::string& mode, std::vector<std::string>& tmp,
         int index = (mode[i] == 'k') * 1 + (mode[i] == 'i') * 2 +
                     (mode[i] == 'o') * 3 + (mode[i] == 't') * 4 +
                     (mode[i] == 'l') * 5;
-        (void)(*f[i])(state, mode[i], tmp, channel, client);
+        (void)(*f[index])(state, mode[i], tmp, channel, client);
     }
     mode.erase(0, mode.find_first_of("+-"));
 }
