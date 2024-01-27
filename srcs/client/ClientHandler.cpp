@@ -44,6 +44,7 @@ void ClientHandler::handleClientInput(Client*& pClient) {
 
     if (bytesRead < 0) {
         handleReceiveError(pClient);
+        ClientList::remove(pClient->getUserInfo().getNickname());
         return;
     } else if (bytesRead == 0) {
         std::cout << "Hangup\n";

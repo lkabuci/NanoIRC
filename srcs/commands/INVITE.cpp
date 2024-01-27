@@ -44,12 +44,14 @@ static void sendSucc(int fd, const std::string& nick, const std::string& nick2,
                      const std::string& channel) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       " 341 " + nick + " " + nick2 + " " + channel + CR_LF;
+    send(fd, msg.c_str(), msg.size(), 0);
 }
 static void SendInv(int fd, const std::string& nick, const std::string& user,
                     const std::string& nick2, const std::string& channel) {
     std::string msg = std::string(":") + nick + "!~" + user + "@" +
                       Reactor::getInstance().getServerIp() + " INVITE " +
                       nick2 + " " + channel + CR_LF;
+    send(fd, msg.c_str(), msg.size(), 0);
 }
 
 void INVITE::execute(Client*                         client,

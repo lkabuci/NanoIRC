@@ -26,7 +26,7 @@ void ClientList::remove(const std::string& nickname) {
     std::map<std::string, Client*>::iterator it = _clients.find(nickname);
 
     if (it == _clients.end())
-        throw std::runtime_error("no such client.");
+        return;
     _clients.erase(it);
     TChannels::removeUserFromAll(it->first);
 }

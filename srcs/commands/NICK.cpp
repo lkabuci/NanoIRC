@@ -7,9 +7,9 @@ NICK::~NICK() {}
 void NICK::execute(Client* client, const std::vector<std::string>& parameters) {
     if (_notEnoughParams(client, parameters) || !_userSetPassword(client))
         return;
+    Parser::name(parameters[0], _nick);
     if (_nicknameAlreadyInUse(client))
         return;
-    Parser::name(parameters[0], _nick);
     client->getUserInfo().setNickname(_nick);
     if (!ClientList::exist(_nick))
         ClientList::add(client);
