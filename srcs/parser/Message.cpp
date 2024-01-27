@@ -1,10 +1,14 @@
 #include "Message.hpp"
+#include "../commands/INVITE.hpp"
 #include "../commands/JOIN.hpp"
+#include "../commands/KICK.hpp"
+#include "../commands/MODE.hpp"
 #include "../commands/NICK.hpp"
 #include "../commands/NOTICE.hpp"
 #include "../commands/PASS.hpp"
 #include "../commands/PRIVMSG.hpp"
 #include "../commands/QUIT.hpp"
+#include "../commands/TOPIC.hpp"
 #include "../commands/USER.hpp"
 
 uint8_t Message::_nbrOfParams = 0;
@@ -182,6 +186,18 @@ void Message::_execute() {
         break;
     case TYPES::QUIT:
         _cmdfunc = new QUIT();
+        break;
+    case TYPES::INVITE:
+        _cmdfunc = new INVITE();
+        break;
+    case TYPES::MODE:
+        _cmdfunc = new MODE();
+        break;
+    case TYPES::KICK:
+        _cmdfunc = new KICK();
+        break;
+    case TYPES::TOPIC:
+        _cmdfunc = new TOPIC();
         break;
     case TYPES::PONG:
         return;
