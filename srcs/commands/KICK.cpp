@@ -67,6 +67,7 @@ void KICK::execute(Client* client, const std::vector<std::string>& parameters) {
         if (tmp[0][0] != ':')
             reason = tmp[0];
         else {
+            tmp[0].erase(0, 1);
             for (size_t i = 0; i < tmp.size(); i++) {
                 reason += tmp[i];
                 reason += " ";
@@ -74,5 +75,12 @@ void KICK::execute(Client* client, const std::vector<std::string>& parameters) {
             reason.pop_back();
         }
     }
+    if (reason.empty())
+        reason = user->getUserInfo().getNickname();
+    std::string msg = ":" + client->getUserInfo().getNickname() + "!~" +
+                      client->getUserInfo().getUsername() + "@" +
+                      Reactor::getInstance().getServerIp() + " KICK " +
+                      tmpChannel.name() + " " +
+                      user->getUserInfo().getNickname() + " :" + reason + CR_LF;
+    tmpChannel.sendToAll(client, msg);
 }
-// :Operator!user@host KICK #channel TargetUser :Reason for the kick
