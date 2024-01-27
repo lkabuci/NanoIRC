@@ -16,11 +16,12 @@ uint8_t Message::_nbrOfParams = 0;
 TYPES::TokenType Message::_commandTypes[] = {
     TYPES::PASS,    TYPES::NICK,   TYPES::USER,  TYPES::JOIN,
     TYPES::KICK,    TYPES::INVITE, TYPES::TOPIC, TYPES::MODE,
-    TYPES::PRIVMSG, TYPES::NOTICE, TYPES::QUIT,  TYPES::PONG};
+    TYPES::PRIVMSG, TYPES::NOTICE, TYPES::QUIT,  TYPES::PONG,
+    TYPES::INVITE,  TYPES::MODE,   TYPES::KICK,  TYPES::TOPIC};
 
-std::string Message::_commandsStr[] = {"PASS",    "NICK",   "USER",  "JOIN",
-                                       "KICK",    "INVITE", "TOPIC", "MODE",
-                                       "PRIVMSG", "NOTICE", "QUIT",  "PONG"};
+std::string Message::_commandsStr[] = {
+    "PASS",    "NICK",   "USER", "JOIN", "KICK",   "INVITE", "TOPIC", "MODE",
+    "PRIVMSG", "NOTICE", "QUIT", "PONG", "INVITE", "MODE",   "KICK",  "TOPIC"};
 
 Message::Message() : _client(NULL), _cmdfunc(NULL) {}
 
@@ -65,7 +66,8 @@ void Message::_crlf() {
 }
 
 void Message::_errUnknownCommand(const std::string& cmd) {
-    std::string reply = ":localhost 421 " +
+    std::string reply = std::string(":") +
+                        Reactor::getInstance().getServerIp() + " 421 " +
                         _client->getUserInfo().getNickname() + " " + cmd +
                         " :Unknown command\r\n";
 

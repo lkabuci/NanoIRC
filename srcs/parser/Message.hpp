@@ -21,7 +21,7 @@ class Message {
     Message(const Message&);
     Message& operator=(const Message&);
 
-    enum { MAX_PARAMS = 15, CMDS_NBR = 12 };
+    enum { MAX_PARAMS = 15, CMDS_NBR = 16 };
 
     static TYPES::TokenType _commandTypes[CMDS_NBR];
     static std::string      _commandsStr[CMDS_NBR];
