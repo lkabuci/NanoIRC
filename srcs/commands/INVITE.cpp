@@ -72,7 +72,7 @@ void INVITE::execute(Client*                         client,
     if (!TChannels::exist(tmp[0]))
         return (send3(client->getSockfd(), client->getUserInfo().getNickname(),
                       tmp[0]));
-    Channel tmpChannel = TChannels::channel(tmp[0]);
+    Channel& tmpChannel = TChannels::channel(tmp[0]);
     tmp.erase(tmp.begin());
     if (!tmpChannel.exist(client))
         return (send4(client->getSockfd(), client->getUserInfo().getNickname(),

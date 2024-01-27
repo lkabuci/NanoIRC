@@ -106,6 +106,7 @@ void TOPIC::execute(Client*                         client,
             tmpChannel.setTopicSetter(client);
             tmpChannel.setTime(time(NULL));
             tmpChannel.sendToAll(client, msg);
+            send(client->getSockfd(), msg.c_str(), msg.size(), 0);
         } else
             return (sendErr5(client->getSockfd(),
                              client->getUserInfo().getNickname(),
