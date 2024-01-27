@@ -102,7 +102,7 @@ void TOPIC::execute(Client*                         client,
             std::string msg = ":" + client->getUserInfo().getNickname() + "!~" +
                               client->getUserInfo().getUsername() + "@" +
                               Reactor::getInstance().getServerIp() + " TOPIC " +
-                              tmpChannel.name() + ":" + topic + CR_LF;
+                              tmpChannel.name() + " :" + topic + CR_LF;
             tmpChannel.setTopicSetter(client);
             tmpChannel.setTime(time(NULL));
             tmpChannel.sendToAll(client, msg);
