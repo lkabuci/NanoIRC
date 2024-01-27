@@ -40,7 +40,8 @@ bool NICK::_notEnoughParams(Client*                         client,
 bool NICK::_userSetPassword(Client* client) {
     if (client->getUserInfo().isSet(UserInfo::PASSWORD_SET))
         return true;
-    std::string reply = ":localhost 451 ";
+    std::string reply =
+        std::string(":") + Reactor::getInstance().getServerIp() + " 451 ";
 
     if (client->getUserInfo().getNickname().empty()) {
         //: atw.hu.quakenet.org 451 *  :Register first.
@@ -56,22 +57,26 @@ bool NICK::_userSetPassword(Client* client) {
 }
 
 void NICK::_welcome(Client* client) {
-    std::string msg = std::string(":") + "localhost 001 " + _nick +
-                      " :Welcome to the IRCServer network, " + _nick + "!" +
-                      client->getUserInfo().getUsername() + "@localhost\r\n";
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " 001 " + _nick + " :Welcome to the IRCServer network, " +
+                      _nick + "!" + client->getUserInfo().getUsername() + "@" +
+                      Reactor::getInstance().getServerIp() + CR_LF;
 
     send(client->getSockfd(), msg.c_str(), msg.length(), 0);
 }
 
 void NICK::_errNoNicknameGiven(Client* client) {
     std::string nick = _nick.empty() ? "*" : _nick;
-    std::string reply = ":localhost 431 " + nick + " :No nickname given\r\n";
+    std::string reply = std::string(":") +
+                        Reactor::getInstance().getServerIp() + " 431 " + nick +
+                        " :No nickname given\r\n";
 
     send(client->getSockfd(), reply.c_str(), reply.length(), 0);
 }
 
 void NICK::_errNicknameAlreadyInUse(Client* client) {
-    std::string reply = ":localhost 433 ";
+    std::string reply =
+        std::string(":") + Reactor::getInstance().getServerIp() + " 433 ";
 
     if (client->getUserInfo().getNickname().empty()) {
         reply.append("*");

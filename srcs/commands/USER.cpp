@@ -27,7 +27,8 @@ void USER::execute(Client* client, const std::vector<std::string>& parameters) {
 
 void USER::_errErroneousNickname(Client* client, const std::string& name) {
     //: euroserv.fr.quakenet.org 432 * 2 :Erroneous Nickname
-    std::string reply = ":localhost 432 ";
+    std::string reply =
+        std::string(":") + Reactor::getInstance().getServerIp() + " 432 ";
 
     if (client->getUserInfo().isSet(UserInfo::NICK_SET)) {
         reply.append(client->getUserInfo().getNickname() + " " +
@@ -42,7 +43,8 @@ void USER::_errErroneousNickname(Client* client, const std::string& name) {
 bool USER::_userSetPassword(Client* client) {
     if (client->getUserInfo().isSet(UserInfo::PASSWORD_SET))
         return true;
-    std::string reply = ":localhost 451 ";
+    std::string reply =
+        std::string(":") + Reactor::getInstance().getServerIp() + " 451 ";
 
     if (client->getUserInfo().getNickname().empty()) {
         //: atw.hu.quakenet.org 451 *  :Register first.
@@ -70,7 +72,8 @@ void USER::_errNotEnoughParams(Client* client) {
     // USER i2 -> :euroserv.fr.quakenet.org 461 * USER :Not enough parameters
     // nickname set : euroserv.fr.quakenet.org 461 i2 USER :Not enough
     // parameters
-    std::string reply = ":localhost 461 ";
+    std::string reply =
+        std::string(":") + Reactor::getInstance().getServerIp() + " 461 ";
 
     if (client->getUserInfo().getNickname().empty()) {
         reply.append("*");
@@ -103,11 +106,12 @@ void USER::_setUserInfo(Client* client) {
 }
 
 void USER::_welcome(Client* client) {
-    std::string msg = std::string(":") + "localhost 001 " +
-                      client->getUserInfo().getNickname() +
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " 001 " + client->getUserInfo().getNickname() +
                       " :Welcome to the IRCServer network, " +
                       client->getUserInfo().getNickname() + "!" +
-                      client->getUserInfo().getUsername() + "@localhost\r\n";
+                      client->getUserInfo().getUsername() + "@" +
+                      Reactor::getInstance().getServerIp() + CR_LF;
 
     send(client->getSockfd(), msg.c_str(), msg.length(), 0);
 }

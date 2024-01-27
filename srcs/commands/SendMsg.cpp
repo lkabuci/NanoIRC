@@ -69,8 +69,9 @@ void SendMsg::_sendText() {
 void SendMsg::_sendToUser(const std::string& name) {
     Client*     receiver = ClientList::get(name);
     std::string msg = ":" + _sender->getUserInfo().getNickname() + "!~" +
-                      _sender->getUserInfo().getUsername() + "@localhost " +
-                      _cmd + " " + name + " :" + _textToSend;
+                      _sender->getUserInfo().getUsername() + "@" +
+                      Reactor::getInstance().getServerIp() + " " + _cmd + " " +
+                      name + " :" + _textToSend;
 
     //: i2!~u2@197.230.30.146 PRIVMSG i1 :hi
     send(receiver->getSockfd(), msg.c_str(), msg.length(), 0);
@@ -122,7 +123,8 @@ void SendMsg::_clear() {
 void SendMsg::_errNoRecipent() {
     if (_cmd == "NOTICE")
         return;
-    std::string reply = ":localhost 411 " +
+    std::string reply = std::string(":") +
+                        Reactor::getInstance().getServerIp() + " 411 " +
                         _sender->getUserInfo().getNickname() +
                         " :No recipent given (" + _cmd + ")\r\n";
 
@@ -133,8 +135,8 @@ void SendMsg::_errNoRecipent() {
 void SendMsg::_errNoTextToSend() {
     if (_cmd == "NOTICE")
         throw std::exception();
-    std::string msg = std::string(":localhost") + " 412 " +
-                      _sender->getUserInfo().getNickname() +
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " 412 " + _sender->getUserInfo().getNickname() +
                       " :No text to send\r\n";
 
     send(_sender->getSockfd(), msg.c_str(), msg.length(), 0);
@@ -145,7 +147,8 @@ void SendMsg::_errNoSuch(const std::string& name,
                          const std::string& description) {
     if (_cmd == "NOTICE")
         throw std::exception();
-    std::string reply = ":localhost 403 " +
+    std::string reply = std::string(":") +
+                        Reactor::getInstance().getServerIp() + " 403 " +
                         _sender->getUserInfo().getNickname() + " " + name +
                         " :" + description + CR_LF;
 
@@ -156,7 +159,8 @@ void SendMsg::_errNoSuch(const std::string& name,
 void SendMsg::_errNotRegistered() {
     if (_cmd == "NOTICE")
         return;
-    std::string reply = ":localhost 451 ";
+    std::string reply =
+        std::string(":") + Reactor::getInstance().getServerIp() + " 451 ";
 
     if (_sender->getUserInfo().getNickname().empty()) {
         reply.append("*");
