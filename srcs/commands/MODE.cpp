@@ -90,8 +90,18 @@ void handleKey(bool state, char c, std::vector<std::string>& tmp,
                          client->getUserInfo().getNickname(), channel.name(),
                          str + "k"));
     }
-    std::string pass = tmp[0];
-    tmp.erase(tmp.begin());
+    std::string pass;
+    if (tmp[0][0] != ':') {
+        pass = tmp[0];
+        tmp.erase(tmp.begin());
+    } else {
+        tmp[0].erase(0, 1);
+        for (size_t i = 0; i < tmp.size(); i++) {
+            pass += tmp[i];
+            pass += " ";
+        }
+        pass.pop_back();
+    }
     if (!state && channel.modeIsSet(CHANNEL_MODE::SET_KEY)) {
         if (pass != channel.getPassword())
             return (sendErr8(client->getSockfd(),
