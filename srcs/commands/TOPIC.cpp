@@ -95,7 +95,7 @@ void TOPIC::execute(Client*                         client,
             tmpChannel.modeIsSet(CHANNEL_MODE::SET_TOPIC)) {
             tmpChannel.setTopic(topic);
             std::string msg = ":" + client->getUserInfo().getNickname() + "!~" +
-                              client->getUserInfo().getUsername() +
+                              client->getUserInfo().getUsername() + "@" +
                               Reactor::getInstance().getServerIp() + " TOPIC " +
                               tmpChannel.name() + ":" + topic + CR_LF;
             tmpChannel.setTopicSetter(client);

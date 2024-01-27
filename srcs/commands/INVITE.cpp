@@ -1,4 +1,5 @@
 #include "INVITE.hpp"
+#include "TOPIC.hpp"
 #include <vector>
 
 void send1(int fd, const std::string& nick) {
@@ -34,9 +35,21 @@ void send5(int fd, const std::string& nick) {
 }
 void send6(int fd, const std::string& nick, const std::string& channel) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      std::string(" 482 ") + nick + " " + channel +
+                      " 482 " + nick + " " + channel +
                       " :You're not channel operator\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
+}
+
+void sendSucc(int fd, const std::string& nick, const std::string& nick2,
+              const std::string& channel) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " 341 " + nick + " " + nick2 + " " + channel + CR_LF;
+}
+void SendInv(int fd, const std::string& nick, const std::string& user,
+             const std::string& nick2, const std::string& channel) {
+    std::string msg = std::string(":") + nick + "!~" + user + "@" +
+                      Reactor::getInstance().getServerIp() + " INVITE " +
+                      nick2 + " " + channel + CR_LF;
 }
 
 void INVITE::execute(Client*                         client,
@@ -70,4 +83,9 @@ void INVITE::execute(Client*                         client,
         return (send6(client->getSockfd(), client->getUserInfo().getNickname(),
                       tmpChannel.name()));
     tmpChannel.invite(inv);
+    sendSucc(client->getSockfd(), client->getUserInfo().getNickname(),
+             inv->getUserInfo().getNickname(), tmpChannel.name());
+    SendInv(inv->getSockfd(), client->getUserInfo().getNickname(),
+            client->getUserInfo().getUsername(),
+            inv->getUserInfo().getNickname(), tmpChannel.name());
 }
