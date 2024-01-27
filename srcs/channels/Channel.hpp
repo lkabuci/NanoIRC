@@ -48,7 +48,7 @@ class Channel {
     const std::string& name() const;
     bool               modeIsSet(CHANNEL_MODE::Modes mode);
     bool               flagIsSet(Client* client, MEMBER_PERMISSION::Flags flag);
-    Client*            getClient(const std::string& username);
+    Client*            getClient(const std::string& nickname);
     const std::string& getPassword() const;
     void               setPassword(const std::string& password);
     void               invite(Client* client);

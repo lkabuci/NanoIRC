@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -33,6 +34,13 @@ static void sendErr2(int fd, const std::string& nick,
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 401 ") + nick + " " + nick2 +
                       " :No such nick\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+}
+static void sendErr9(int fd, const std::string& nick, const std::string& nick2,
+                     std::string channel) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      std::string(" 441 ") + nick + " " + nick2 + " " +
+                      channel + " :They aren't on that channel\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 
@@ -140,10 +148,14 @@ void handleOperator(bool state, char c, std::vector<std::string>& tmp,
                          client->getUserInfo().getNickname(), channel.name(),
                          str + "o"));
     }
-    Client* user = channel.getClient(tmp[0]);
-    if (!user)
+    if (ClientList::exist(tmp[0]) && !channel.exist(tmp[0]))
+        return (sendErr9(client->getSockfd(),
+                         client->getUserInfo().getNickname(), tmp[0],
+                         channel.name()));
+    if (!ClientList::exist(tmp[0]))
         return (sendErr2(client->getSockfd(),
                          client->getUserInfo().getNickname(), tmp[0]));
+    Client* user = channel.getClient(tmp[0]);
     tmp.erase(tmp.begin());
     if (!state && channel.flagIsSet(user, MEMBER_PERMISSION::OPERATOR)) {
         channel.setPermission(user, MEMBER_PERMISSION::REGULAR);
@@ -158,6 +170,7 @@ void handleOperator(bool state, char c, std::vector<std::string>& tmp,
 
     else if (state && !channel.flagIsSet(user, MEMBER_PERMISSION::OPERATOR)) {
         channel.setPermission(user, MEMBER_PERMISSION::OPERATOR);
+
         std::string msg = ":" + client->getUserInfo().getNickname() + "!~" +
                           client->getUserInfo().getUsername() + "@" +
                           Reactor::getInstance().getServerIp() + " MODE " +

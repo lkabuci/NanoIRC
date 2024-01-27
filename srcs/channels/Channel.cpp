@@ -124,11 +124,11 @@ bool Channel::flagIsSet(Client* client, MEMBER_PERMISSION::Flags flag) {
     return (it == _members.end()) ? false : it->second & flag;
 }
 
-Client* Channel::getClient(const std::string& username) {
+Client* Channel::getClient(const std::string& nickname) {
     std::map<Client*, MEMBER_PERMISSION::Flags>::iterator it = _members.begin();
 
     for (; it != _members.end(); ++it) {
-        if (it->first->getUserInfo().getUsername() == username)
+        if (it->first->getUserInfo().getNickname() == nickname)
             return it->first;
     }
     return NULL;
