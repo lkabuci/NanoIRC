@@ -34,19 +34,19 @@ void Message::run(Client* client) {
         client->getMessage() == "\n")
         return;
     _client = client;
-    _message = _client->getMessage();
-    std::string temp(_message);
+    std::string temp(_client->getMessage());
     std::string msg;
     try {
         do {
             msg = _getMessage(temp);
             _parse(msg);
-            _execute();
+            _execute(msg);
             _reset();
             temp = temp.substr(msg.length());
         } while (!temp.empty());
     } catch (const std::exception& e) {
     }
+    _client->finish();
 }
 
 void Message::_parse(const std::string& message) {
@@ -164,8 +164,8 @@ bool Message::_isCommand() {
     return false;
 }
 
-void Message::_execute() {
-    if (_message.empty() || _message == CR_LF)
+void Message::_execute(const std::string& msg) {
+    if (msg.empty() || msg == CR_LF)
         return;
     switch (_whichCommand()) {
     case TYPES::PASS:
@@ -212,7 +212,7 @@ void Message::_execute() {
         _cmdfunc->execute(_client, _parameters);
     } catch (...) {
     }
-    _client->finish();
+    //_client->finish();
 }
 
 TYPES::TokenType Message::_whichCommand() {
@@ -224,6 +224,7 @@ TYPES::TokenType Message::_whichCommand() {
 }
 
 void Message::_reset() {
+    _client->finish();
     _nbrOfParams = 0;
     _parameters.clear();
     delete _cmdfunc;

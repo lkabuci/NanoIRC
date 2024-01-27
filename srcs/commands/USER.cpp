@@ -17,7 +17,7 @@ void USER::execute(Client* client, const std::vector<std::string>& parameters) {
     if (!_userSetPassword(client))
         return;
     _ignoreHostAndServerNames();
-    _parseRealName(client);
+    _parseRealName();
     _setUserInfo(client);
     if (!ClientList::exist(client->getUserInfo().getNickname()))
         ClientList::add(client);
@@ -91,7 +91,7 @@ void USER::_ignoreHostAndServerNames() {
     Parser::advance(); // skip servername
 }
 
-void USER::_parseRealName(Client* client) {
+void USER::_parseRealName() {
     if (!Parser::match(TYPES::COLON)) {
         _realname = Parser::advance().lexeme();
     } else {
@@ -108,9 +108,8 @@ void USER::_setUserInfo(Client* client) {
 void USER::_welcome(Client* client) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       " 001 " + client->getUserInfo().getNickname() +
-                      " :Welcome to the IRCServer network, " +
-                      client->getUserInfo().getNickname() + "!" +
-                      client->getUserInfo().getUsername() + "@" +
+                      " :sf ghayerha, " + client->getUserInfo().getNickname() +
+                      "!" + client->getUserInfo().getUsername() + "@" +
                       Reactor::getInstance().getServerIp() + CR_LF;
 
     send(client->getSockfd(), msg.c_str(), msg.length(), 0);

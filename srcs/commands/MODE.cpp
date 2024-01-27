@@ -21,47 +21,52 @@ void error(bool state, char c, std::vector<std::string>& tmp, Channel& channel,
     send(client->getSockfd(), msg.c_str(), msg.size(), 0);
 }
 
-void sendErr1(int fd, const std::string& nick) {
+static void sendErr1(int fd, const std::string& nick) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 461 ") + nick +
                       " MODE :Not enough parameters\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 
-void sendErr2(int fd, const std::string& nick, const std::string& nick2) {
+static void sendErr2(int fd, const std::string& nick,
+                     const std::string& nick2) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 401 ") + nick + " " + nick2 +
                       " :No such nick\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 
-void sendErr3(int fd, const std::string& nick, const std::string& channel) {
+static void sendErr3(int fd, const std::string& nick,
+                     const std::string& channel) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 403 ") + nick + " " + channel +
                       " :No such channel\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
-void sendErr4(int fd, const std::string& nick, const std::string& channel) {
+static void sendErr4(int fd, const std::string& nick,
+                     const std::string& channel) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 442 ") + nick + " " + channel +
                       " :You're not on that channel\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 
-void sendErr6(int fd, const std::string& nick, const std::string& channel) {
+static void sendErr6(int fd, const std::string& nick,
+                     const std::string& channel) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 482 ") + nick + " " + channel +
                       " :You're not channel operator\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
-void sendErr7(int fd, const std::string& nick, const std::string& channel,
-              std::string str) {
+static void sendErr7(int fd, const std::string& nick,
+                     const std::string& channel, std::string str) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 461 ") + nick + "MODE" + str +
                       " :Not enough parameters\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
-void sendErr8(int fd, const std::string& nick, const std::string& channel) {
+static void sendErr8(int fd, const std::string& nick,
+                     const std::string& channel) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 467 ") + nick + " " + channel +
                       " :Channel key already set\r\n";

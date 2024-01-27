@@ -2,35 +2,35 @@
 #include <cstddef>
 #include <string>
 
-void send1(int fd, const std::string& nick) {
+static void send1(int fd, const std::string& nick) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 461 ") + nick +
                       " KICK :Not enough parameters\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 
-void send2(int fd, const std::string& nick, const std::string& nick2) {
+static void send2(int fd, const std::string& nick, const std::string& nick2) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 401 ") + nick + " " + nick2 +
                       " :No such nick\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 
-void send3(int fd, const std::string& nick, const std::string& channel) {
+static void send3(int fd, const std::string& nick, const std::string& channel) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 403 ") + nick + " " + channel +
                       " :No such channel\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
-void send4(int fd, const std::string& nick, const std::string nick2,
-           const std::string& channel) {
+static void send4(int fd, const std::string& nick, const std::string nick2,
+                  const std::string& channel) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 441 ") + nick + " " + nick2 + " " +
                       channel + " :They aren't on that channel\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 
-void send6(int fd, const std::string& nick, const std::string& channel) {
+static void send6(int fd, const std::string& nick, const std::string& channel) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 482 ") + nick + " " + channel +
                       " :You're not channel operator\r\n";

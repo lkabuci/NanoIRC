@@ -27,10 +27,9 @@ class Message {
     static std::string      _commandsStr[CMDS_NBR];
 
     void _parse(const std::string& message);
-    void _execute();
+    void _execute(const std::string& msg);
 
     Client*                  _client;
-    std::string              _message;
     std::string              _cmd;
     std::vector<std::string> _parameters;
     Command*                 _cmdfunc;

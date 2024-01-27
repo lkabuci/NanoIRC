@@ -58,8 +58,8 @@ bool NICK::_userSetPassword(Client* client) {
 
 void NICK::_welcome(Client* client) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      " 001 " + _nick + " :Welcome to the IRCServer network, " +
-                      _nick + "!" + client->getUserInfo().getUsername() + "@" +
+                      " 001 " + _nick + " :sf ghayerha, " + _nick + "!" +
+                      client->getUserInfo().getUsername() + "@" +
                       Reactor::getInstance().getServerIp() + CR_LF;
 
     send(client->getSockfd(), msg.c_str(), msg.length(), 0);

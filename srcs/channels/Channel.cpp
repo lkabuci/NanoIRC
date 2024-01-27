@@ -119,6 +119,8 @@ bool Channel::flagIsSet(Client* client, MEMBER_PERMISSION::Flags flag) {
     std::map<Client*, MEMBER_PERMISSION::Flags>::iterator it =
         _members.find(client);
 
+    if (it == _members.end())
+        std::cout << "---------\n";
     return (it == _members.end()) ? false : it->second & flag;
 }
 

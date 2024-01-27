@@ -21,7 +21,7 @@ enum Modes {
 }
 
 namespace MEMBER_PERMISSION {
-enum Flags { OPERATOR, REGULAR };
+enum Flags { OPERATOR = 1, REGULAR = 2 };
 }
 
 class Channel {

@@ -2,51 +2,51 @@
 #include "TOPIC.hpp"
 #include <vector>
 
-void send1(int fd, const std::string& nick) {
+static void send1(int fd, const std::string& nick) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 461 ") + nick +
                       " INVITE :Not enough parameters\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 
-void send2(int fd, const std::string& nick, const std::string& nick2) {
+static void send2(int fd, const std::string& nick, const std::string& nick2) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 401 ") + nick + " " + nick2 +
                       " :No such nick\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 
-void send3(int fd, const std::string& nick, const std::string& channel) {
+static void send3(int fd, const std::string& nick, const std::string& channel) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 403 ") + nick + " " + channel +
                       " :No such channel\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
-void send4(int fd, const std::string& nick, const std::string& channel) {
+static void send4(int fd, const std::string& nick, const std::string& channel) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 442 ") + nick + " " + channel +
                       " :You're not on that channel\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
-void send5(int fd, const std::string& nick) {
+static void send5(int fd, const std::string& nick) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 401 ") + nick + " INVITE :No such nick\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
-void send6(int fd, const std::string& nick, const std::string& channel) {
+static void send6(int fd, const std::string& nick, const std::string& channel) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       " 482 " + nick + " " + channel +
                       " :You're not channel operator\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 
-void sendSucc(int fd, const std::string& nick, const std::string& nick2,
-              const std::string& channel) {
+static void sendSucc(int fd, const std::string& nick, const std::string& nick2,
+                     const std::string& channel) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       " 341 " + nick + " " + nick2 + " " + channel + CR_LF;
 }
-void SendInv(int fd, const std::string& nick, const std::string& user,
-             const std::string& nick2, const std::string& channel) {
+static void SendInv(int fd, const std::string& nick, const std::string& user,
+                    const std::string& nick2, const std::string& channel) {
     std::string msg = std::string(":") + nick + "!~" + user + "@" +
                       Reactor::getInstance().getServerIp() + " INVITE " +
                       nick2 + " " + channel + CR_LF;
