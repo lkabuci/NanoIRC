@@ -267,7 +267,7 @@ void MODE::execute(Client* client, const std::vector<std::string>& parameters) {
     if (!TChannels::exist(tmp[0]))
         return (sendErr3(client->getSockfd(),
                          client->getUserInfo().getNickname(), tmp[0]));
-    Channel tmpChannel = TChannels::channel(tmp[0]);
+    Channel& tmpChannel = TChannels::channel(tmp[0]);
     tmp.erase(tmp.begin());
     if (!tmpChannel.exist(client))
         return (sendErr4(client->getSockfd(),
