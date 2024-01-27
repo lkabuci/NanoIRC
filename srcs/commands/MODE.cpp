@@ -13,6 +13,7 @@ void error(bool state, char c, std::vector<std::string>& tmp, Channel& channel,
     (void)tmp;
     (void)channel;
     (void)client;
+    (void)c;
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 472 ") +
                       client->getUserInfo().getNickname() + " " +
@@ -69,6 +70,7 @@ void sendErr8(int fd, const std::string& nick, const std::string& channel) {
 
 void handleKey(bool state, char c, std::vector<std::string>& tmp,
                Channel& channel, Client* client) {
+    (void)c;
     if (tmp.empty()) {
         std::string str(1, (!state) * '-' + (state) * '+');
         return (sendErr7(client->getSockfd(),
@@ -104,6 +106,7 @@ void handleKey(bool state, char c, std::vector<std::string>& tmp,
 
 void handleInvite(bool state, char c, std::vector<std::string>& tmp,
                   Channel& channel, Client* client) {
+    (void)c;
     if (!state && channel.modeIsSet(CHANNEL_MODE::SET_INVITE_ONLY)) {
         channel.unsetMode(CHANNEL_MODE::SET_INVITE_ONLY);
         std::string msg = ":" + client->getUserInfo().getNickname() + "!~" +
@@ -125,6 +128,7 @@ void handleInvite(bool state, char c, std::vector<std::string>& tmp,
 
 void handleOperator(bool state, char c, std::vector<std::string>& tmp,
                     Channel& channel, Client* client) {
+    (void)c;
     if (tmp.empty()) {
         std::string str(1, (!state) * '-' + (state) * '+');
         return (sendErr7(client->getSockfd(),
@@ -161,6 +165,7 @@ void handleOperator(bool state, char c, std::vector<std::string>& tmp,
 
 void handleTopic(bool state, char c, std::vector<std::string>& tmp,
                  Channel& channel, Client* client) {
+    (void)c;
     (void)tmp;
     if (!state && channel.modeIsSet(CHANNEL_MODE::SET_TOPIC)) {
         channel.unsetMode(CHANNEL_MODE::SET_TOPIC);
@@ -183,6 +188,7 @@ void handleTopic(bool state, char c, std::vector<std::string>& tmp,
 
 void handleLimit(bool state, char c, std::vector<std::string>& tmp,
                  Channel& channel, Client* client) {
+    (void)c;
     if (tmp.empty() && state)
         return (sendErr7(client->getSockfd(),
                          client->getUserInfo().getNickname(), channel.name(),
