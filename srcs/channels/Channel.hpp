@@ -5,6 +5,7 @@
 #define __CHANNEL_HPP__
 
 #include "../../include/IRC.h"
+#include <ctime>
 
 class Client;
 
@@ -58,6 +59,10 @@ class Channel {
     void setPermission(Client* client, MEMBER_PERMISSION::Flags flag);
     const uint16_t& getLimit() const;
     void            setLimit(const uint16_t& limit);
+    Client*         getTopicSetter();
+    void            setTopicSetter(Client* setter);
+    const time_t&   getTime() const;
+    void            setTime(time_t time);
 
   private:
     std::string                                 _name;
@@ -66,6 +71,8 @@ class Channel {
     std::vector<Client*>                        _invited;
     CHANNEL_MODE::Modes                         _mode;
     std::string                                 _topic;
+    time_t                                      _timeTopic;
+    Client*                                     _topicSetter;
     uint16_t                                    _limit;
 };
 

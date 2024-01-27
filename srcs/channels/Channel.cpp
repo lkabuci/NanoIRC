@@ -1,11 +1,13 @@
 #include "Channel.hpp"
 #include "../client/Client.hpp"
+#include <netdb.h>
 
-Channel::Channel() {}
+Channel::Channel() : _timeTopic(0), _topicSetter(NULL) {}
 
 Channel::Channel(const std::string& name, const std::string& password,
                  CHANNEL_MODE::Modes mode)
-    : _name(name), _password(password), _mode(mode), _limit(0) {}
+    : _name(name), _password(password), _mode(mode), _timeTopic(0),
+      _topicSetter(NULL), _limit(0) {}
 
 Channel::Channel(const Channel& channel)
     : _name(channel._name), _password(channel._password),
@@ -180,4 +182,17 @@ const uint16_t& Channel::getLimit() const {
 
 void Channel::setLimit(const uint16_t& limit) {
     _limit = limit;
+}
+
+Client* Channel::getTopicSetter() {
+    return _topicSetter;
+}
+void Channel::setTopicSetter(Client* setter) {
+    _topicSetter = setter;
+}
+const time_t& Channel::getTime() const {
+    return _timeTopic;
+}
+void Channel::setTime(time_t time) {
+    _timeTopic = time;
 }

@@ -18,21 +18,21 @@ void send2(int fd, const std::string& nick, const std::string& nick2) {
 
 void send3(int fd, const std::string& nick, const std::string& channel) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      std::string(" 403 ") + nick + " #" + channel +
+                      std::string(" 403 ") + nick + " " + channel +
                       " :No such channel\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 void send4(int fd, const std::string& nick, const std::string nick2,
            const std::string& channel) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      std::string(" 441 ") + nick + " " + nick2 + " #" +
+                      std::string(" 441 ") + nick + " " + nick2 + " " +
                       channel + " :They aren't on that channel\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 
 void send6(int fd, const std::string& nick, const std::string& channel) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      std::string(" 482 ") + nick + " #" + channel +
+                      std::string(" 482 ") + nick + " " + channel +
                       " :You're not channel operator\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
@@ -44,8 +44,7 @@ void KICK::execute(Client* client, const std::vector<std::string>& parameters) {
             send1(client->getSockfd(), client->getUserInfo().getNickname()));
     if (tmp[0][0] != '#')
         return (send3(client->getSockfd(), client->getUserInfo().getNickname(),
-                      tmp[0].substr(1)));
-    tmp[0].erase(0, 1);
+                      tmp[0]));
     if (!TChannels::exist(tmp[0]))
         return (send3(client->getSockfd(), client->getUserInfo().getNickname(),
                       tmp[0]));
