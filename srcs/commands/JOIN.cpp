@@ -84,8 +84,12 @@ void JOIN::_createChannel(const size_t& index) {
 void JOIN::_addToChannel(Channel& channel, const size_t& index) {
     if (channel.exist(_sender))
         return;
-    if (_channelIsInviteOnly(channel) && !channel.isInvited(_sender)) {
-        _errInviteOnlyChan(channel.name());
+    if (_channelIsInviteOnly(channel)) {
+        if (!channel.isInvited(_sender)) {
+            _errInviteOnlyChan(channel.name());
+            return;
+        }
+        _joinWithoutAsk(channel);
         return;
     }
     if (index >= channel.getLimit()) {
@@ -94,6 +98,12 @@ void JOIN::_addToChannel(Channel& channel, const size_t& index) {
     }
     if (_channelHasKey(channel) && !_keyIsCorrect(channel, index))
         return;
+    _addClientToChannel(channel, MEMBER_PERMISSION::REGULAR);
+    _channelReply(channel.name());
+    _tellMembers(channel);
+}
+
+void JOIN::_joinWithoutAsk(Channel& channel) {
     _addClientToChannel(channel, MEMBER_PERMISSION::REGULAR);
     _channelReply(channel.name());
     _tellMembers(channel);
@@ -149,6 +159,7 @@ bool JOIN::_channelHasKey(Channel& channel) {
 }
 
 void JOIN::_setKeys() {
+    Parser::match(TYPES::SPACE);
     if (Parser::isAtEnd())
         return;
     do {

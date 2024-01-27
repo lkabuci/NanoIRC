@@ -35,6 +35,7 @@ class JOIN : public Command {
     bool _userIsRegistered();
     void _leaveAllChannels();
     bool _validChannel(const std::string& channel);
+    void _joinWithoutAsk(Channel& channel);
 
     void _channelReply(const std::string& channel);
     void _tellMembers(Channel& channel);
