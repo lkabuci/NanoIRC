@@ -1,30 +1,91 @@
 #include "INVITE.hpp"
-#include <stdexcept>
+#include "TOPIC.hpp"
 #include <vector>
+
+void send1(int fd, const std::string& nick) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      std::string(" 461 ") + nick +
+                      " INVITE :Not enough parameters\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+}
+
+void send2(int fd, const std::string& nick, const std::string& nick2) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      std::string(" 401 ") + nick + " " + nick2 +
+                      " :No such nick\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+}
+
+void send3(int fd, const std::string& nick, const std::string& channel) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      std::string(" 403 ") + nick + " " + channel +
+                      " :No such channel\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+}
+void send4(int fd, const std::string& nick, const std::string& channel) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      std::string(" 442 ") + nick + " " + channel +
+                      " :You're not on that channel\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+}
+void send5(int fd, const std::string& nick) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      std::string(" 401 ") + nick + " INVITE :No such nick\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+}
+void send6(int fd, const std::string& nick, const std::string& channel) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " 482 " + nick + " " + channel +
+                      " :You're not channel operator\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+}
+
+void sendSucc(int fd, const std::string& nick, const std::string& nick2,
+              const std::string& channel) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      " 341 " + nick + " " + nick2 + " " + channel + CR_LF;
+}
+void SendInv(int fd, const std::string& nick, const std::string& user,
+             const std::string& nick2, const std::string& channel) {
+    std::string msg = std::string(":") + nick + "!~" + user + "@" +
+                      Reactor::getInstance().getServerIp() + " INVITE " +
+                      nick2 + " " + channel + CR_LF;
+}
 
 void INVITE::execute(Client*                         client,
                      const std::vector<std::string>& parameters) {
-    std::cout << "Invite called \n";
     std::vector<std::string> tmp(parameters);
-    if (tmp.size() != 2)
-        throw std::runtime_error("invalid args");
+
+    if (tmp.size() < 2)
+        return (
+            send1(client->getSockfd(), client->getUserInfo().getNickname()));
     Client* inv = ClientList::get(tmp[0]);
-    if (!inv)
-        throw std::runtime_error("Client makaynch");
     tmp.erase(tmp.begin());
+    if (!inv)
+        return (send2(client->getSockfd(), client->getUserInfo().getNickname(),
+                      tmp[0]));
     if (tmp[0][0] != '#')
-        throw std::runtime_error("Channel needed");
-    tmp[0].erase(0, 1);
+        return (send3(client->getSockfd(), client->getUserInfo().getNickname(),
+                      tmp[0]));
     if (!TChannels::exist(tmp[0]))
-        throw std::runtime_error("Channel not found a sahbi");
+        return (send3(client->getSockfd(), client->getUserInfo().getNickname(),
+                      tmp[0]));
     Channel tmpChannel = TChannels::channel(tmp[0]);
     tmp.erase(tmp.begin());
     if (!tmpChannel.exist(client))
-        throw std::runtime_error("You Re not a member in the channel");
-    if (tmpChannel.isInvited(inv) || tmpChannel.exist(inv))
-        return;
-    if (tmpChannel.modeIsSet(CHANNEL_MODE::SET_INVITE_ONLY) &&
-        !tmpChannel.flagIsSet(client, MEMBER_PERMISSION::OPERATOR))
-        throw std::runtime_error("ERR_CHANOPRIVSNEEDED");
+        return (send4(client->getSockfd(), client->getUserInfo().getNickname(),
+                      tmpChannel.name()));
+    else if (tmpChannel.exist(inv))
+        return (
+            send5(client->getSockfd(), client->getUserInfo().getNickname()));
+    else if (tmpChannel.modeIsSet(CHANNEL_MODE::SET_INVITE_ONLY) &&
+             !tmpChannel.flagIsSet(client, MEMBER_PERMISSION::OPERATOR))
+        return (send6(client->getSockfd(), client->getUserInfo().getNickname(),
+                      tmpChannel.name()));
     tmpChannel.invite(inv);
+    sendSucc(client->getSockfd(), client->getUserInfo().getNickname(),
+             inv->getUserInfo().getNickname(), tmpChannel.name());
+    SendInv(inv->getSockfd(), client->getUserInfo().getNickname(),
+            client->getUserInfo().getUsername(),
+            inv->getUserInfo().getNickname(), tmpChannel.name());
 }

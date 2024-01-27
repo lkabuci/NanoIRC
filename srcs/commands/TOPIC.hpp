@@ -10,5 +10,4 @@ class TOPIC : public Command {
     virtual void execute(Client*                         client,
                          const std::vector<std::string>& parameters);
 };
-
 #endif

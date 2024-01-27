@@ -1,39 +1,86 @@
 #include "KICK.hpp"
 #include <cstddef>
-#include <stdexcept>
 #include <string>
+
+void send1(int fd, const std::string& nick) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      std::string(" 461 ") + nick +
+                      " KICK :Not enough parameters\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+}
+
+void send2(int fd, const std::string& nick, const std::string& nick2) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      std::string(" 401 ") + nick + " " + nick2 +
+                      " :No such nick\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+}
+
+void send3(int fd, const std::string& nick, const std::string& channel) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      std::string(" 403 ") + nick + " " + channel +
+                      " :No such channel\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+}
+void send4(int fd, const std::string& nick, const std::string nick2,
+           const std::string& channel) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      std::string(" 441 ") + nick + " " + nick2 + " " +
+                      channel + " :They aren't on that channel\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+}
+
+void send6(int fd, const std::string& nick, const std::string& channel) {
+    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+                      std::string(" 482 ") + nick + " " + channel +
+                      " :You're not channel operator\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+}
 
 void KICK::execute(Client* client, const std::vector<std::string>& parameters) {
     std::vector<std::string> tmp(parameters);
     if (tmp.size() < 2)
-        throw std::runtime_error("invalid args");
+        return (
+            send1(client->getSockfd(), client->getUserInfo().getNickname()));
     if (tmp[0][0] != '#')
-        throw std::runtime_error("Invalid Channel");
-    tmp[0].erase(0, 1);
+        return (send3(client->getSockfd(), client->getUserInfo().getNickname(),
+                      tmp[0]));
     if (!TChannels::exist(tmp[0]))
-        throw std::runtime_error("Channel not found a sahbi");
+        return (send3(client->getSockfd(), client->getUserInfo().getNickname(),
+                      tmp[0]));
     Channel tmpChannel = TChannels::channel(tmp[0]);
     tmp.erase(tmp.begin());
     if (!tmpChannel.exist(client))
-        throw std::runtime_error("You Re not a member in the channel");
+        return (send6(client->getSockfd(), client->getUserInfo().getNickname(),
+                      tmpChannel.name()));
     Client* user = tmpChannel.getClient(tmp[0]);
     if (!user)
-        throw std::runtime_error(std::string("client : ") + tmp[0] +
-                                 std::string("not found in #") + tmp[0]);
+        return (send4(client->getSockfd(), client->getUserInfo().getNickname(),
+                      tmp[0], tmpChannel.name()));
     tmp.erase(tmp.begin());
     if (!tmpChannel.flagIsSet(client, MEMBER_PERMISSION::OPERATOR))
-        throw std::runtime_error(client->getUserInfo().getUsername() +
-                                 ": Cannot kick he is not operator");
+        return (send6(client->getSockfd(), client->getUserInfo().getNickname(),
+                      tmpChannel.name()));
     tmpChannel.remove(user);
+    std::string reason;
     if (!tmp.empty()) {
         if (tmp[0][0] != ':')
-            throw std::runtime_error("Syntax reason error need \':\'");
-        tmp[0].erase(0, 1);
-        std::string reason;
-        for (size_t i = 0; i < tmp.size(); i++) {
-            reason += tmp[i];
-            reason += " ";
+            reason = tmp[0];
+        else {
+            tmp[0].erase(0, 1);
+            for (size_t i = 0; i < tmp.size(); i++) {
+                reason += tmp[i];
+                reason += " ";
+            }
+            reason.pop_back();
         }
-        reason.pop_back();
     }
+    if (reason.empty())
+        reason = user->getUserInfo().getNickname();
+    std::string msg = ":" + client->getUserInfo().getNickname() + "!~" +
+                      client->getUserInfo().getUsername() + "@" +
+                      Reactor::getInstance().getServerIp() + " KICK " +
+                      tmpChannel.name() + " " +
+                      user->getUserInfo().getNickname() + " :" + reason + CR_LF;
+    tmpChannel.sendToAll(client, msg);
 }

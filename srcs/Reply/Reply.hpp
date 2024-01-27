@@ -8,6 +8,7 @@
 
 namespace SUCCESS_CODES {
 enum CODES {
+
     RPL_WELCOME = 1,
     RPL_TOPIC = 332,
 
@@ -19,6 +20,8 @@ enum CODES {
 
 namespace ERROR_CODES {
 enum CODES {
+    ERR_NOTONCHANNEL = 442,
+
     //:<server> 462 <nickname> :You may not reregisted
     ERR_ALREADYREGISTRED = 462,
 
@@ -60,6 +63,13 @@ enum CODES {
 
     // :<server> 451 <nickname> :You have not registered
     ERR_NOTREGISTERED = 451,
+    ERR_CHANOPRIVSNEEDED = 482,
+    ERR_USERONCHANNEL = 443,
+    ERR_BADCHANMASK = 476,
+    ERR_UNKNOWNMODE = 472,
+    ERR_USERSDONTMATCH = 502,
+    ERR_KEYSET = 467,
+    ERR_UMODEUNKNOWNFLAG = 501,
 };
 }
 

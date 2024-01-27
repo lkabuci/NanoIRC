@@ -104,6 +104,9 @@ std::map<ERROR_CODES::CODES, std::string> Reply::_fillErrorMap() {
     ret[ERROR_CODES::ERR_NICKCOLLISION] = ":Nickname collision KILL from";
     ret[ERROR_CODES::ERR_UNKNOWNCOMMAND] = ":Unknown command";
     ret[ERROR_CODES::ERR_NOTREGISTERED] = ":You have not registered";
+    ret[ERROR_CODES::ERR_NOTONCHANNEL] = ":You're not on that channel";
+    ret[ERROR_CODES::ERR_CHANOPRIVSNEEDED] = ":You're not channel operator";
+    ret[ERROR_CODES::ERR_USERONCHANNEL] = ":is already on channel";
     return (ret);
 }
 
@@ -113,4 +116,25 @@ std::map<SUCCESS_CODES::CODES, std::string> Reply::_fillSuccessMap() {
     ret[SUCCESS_CODES::RPL_WELCOME] = "Welcome to the Internet Relay Network";
     ret[SUCCESS_CODES::RPL_TOPIC] = "";
     return ret;
+}
+
+void sendn(int fd, const std::string& message) {
+    int         numWritten;
+    int         totWritten;
+    int         len = static_cast<int>(message.length());
+    const char* buffer = message.c_str();
+
+    for (totWritten = 0; totWritten < len;) {
+        numWritten = send(fd, buffer, len - totWritten, 0);
+
+        if (numWritten <= 0) {
+            if (numWritten == -1) {
+                std::perror("send");
+                throw std::exception();
+            }
+            return;
+        }
+        totWritten += numWritten;
+        buffer += numWritten;
+    }
 }

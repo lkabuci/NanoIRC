@@ -19,7 +19,7 @@ std::string Utils::join(const std::vector<std::string>& arr) {
     return str;
 }
 
-std::string Utils::toStr(int nbr) {
+std::string Utils::toStr(long nbr) {
     std::string        ret;
     std::ostringstream convert;
     convert << nbr;
