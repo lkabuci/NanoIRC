@@ -30,8 +30,7 @@ void BOT::addToClients() {
 
     sockaddr_storage botAddrs;
     socklen_t        botAddrLen = sizeof(botAddrs);
-    int              botSocket =
-        accept(serverfd, reinterpret_cast<sockaddr*>(&botAddrLen), &botAddrLen);
+    int botSocket = accept(serverfd, (sockaddr*)(&botAddrLen), &botAddrLen);
 
     if (botSocket == -1) {
         std::cerr << "Failed to accept new connection" << std::endl;

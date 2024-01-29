@@ -64,15 +64,11 @@ void KICK::execute(Client* client, const std::vector<std::string>& parameters) {
     tmpChannel.remove(user);
     std::string reason;
     if (!tmp.empty()) {
-        if (tmp[0][0] != ':')
+        if (tmp[0] != ":")
             reason = tmp[0];
         else {
-            tmp[0].erase(0, 1);
-            for (size_t i = 0; i < tmp.size(); i++) {
-                reason += tmp[i];
-                reason += " ";
-            }
-            reason.pop_back();
+            tmp.erase(tmp.begin());
+            reason = Utils::join(tmp);
         }
     }
     if (reason.empty())

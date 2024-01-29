@@ -91,16 +91,19 @@ void handleKey(bool state, char c, std::vector<std::string>& tmp,
                          str + "k"));
     }
     std::string pass;
-    if (tmp[0][0] != ':') {
+    if (tmp[0] != ":") {
         pass = tmp[0];
         tmp.erase(tmp.begin());
     } else {
-        tmp[0].erase(0, 1);
-        for (size_t i = 0; i < tmp.size(); i++) {
-            pass += tmp[i];
-            pass += " ";
-        }
-        pass.pop_back();
+        // tmp[0].erase(0, 1);
+        tmp.erase(tmp.begin());
+        pass = Utils::join(tmp);
+        tmp.clear();
+        // for (size_t i = 0; i < tmp.size(); i++) {
+        //     pass += tmp[i];
+        //     pass += " ";
+        // }
+        // pass.pop_back();
     }
     if (!state && channel.modeIsSet(CHANNEL_MODE::SET_KEY)) {
         if (pass != channel.getPassword())
@@ -158,15 +161,23 @@ void handleOperator(bool state, char c, std::vector<std::string>& tmp,
                          client->getUserInfo().getNickname(), channel.name(),
                          str + "o"));
     }
-    if (ClientList::exist(tmp[0]) && !channel.exist(tmp[0]))
+    std::string str;
+    if (tmp[0] != ":") {
+        str = tmp[0];
+        tmp.erase(tmp.begin());
+    } else {
+        tmp.erase(tmp.begin());
+        str = Utils::join(tmp);
+        tmp.clear();
+    }
+    if (ClientList::exist(str) && !channel.exist(str))
         return (sendErr9(client->getSockfd(),
-                         client->getUserInfo().getNickname(), tmp[0],
+                         client->getUserInfo().getNickname(), str,
                          channel.name()));
-    if (!ClientList::exist(tmp[0]))
+    if (!ClientList::exist(str))
         return (sendErr2(client->getSockfd(),
-                         client->getUserInfo().getNickname(), tmp[0]));
-    Client* user = channel.getClient(tmp[0]);
-    tmp.erase(tmp.begin());
+                         client->getUserInfo().getNickname(), str));
+    Client* user = channel.getClient(str);
     if (!state && channel.flagIsSet(user, MEMBER_PERMISSION::OPERATOR)) {
         channel.setPermission(user, MEMBER_PERMISSION::REGULAR);
         std::string msg = ":" + client->getUserInfo().getNickname() + "!~" +
@@ -176,9 +187,7 @@ void handleOperator(bool state, char c, std::vector<std::string>& tmp,
                           user->getUserInfo().getNickname() + CR_LF;
         channel.sendToAll(client, msg);
         send(client->getSockfd(), msg.c_str(), msg.size(), 0);
-    }
-
-    else if (state && !channel.flagIsSet(user, MEMBER_PERMISSION::OPERATOR)) {
+    } else if (state && !channel.flagIsSet(user, MEMBER_PERMISSION::OPERATOR)) {
         channel.setPermission(user, MEMBER_PERMISSION::OPERATOR);
 
         std::string msg = ":" + client->getUserInfo().getNickname() + "!~" +
@@ -221,11 +230,20 @@ void handleLimit(bool state, char c, std::vector<std::string>& tmp,
         return (sendErr7(client->getSockfd(),
                          client->getUserInfo().getNickname(), channel.name(),
                          "+l"));
-    if (state) {
-        std::stringstream ss(tmp[0]);
-        tmp.erase(tmp.begin());
-        unsigned long limit;
+    if (state && !channel.modeIsSet(CHANNEL_MODE::SET_LIMIT)) {
+        std::string str;
+        if (tmp[0] != ":") {
+            str = tmp[0];
+            tmp.erase(tmp.begin());
+        } else {
+            tmp.erase(tmp.begin()); //? why removing the first item
+            str = Utils::join(tmp);
+            tmp.clear();
+        }
+        std::stringstream ss(str);
+        unsigned long     limit;
         ss >> limit;
+        std::cout << "--> " << limit << std::endl;
         channel.setLimit(limit);
         channel.setMode(CHANNEL_MODE::SET_LIMIT);
         std::string msg = ":" + client->getUserInfo().getNickname() + "!~" +
@@ -234,7 +252,7 @@ void handleLimit(bool state, char c, std::vector<std::string>& tmp,
                           channel.name() + " +l " + Utils::toStr(limit) + CR_LF;
         channel.sendToAll(client, msg);
         send(client->getSockfd(), msg.c_str(), msg.size(), 0);
-    } else {
+    } else if (!state && channel.modeIsSet(CHANNEL_MODE::SET_LIMIT)) {
         channel.unsetMode(CHANNEL_MODE::SET_LIMIT);
         std::string msg = ":" + client->getUserInfo().getNickname() + "!~" +
                           client->getUserInfo().getUsername() + "@" +
