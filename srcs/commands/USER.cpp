@@ -61,12 +61,23 @@ void USER::_setUserInfo(Client* client) {
 }
 
 void USER::_welcome(Client* client) {
-    std::string msg = ":ircserver 001 : sf ghayerha " +
-                      client->getUserInfo().getNickname() + "!" +
-                      client->getUserInfo().getUsername() + "@" +
-                      Reactor::getInstance().getServerIp() + CR_LF;
+    std::time_t tm = std::time(0);
+    char*       date_time = std::ctime(&tm);
+    std::string msg = ":ircserver 001 " + client->getUserInfo().getNickname() +
+                      " :sf ghyerha\r\n";
+    std::string yourhost = ":ircserver 002 " +
+                           client->getUserInfo().getNickname() +
+                           " :Your host is ircserver, running version i1\r\n";
+    std::string created = ":ircserver 003 " +
+                          client->getUserInfo().getNickname() +
+                          " :This server was created " + date_time + CR_LF;
+    std::string info = ":ircserver 004 " + client->getUserInfo().getNickname() +
+                       " ircserver i1 itkol\r\n";
 
     send(client->getSockfd(), msg.c_str(), msg.length(), 0);
+    send(client->getSockfd(), yourhost.c_str(), yourhost.length(), 0);
+    send(client->getSockfd(), created.c_str(), created.length(), 0);
+    send(client->getSockfd(), info.c_str(), info.length(), 0);
 }
 
 void USER::_errAlreadyRegistred(Client* client) {

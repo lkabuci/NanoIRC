@@ -78,12 +78,22 @@ bool NICK::_userSetPassword(Client* client) {
     return false;
 }
 
+#include <ctime>
+
 void NICK::_welcome(Client* client) {
-    std::string msg = ":ircserver 001" + _nick + " :sf ghayerha, " + _nick +
-                      "!" + client->getUserInfo().getUsername() + "@" +
-                      Reactor::getInstance().getServerIp() + CR_LF;
+    std::time_t tm = std::time(0);
+    char*       date_time = std::ctime(&tm);
+    std::string msg = ":ircserver 001 " + _nick + " :sf ghayerha\r\n";
+    std::string yourhost = ":ircserver 002 " + _nick +
+                           " :Your host is ircserver, running version i1\r\n";
+    std::string created = ":ircserver 003 " + _nick +
+                          " :This server was created " + date_time + CR_LF;
+    std::string info = ":ircserver 004 " + _nick + " ircserver i1 itkol\r\n";
 
     send(client->getSockfd(), msg.c_str(), msg.length(), 0);
+    send(client->getSockfd(), yourhost.c_str(), yourhost.length(), 0);
+    send(client->getSockfd(), created.c_str(), created.length(), 0);
+    send(client->getSockfd(), info.c_str(), info.length(), 0);
 }
 
 //: i1!~u1@197.230.30.146 NICK :fhfhfhfh
