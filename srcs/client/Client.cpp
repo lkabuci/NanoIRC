@@ -76,5 +76,6 @@ void Client::setIsDoneReading(bool isDoneReading) {
 
 void Client::finish() {
     _isDoneReading = false;
-    _message.clear();
+    if (!_message.empty())
+        _message.clear();
 }

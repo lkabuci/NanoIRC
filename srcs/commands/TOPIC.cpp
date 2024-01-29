@@ -67,7 +67,7 @@ void TOPIC::execute(Client*                         client,
     if (!TChannels::exist(tmp[0]))
         return (sendErr2(client->getSockfd(),
                          client->getUserInfo().getNickname(), tmp[0]));
-    Channel tmpChannel = TChannels::channel(tmp[0]);
+    Channel& tmpChannel = TChannels::channel(tmp[0]);
     if (!tmpChannel.exist(client))
         return (sendErr3(client->getSockfd(),
                          client->getUserInfo().getNickname(),
@@ -86,15 +86,11 @@ void TOPIC::execute(Client*                         client,
                   tmpChannel.getTopicSetter()->getUserInfo().getNickname(),
                   Utils::toStr(tmpChannel.getTime()));
     } else {
-        if (tmp[0][0] != ':') {
+        if (tmp[0] != ":") {
             topic = tmp[0];
         } else {
-            tmp[0].erase(0, 1);
-            for (size_t i = 0; i < tmp.size(); i++) {
-                topic += tmp[i];
-                topic += " ";
-            }
-            topic.pop_back();
+            tmp.erase(tmp.begin());
+            topic = Utils::join(tmp);
         }
         if (tmpChannel.flagIsSet(client, MEMBER_PERMISSION::OPERATOR) ||
             tmpChannel.modeIsSet(CHANNEL_MODE::SET_TOPIC)) {
