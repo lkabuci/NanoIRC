@@ -7,7 +7,10 @@ NICK::~NICK() {}
 void NICK::execute(Client* client, const std::vector<std::string>& parameters) {
     if (_notEnoughParams(client, parameters) || !_userSetPassword(client))
         return;
-    Parser::name(parameters[0], _nick);
+    if (!Parser::name(parameters[0], _nick)) {
+        _errErroneousNickname(client, parameters[0]);
+        throw std::exception();
+    }
     if (_nicknameAlreadyInUse(client))
         return;
     client->getUserInfo().setNickname(_nick);
@@ -67,9 +70,7 @@ void NICK::_welcome(Client* client) {
 
 void NICK::_errNoNicknameGiven(Client* client) {
     std::string nick = _nick.empty() ? "*" : _nick;
-    std::string reply = std::string(":") +
-                        Reactor::getInstance().getServerIp() + " 431 " + nick +
-                        " :No nickname given\r\n";
+    std::string reply = ":ircserver 431 " + nick + " :No nickname given\r\n";
 
     send(client->getSockfd(), reply.c_str(), reply.length(), 0);
 }
@@ -86,5 +87,20 @@ void NICK::_errNicknameAlreadyInUse(Client* client) {
                      client->getUserInfo().getUsername());
     }
     reply.append(" :Nickname is already in use\r\n");
+    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
+}
+
+void NICK::_errErroneousNickname(Client* client, const std::string& name) {
+    //: stockholm.se.quakenet.org 432 * 23g :Erroneous Nickname
+    std::string reply = ":ircserver 432 ";
+
+    if (client->getUserInfo().getNickname().empty()) {
+        reply.append("* ");
+    } else {
+        //: euroserv.fr.quakenet.org 433 i1 n1 :Nickname is already in use.
+        reply.append(client->getUserInfo().getNickname());
+    }
+    reply.append(name == ":" ? "" : name);
+    reply.append(" :Erroneous Nickname\r\n");
     send(client->getSockfd(), reply.c_str(), reply.length(), 0);
 }
