@@ -78,8 +78,6 @@ bool NICK::_userSetPassword(Client* client) {
     return false;
 }
 
-#include <ctime>
-
 void NICK::_welcome(Client* client) {
     std::time_t tm = std::time(0);
     char*       date_time = std::ctime(&tm);
