@@ -62,7 +62,6 @@ void ClientHandler::handleClientInput(Client*& pClient) {
         Message msg;
 
         msg.run(pClient);
-        // ! sigsegv
     }
 }
 
