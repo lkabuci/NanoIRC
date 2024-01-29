@@ -31,8 +31,8 @@ class SendMsg {
     static void _errNotRegistered();
     static void _errNoRecipent();
     static void _errNoTextToSend();
-    static void _errNoSuch(const std::string& name,
-                           const std::string& description);
+    static void _errNoSuchNick(const std::string& name);
+    static void _errNoSuchChannel(const std::string& name);
 };
 
 #endif
