@@ -5,6 +5,10 @@ USER::USER() {}
 USER::~USER() {}
 
 void USER::execute(Client* client, const std::vector<std::string>& parameters) {
+    if (client->getUserInfo().isRegistered()) {
+        _errAlreadyRegistred(client);
+        return;
+    }
     if (_notEnoughParams(client, parameters))
         return;
 
@@ -25,40 +29,6 @@ void USER::execute(Client* client, const std::vector<std::string>& parameters) {
         _welcome(client);
 }
 
-void USER::_errErroneousNickname(Client* client, const std::string& name) {
-    //: euroserv.fr.quakenet.org 432 * 2 :Erroneous Nickname
-    std::string reply =
-        std::string(":") + Reactor::getInstance().getServerIp() + " 432 ";
-
-    if (client->getUserInfo().isSet(UserInfo::NICK_SET)) {
-        reply.append(client->getUserInfo().getNickname() + " " +
-                     client->getUserInfo().getUsername());
-    } else {
-        reply.append("*");
-    }
-    reply.append(" " + name + " :Erroneouse Nickname\r\n");
-    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
-}
-
-bool USER::_userSetPassword(Client* client) {
-    if (client->getUserInfo().isSet(UserInfo::PASSWORD_SET))
-        return true;
-    std::string reply =
-        std::string(":") + Reactor::getInstance().getServerIp() + " 451 ";
-
-    if (client->getUserInfo().getNickname().empty()) {
-        //: atw.hu.quakenet.org 451 *  :Register first.
-        reply.append("*  ");
-    } else {
-        //: atw.hu.quakenet.org 451 i1 i1 :Register first.
-        reply.append(client->getUserInfo().getNickname() + " " +
-                     client->getUserInfo().getUsername());
-    }
-    reply.append(" :You have not registered\r\n");
-    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
-    return false;
-}
-
 bool USER::_notEnoughParams(Client*                         client,
                             const std::vector<std::string>& parameters) {
     if (parameters.size() < 4) {
@@ -68,27 +38,12 @@ bool USER::_notEnoughParams(Client*                         client,
     return false;
 }
 
-void USER::_errNotEnoughParams(Client* client) {
-    // USER i2 -> :euroserv.fr.quakenet.org 461 * USER :Not enough parameters
-    // nickname set : euroserv.fr.quakenet.org 461 i2 USER :Not enough
-    // parameters
-    std::string reply =
-        std::string(":") + Reactor::getInstance().getServerIp() + " 461 ";
-
-    if (client->getUserInfo().getNickname().empty()) {
-        reply.append("*");
-    } else {
-        reply.append(client->getUserInfo().getUsername());
-    }
-    reply.append(" USER :Not enough parameters\r\n");
-    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
-}
-
 void USER::_ignoreHostAndServerNames() {
     Parser::advance(); // skip space
     Parser::advance(); // skip hostname
     Parser::advance(); // skip space
     Parser::advance(); // skip servername
+    Parser::advance(); // skip space
 }
 
 void USER::_parseRealName() {
@@ -106,11 +61,65 @@ void USER::_setUserInfo(Client* client) {
 }
 
 void USER::_welcome(Client* client) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      " 001 " + client->getUserInfo().getNickname() +
-                      " :sf ghayerha, " + client->getUserInfo().getNickname() +
-                      "!" + client->getUserInfo().getUsername() + "@" +
+    std::string msg = ":ircserver 001 : sf ghayerha " +
+                      client->getUserInfo().getNickname() + "!" +
+                      client->getUserInfo().getUsername() + "@" +
                       Reactor::getInstance().getServerIp() + CR_LF;
 
     send(client->getSockfd(), msg.c_str(), msg.length(), 0);
+}
+
+void USER::_errAlreadyRegistred(Client* client) {
+    //: euroserv.fr.quakenet.org 462 i1 :You may not reregister
+    std::string reply = ":ircserver 462 " +
+                        client->getUserInfo().getNickname() +
+                        " :You may not reregister\r\n";
+
+    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
+}
+void USER::_errNotEnoughParams(Client* client) {
+    // USER i2 -> :euroserv.fr.quakenet.org 461 * USER :Not enough parameters
+    // nickname set : euroserv.fr.quakenet.org 461 i2 USER :Not enough
+    // parameters
+    std::string reply = ":ircserver 461 ";
+
+    if (client->getUserInfo().getNickname().empty()) {
+        reply.append("*");
+    } else {
+        reply.append(client->getUserInfo().getUsername());
+    }
+    reply.append(" USER :Not enough parameters\r\n");
+    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
+}
+
+void USER::_errErroneousNickname(Client* client, const std::string& name) {
+    //: euroserv.fr.quakenet.org 432 * 2 :Erroneous Nickname
+    std::string reply = ":ircserver 432 ";
+
+    if (client->getUserInfo().isSet(UserInfo::NICK_SET)) {
+        reply.append(client->getUserInfo().getNickname() + " " +
+                     client->getUserInfo().getUsername());
+    } else {
+        reply.append("*");
+    }
+    reply.append(" " + name + " :Erroneouse Nickname\r\n");
+    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
+}
+
+bool USER::_userSetPassword(Client* client) {
+    if (client->getUserInfo().isSet(UserInfo::PASSWORD_SET))
+        return true;
+    std::string reply = ":ircserver 451 ";
+
+    if (client->getUserInfo().getNickname().empty()) {
+        //: atw.hu.quakenet.org 451 *  :Register first.
+        reply.append("*  ");
+    } else {
+        //: atw.hu.quakenet.org 451 i1 i1 :Register first.
+        reply.append(client->getUserInfo().getNickname() + " " +
+                     client->getUserInfo().getUsername());
+    }
+    reply.append(" :You have not registered\r\n");
+    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
+    return false;
 }

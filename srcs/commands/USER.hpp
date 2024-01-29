@@ -20,6 +20,7 @@ class USER : public Command {
     std::string _username;
     std::string _realname;
 
+    void _errAlreadyRegistred(Client* client);
     void _parseRealName();
     bool _notEnoughParams(Client*                         client,
                           const std::vector<std::string>& parameters);
