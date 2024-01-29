@@ -9,20 +9,40 @@ void NICK::execute(Client* client, const std::vector<std::string>& parameters) {
         return;
     if (!Parser::name(parameters[0], _nick)) {
         _errErroneousNickname(client, parameters[0]);
-        throw std::exception();
-    }
-    if (_nicknameAlreadyInUse(client))
         return;
+    }
+    if (_nickIsSame(client) || _nicknameAlreadyInUse(client))
+        return;
+    if (_nicknameChange(client)) {
+        _change(client);
+    } else {
+        _newUser(client);
+    }
+}
+
+void NICK::_newUser(Client* client) {
     client->getUserInfo().setNickname(_nick);
-    if (!ClientList::exist(_nick))
-        ClientList::add(client);
+    ClientList::add(client);
     if (client->getUserInfo().isRegistered())
         _welcome(client);
 }
 
+bool NICK::_nicknameChange(Client* client) {
+    return !client->getUserInfo().getNickname().empty();
+}
+
+void NICK::_change(Client* client) {
+    _rpl(client);
+    ClientList::changeNickname(client->getUserInfo().getNickname(), _nick);
+    client->getUserInfo().setNickname(_nick);
+}
+
+bool NICK::_nickIsSame(Client* client) {
+    return client->getUserInfo().getNickname() == _nick;
+}
+
 bool NICK::_nicknameAlreadyInUse(Client* client) {
-    if (ClientList::exist(_nick) &&
-        _nick != client->getUserInfo().getNickname()) {
+    if (ClientList::exist(_nick)) {
         //: euroserv.fr.quakenet.org 433 * n1 :Nickname is already in use.
         _errNicknameAlreadyInUse(client);
         return true;
@@ -43,8 +63,7 @@ bool NICK::_notEnoughParams(Client*                         client,
 bool NICK::_userSetPassword(Client* client) {
     if (client->getUserInfo().isSet(UserInfo::PASSWORD_SET))
         return true;
-    std::string reply =
-        std::string(":") + Reactor::getInstance().getServerIp() + " 451 ";
+    std::string reply = ":ircserver 451 ";
 
     if (client->getUserInfo().getNickname().empty()) {
         //: atw.hu.quakenet.org 451 *  :Register first.
@@ -60,12 +79,21 @@ bool NICK::_userSetPassword(Client* client) {
 }
 
 void NICK::_welcome(Client* client) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      " 001 " + _nick + " :sf ghayerha, " + _nick + "!" +
-                      client->getUserInfo().getUsername() + "@" +
+    std::string msg = ":ircserver 001" + _nick + " :sf ghayerha, " + _nick +
+                      "!" + client->getUserInfo().getUsername() + "@" +
                       Reactor::getInstance().getServerIp() + CR_LF;
 
     send(client->getSockfd(), msg.c_str(), msg.length(), 0);
+}
+
+//: i1!~u1@197.230.30.146 NICK :fhfhfhfh
+void NICK::_rpl(Client* client) {
+    std::string reply = std::string(":") + client->getUserInfo().getNickname() +
+                        "!~" + client->getUserInfo().getUsername() + "@" +
+                        Reactor::getInstance().getServerIp() +
+                        " NICK :" + _nick + CR_LF;
+
+    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
 }
 
 void NICK::_errNoNicknameGiven(Client* client) {
@@ -76,8 +104,7 @@ void NICK::_errNoNicknameGiven(Client* client) {
 }
 
 void NICK::_errNicknameAlreadyInUse(Client* client) {
-    std::string reply =
-        std::string(":") + Reactor::getInstance().getServerIp() + " 433 ";
+    std::string reply = ":ircserver 433 ";
 
     if (client->getUserInfo().getNickname().empty()) {
         reply.append("*");
@@ -86,7 +113,7 @@ void NICK::_errNicknameAlreadyInUse(Client* client) {
         reply.append(client->getUserInfo().getNickname() + " " +
                      client->getUserInfo().getUsername());
     }
-    reply.append(" :Nickname is already in use\r\n");
+    reply.append(" " + _nick + " :Nickname is already in use\r\n");
     send(client->getSockfd(), reply.c_str(), reply.length(), 0);
 }
 
