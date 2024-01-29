@@ -224,7 +224,6 @@ TYPES::TokenType Message::_whichCommand() {
 }
 
 void Message::_reset() {
-    _client->finish();
     _nbrOfParams = 0;
     _parameters.clear();
     delete _cmdfunc;
