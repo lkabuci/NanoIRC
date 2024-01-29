@@ -48,7 +48,7 @@ void KICK::execute(Client* client, const std::vector<std::string>& parameters) {
     if (!TChannels::exist(tmp[0]))
         return (send3(client->getSockfd(), client->getUserInfo().getNickname(),
                       tmp[0]));
-    Channel tmpChannel = TChannels::channel(tmp[0]);
+    Channel& tmpChannel = TChannels::channel(tmp[0]);
     tmp.erase(tmp.begin());
     if (!tmpChannel.exist(client))
         return (send6(client->getSockfd(), client->getUserInfo().getNickname(),

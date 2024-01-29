@@ -67,7 +67,7 @@ void TOPIC::execute(Client*                         client,
     if (!TChannels::exist(tmp[0]))
         return (sendErr2(client->getSockfd(),
                          client->getUserInfo().getNickname(), tmp[0]));
-    Channel tmpChannel = TChannels::channel(tmp[0]);
+    Channel& tmpChannel = TChannels::channel(tmp[0]);
     if (!tmpChannel.exist(client))
         return (sendErr3(client->getSockfd(),
                          client->getUserInfo().getNickname(),
