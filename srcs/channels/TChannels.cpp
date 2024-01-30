@@ -73,3 +73,13 @@ void TChannels::removeUserFromAll(const std::string& nick) {
         }
     }
 }
+
+Channel& TChannels::userChannel(const std::string& nick) {
+    std::map<std::string, Channel>::iterator it = _channels.begin();
+
+    for (; it != _channels.end(); ++it) {
+        if (it->second.exist(nick))
+            return it->second;
+    }
+    throw std::runtime_error("no such channel");
+}

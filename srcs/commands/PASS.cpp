@@ -17,13 +17,15 @@ PASS& PASS::operator=(const PASS& p) {
 
 void PASS::execute(Client* client, const std::vector<std::string>& parameters) {
     if (client->getUserInfo().isRegistered()) {
-        _errAlreadyRegistred(client);
+        //_errAlreadyRegistred(client);
+        Reply::errAlreadyRegistred(client);
         return;
     }
     if (!_validParameters(client, parameters))
         return;
     if (parameters[0] != Server::getPasswd()) {
-        _errPasswdMismatch(client);
+        //_errPasswdMismatch(client);
+        Reply::errPasswdMismatch(client);
         return;
     }
     _password = parameters[0];
@@ -33,34 +35,38 @@ void PASS::execute(Client* client, const std::vector<std::string>& parameters) {
 bool PASS::_validParameters(Client*                         client,
                             const std::vector<std::string>& parameters) {
     if (parameters.size() != 1) {
-        _errNeedMoreParams(client);
+        //_errNeedMoreParams(client);
+        Reply::errNotEnoughParams(client, "PASS");
         return false;
     }
     return true;
 }
 
 //: tngnet.nl.quakenet.org 461 i1 JOIN :Not enough parameters
-void PASS::_errNeedMoreParams(Client* client) {
-    std::string reply = std::string(":") + Reactor::getServerName() + " 461 " +
-                        client->getUserInfo().getNickname() +
-                        " PASS :Not enough parameters\r\n";
+// void PASS::_errNeedMoreParams(Client* client) {
+//     std::string reply = std::string(":") + Reactor::getServerName() + " 461 "
+//     +
+//                         client->getUserInfo().getNickname() +
+//                         " PASS :Not enough parameters\r\n";
 
-    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
-}
+//    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
+//}
 
-void PASS::_errPasswdMismatch(Client* client) {
-    std::string reply = std::string(":") + Reactor::getServerName() + " 464 " +
-                        client->getUserInfo().getNickname() +
-                        " :Password incorrect\r\n";
+// void PASS::_errPasswdMismatch(Client* client) {
+//     std::string reply = std::string(":") + Reactor::getServerName() + " 464 "
+//     +
+//                         client->getUserInfo().getNickname() +
+//                         " :Password incorrect\r\n";
 
-    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
-}
+//    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
+//}
 
-void PASS::_errAlreadyRegistred(Client* client) {
-    // :tngnet.nl.quakenet.org 462 i1 :You may not reregister
-    std::string reply = std::string(":") + Reactor::getServerName() + " 462 " +
-                        client->getUserInfo().getNickname() +
-                        " :You may not reregister\r\n";
+// void PASS::_errAlreadyRegistred(Client* client) {
+//     // :tngnet.nl.quakenet.org 462 i1 :You may not reregister
+//     std::string reply = std::string(":") + Reactor::getServerName() + " 462 "
+//     +
+//                         client->getUserInfo().getNickname() +
+//                         " :You may not reregister\r\n";
 
-    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
-}
+//    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
+//}

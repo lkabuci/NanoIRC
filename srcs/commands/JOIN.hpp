@@ -37,12 +37,12 @@ class JOIN : public Command {
     bool _validChannel(const std::string& channel);
     void _joinWithoutAsk(Channel& channel);
 
-    void _channelReply(const std::string& channel);
+    // void _channelReply(const std::string& channel);
     void _tellMembers(Channel& channel);
-    void _errNotEnoughParams(Client* client);
-    void _errNoSuchChannel(const std::string& name);
-    void _errChannelIsFull(const std::string& name);
-    void _errInviteOnlyChan(const std::string& name);
+    // void _errNotEnoughParams(Client* client);
+    // void _errNoSuchChannel(const std::string& name);
+    // void _errChannelIsFull(const std::string& name);
+    // void _errInviteOnlyChan(const std::string& name);
 };
 
 #endif

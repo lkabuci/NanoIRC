@@ -18,7 +18,6 @@ class QUIT : public Command {
     Client*     _client;
 
     void _setQuitMessage();
-    void _oneParam();
     void _sendReply();
 };
 

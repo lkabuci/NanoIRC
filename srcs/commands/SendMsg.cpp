@@ -16,7 +16,7 @@ void SendMsg::sendMessage(Client*                         client,
         _errNoRecipent();
         return;
     }
-    if (!client->getUserInfo().isRegistered()) {
+    if (!_sender->getUserInfo().isRegistered()) {
         //: stockholm.se.quakenet.org 451 *  :Register first
         _errNotRegistered();
         return;
@@ -69,7 +69,7 @@ void SendMsg::_sendText() {
 void SendMsg::_sendToUser(const std::string& name) {
     if (!ClientList::exist(name)) {
         _errNoSuchNick(name);
-        throw std::exception();
+        // Reply::errNoSuchNick(_sender, name);
     }
     Client*     receiver = ClientList::get(name);
     std::string msg = ":" + _sender->getUserInfo().getNickname() + "!~" +
@@ -84,8 +84,8 @@ void SendMsg::_sendToUser(const std::string& name) {
 void SendMsg::_sendToChannel(const std::string& name) {
     if (!TChannels::exist(name)) {
         //: hostsailor.ro.quakenet.org 403 u1 #cfhs :No such channel
+        //_errNoSuchChannel(name);
         _errNoSuchChannel(name);
-        throw std::exception();
     }
     Channel& channel = TChannels::channel(name);
     //: i1!~u1@197.230.30.146 PRIVMSG #ch1 :  hello
@@ -99,12 +99,15 @@ void SendMsg::_sendToChannel(const std::string& name) {
 
 void SendMsg::_errNoSuchChannel(const std::string& name) {
     //: hostsailor.ro.quakenet.org 403 u1 #cfhs :No such channel
-    std::string reply = std::string(":") +
-                        Reactor::getInstance().getServerIp() + " 403 " +
-                        _sender->getUserInfo().getNickname() + " " + name +
-                        " :No such channel\r\n";
+    if (_cmd != "NOTICE")
+        Reply::errNoSuchChannel(_sender, name);
+    throw std::exception();
+    // std::string reply = std::string(":") +
+    //                     Reactor::getInstance().getServerIp() + " 403 " +
+    //                     _sender->getUserInfo().getNickname() + " " + name +
+    //                     " :No such channel\r\n";
 
-    send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
+    // send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
 }
 
 void SendMsg::_addChannel() {
@@ -133,50 +136,51 @@ void SendMsg::_clear() {
 void SendMsg::_errNoRecipent() {
     if (_cmd == "NOTICE")
         return;
-    // fix errors
-    std::string reply = std::string(":IRCSERVER") + " 411 " +
-                        _sender->getUserInfo().getNickname() +
-                        " :No recipent given (" + _cmd + ")\r\n";
+    Reply::errNoRecipient(_sender, _cmd);
+    // std::string reply = std::string(":IRCSERVER") + " 411 " +
+    //                     _sender->getUserInfo().getNickname() +
+    //                     " :No recipent given (" + _cmd + ")\r\n";
 
-    send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
+    // send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
 }
 
 //: stockholm.se.quakenet.org 412 i2 :No text to send
 void SendMsg::_errNoTextToSend() {
-    if (_cmd == "NOTICE")
-        throw std::exception();
-    std::string reply = ":ircserver 412 " +
-                        _sender->getUserInfo().getNickname() +
-                        " :No text to send\r\n";
+    if (_cmd != "NOTICE")
+        Reply::errNoTextToSend(_sender);
+    // std::string reply = ":ircserver 412 " +
+    //                     _sender->getUserInfo().getNickname() +
+    //                     " :No text to send\r\n";
 
-    send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
+    // send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
     throw std::exception();
 }
 
 void SendMsg::_errNoSuchNick(const std::string& name) {
-    if (_cmd == "NOTICE")
-        throw std::exception();
-    std::string reply = ":ircserver 401 " +
-                        _sender->getUserInfo().getNickname() + " " + name +
-                        " :No such nick\r\n";
+    if (_cmd != "NOTICE")
+        Reply::errNoSuchNick(_sender, name);
+    // std::string reply = ":ircserver 401 " +
+    //                     _sender->getUserInfo().getNickname() + " " + name +
+    //                     " :No such nick\r\n";
 
-    send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
+    // send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
     throw std::exception();
 }
 
 void SendMsg::_errNotRegistered() {
     if (_cmd == "NOTICE")
         return;
-    std::string reply =
-        std::string(":") + Reactor::getInstance().getServerIp() + " 451 ";
+    Reply::errNotRegistered(_sender);
+    // std::string reply =
+    //     std::string(":") + Reactor::getInstance().getServerIp() + " 451 ";
 
-    if (_sender->getUserInfo().getNickname().empty()) {
-        reply.append("*");
-    } else {
-        reply.append(_sender->getUserInfo().getNickname() + " " +
-                     _sender->getUserInfo().getUsername());
-    }
-    reply.append(" :You have not regisetred\r\n");
+    // if (_sender->getUserInfo().getNickname().empty()) {
+    //     reply.append("*");
+    // } else {
+    //     reply.append(_sender->getUserInfo().getNickname() + " " +
+    //                  _sender->getUserInfo().getUsername());
+    // }
+    // reply.append(" :You have not regisetred\r\n");
 
-    send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
+    // send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
 }
