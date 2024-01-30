@@ -2,12 +2,12 @@
 #include "../client/Client.hpp"
 #include <netdb.h>
 
-Channel::Channel() : _timeTopic(0), _topicSetter(NULL) {}
+Channel::Channel() : _timeTopic(0), _topicSetter(NULL), _limit(3) {}
 
 Channel::Channel(const std::string& name, const std::string& password,
                  CHANNEL_MODE::Modes mode)
     : _name(name), _password(password), _mode(mode), _timeTopic(0),
-      _topicSetter(NULL), _limit(0) {}
+      _topicSetter(NULL), _limit(3) {}
 
 Channel::Channel(const Channel& channel)
     : _name(channel._name), _password(channel._password),

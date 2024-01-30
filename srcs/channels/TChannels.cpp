@@ -83,3 +83,13 @@ Channel& TChannels::userChannel(const std::string& nick) {
     }
     throw std::runtime_error("no such channel");
 }
+
+bool TChannels::userExists(const std::string& nick) {
+    std::map<std::string, Channel>::iterator it = _channels.begin();
+
+    for (; it != _channels.end(); ++it) {
+        if (it->second.exist(nick))
+            return true;
+    }
+    return false;
+}

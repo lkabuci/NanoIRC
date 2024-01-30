@@ -8,7 +8,8 @@ void NICK::execute(Client* client, const std::vector<std::string>& parameters) {
     if (_notEnoughParams(client, parameters) || !_userSetPassword(client))
         return;
     if (!Parser::name(parameters[0], _nick)) {
-        _errErroneousNickname(client, parameters[0]);
+        //_errErroneousNickname(client, parameters[0]);
+        Reply::errErroneousNickname(client, parameters[0]);
         return;
     }
     if (_nickIsSame(client) || _nicknameAlreadyInUse(client))

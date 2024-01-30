@@ -232,8 +232,8 @@ void Reply::welcome(Client* client) {
         server_name + " 003 " + client->getUserInfo().getNickname() +
         " :This server was created Tue 16 Jan 2024 at 14:47\r\n";
     std::string rpl_myinfo = server_name + " 004 " +
-                             client->getUserInfo().getNickname() + server_name +
-                             " i1 itkol\r\n";
+                             client->getUserInfo().getNickname() + " " +
+                             server_name + " i1 itkol\r\n";
 
     send(client->getSockfd(), rpl_welcome.c_str(), rpl_welcome.length(), 0);
     send(client->getSockfd(), rpl_yourhost.c_str(), rpl_yourhost.length(), 0);
@@ -301,8 +301,7 @@ void Reply::errErroneousNickname(Client* client, const std::string& name) {
     std::string reply = std::string(":") + Reactor::getServerName() + " 432 ";
 
     if (client->getUserInfo().isSet(UserInfo::NICK_SET)) {
-        reply.append(client->getUserInfo().getNickname() + " " +
-                     client->getUserInfo().getUsername());
+        reply.append(client->getUserInfo().getNickname());
     } else {
         reply.append("*");
     }
