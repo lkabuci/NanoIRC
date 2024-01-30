@@ -7,13 +7,16 @@
 
 class QUIT : public Command {
   public:
-    QUIT();
+    explicit QUIT();
     virtual ~QUIT();
 
     virtual void execute(Client*                         client,
                          const std::vector<std::string>& parameters);
 
   private:
+    QUIT(const QUIT&);
+    QUIT& operator=(const QUIT&);
+
     std::string _message;
     Client*     _client;
 
