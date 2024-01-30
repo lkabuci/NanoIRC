@@ -27,7 +27,6 @@ class USER : public Command {
     bool _userSetPassword(Client* client);
     void _ignoreHostAndServerNames();
     void _setUserInfo(Client* client);
-    void _welcome(Client* client);
     void _errNotEnoughParams(Client* client);
     void _errErroneousNickname(Client* client, const std::string& name);
 };

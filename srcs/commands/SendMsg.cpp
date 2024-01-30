@@ -74,8 +74,8 @@ void SendMsg::_sendToUser(const std::string& name) {
     Client*     receiver = ClientList::get(name);
     std::string msg = ":" + _sender->getUserInfo().getNickname() + "!~" +
                       _sender->getUserInfo().getUsername() + "@" +
-                      Reactor::getInstance().getServerIp() + " " + _cmd + " " +
-                      name + " :" + _textToSend;
+                      _sender->getIp() + " " + _cmd + " " + name + " :" +
+                      _textToSend;
 
     //: i2!~u2@197.230.30.146 PRIVMSG i1 :hi
     send(receiver->getSockfd(), msg.c_str(), msg.length(), 0);

@@ -21,6 +21,7 @@ class Client {
     void               appendMessage(const std::string& message);
     bool               isDoneReading() const;
     void               setIsDoneReading(bool isDoneReading);
+    const char*        getIp() const;
     void               finish();
 
   private:

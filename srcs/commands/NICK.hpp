@@ -28,7 +28,6 @@ class NICK : public Command {
     void _rpl(Client* client);
     void _change(Client* client);
     bool _nicknameChange(Client* client);
-    void _welcome(Client* client);
     void _errNoNicknameGiven(Client* client);
     void _errNicknameAlreadyInUse(Client* client);
     void _errErroneousNickname(Client* client, const std::string& name);

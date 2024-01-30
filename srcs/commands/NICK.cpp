@@ -24,7 +24,7 @@ void NICK::_newUser(Client* client) {
     client->getUserInfo().setNickname(_nick);
     ClientList::add(client);
     if (client->getUserInfo().isRegistered())
-        _welcome(client);
+        Reply::welcome(client);
 }
 
 bool NICK::_nicknameChange(Client* client) {
@@ -63,7 +63,7 @@ bool NICK::_notEnoughParams(Client*                         client,
 bool NICK::_userSetPassword(Client* client) {
     if (client->getUserInfo().isSet(UserInfo::PASSWORD_SET))
         return true;
-    std::string reply = ":ircserver 451 ";
+    std::string reply = std::string(":") + Reactor::getServerName() + " 451 ";
 
     if (client->getUserInfo().getNickname().empty()) {
         //: atw.hu.quakenet.org 451 *  :Register first.
@@ -78,41 +78,25 @@ bool NICK::_userSetPassword(Client* client) {
     return false;
 }
 
-void NICK::_welcome(Client* client) {
-    std::time_t tm = std::time(0);
-    char*       date_time = std::ctime(&tm);
-    std::string msg = ":ircserver 001 " + _nick + " :sf ghayerha\r\n";
-    std::string yourhost = ":ircserver 002 " + _nick +
-                           " :Your host is ircserver, running version i1\r\n";
-    std::string created = ":ircserver 003 " + _nick +
-                          " :This server was created " + date_time + CR_LF;
-    std::string info = ":ircserver 004 " + _nick + " ircserver i1 itkol\r\n";
-
-    send(client->getSockfd(), msg.c_str(), msg.length(), 0);
-    send(client->getSockfd(), yourhost.c_str(), yourhost.length(), 0);
-    send(client->getSockfd(), created.c_str(), created.length(), 0);
-    send(client->getSockfd(), info.c_str(), info.length(), 0);
-}
-
 //: i1!~u1@197.230.30.146 NICK :fhfhfhfh
 void NICK::_rpl(Client* client) {
     std::string reply = std::string(":") + client->getUserInfo().getNickname() +
                         "!~" + client->getUserInfo().getUsername() + "@" +
-                        Reactor::getInstance().getServerIp() +
-                        " NICK :" + _nick + CR_LF;
+                        client->getIp() + " NICK :" + _nick + CR_LF;
 
     send(client->getSockfd(), reply.c_str(), reply.length(), 0);
 }
 
 void NICK::_errNoNicknameGiven(Client* client) {
     std::string nick = _nick.empty() ? "*" : _nick;
-    std::string reply = ":ircserver 431 " + nick + " :No nickname given\r\n";
+    std::string reply = std::string(":") + Reactor::getServerName() + " 431 " +
+                        nick + " :No nickname given\r\n";
 
     send(client->getSockfd(), reply.c_str(), reply.length(), 0);
 }
 
 void NICK::_errNicknameAlreadyInUse(Client* client) {
-    std::string reply = ":ircserver 433 ";
+    std::string reply = std::string(":") + Reactor::getServerName() + " 433 ";
 
     if (client->getUserInfo().getNickname().empty()) {
         reply.append("*");
@@ -127,7 +111,7 @@ void NICK::_errNicknameAlreadyInUse(Client* client) {
 
 void NICK::_errErroneousNickname(Client* client, const std::string& name) {
     //: stockholm.se.quakenet.org 432 * 23g :Erroneous Nickname
-    std::string reply = ":ircserver 432 ";
+    std::string reply = std::string(":") + Reactor::getServerName() + " 432 ";
 
     if (client->getUserInfo().getNickname().empty()) {
         reply.append("* ");

@@ -74,6 +74,10 @@ void Client::setIsDoneReading(bool isDoneReading) {
     _isDoneReading = isDoneReading;
 }
 
+const char* Client::getIp() const {
+    return _ip;
+}
+
 void Client::finish() {
     _isDoneReading = false;
     if (!_message.empty())

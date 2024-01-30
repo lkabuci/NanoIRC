@@ -93,6 +93,7 @@ class Reply {
     static void rpl_channelModeIs(int fd, const std::string& nickname,
                                   const std::string& channel,
                                   const std::string& mode);
+    static void welcome(Client* client);
 
   private:
     Reply();

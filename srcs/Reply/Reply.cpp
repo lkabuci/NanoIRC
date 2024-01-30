@@ -138,3 +138,26 @@ void sendn(int fd, const std::string& message) {
         buffer += numWritten;
     }
 }
+
+void Reply::welcome(Client* client) {
+    std::string server_name = std::string(":") + Reactor::getServerName();
+    std::string rpl_welcome =
+        server_name + " 001 " + client->getUserInfo().getNickname() +
+        " :Welcome to the Internet Relay Network " +
+        client->getUserInfo().getNickname() + "!" +
+        client->getUserInfo().getUsername() + "@" + client->getIp() + CR_LF;
+    std::string rpl_yourhost =
+        server_name + " 002 " + client->getUserInfo().getNickname() +
+        " :Your host is " + server_name + ", running version v1\r\n";
+    std::string rpl_created =
+        server_name + " 003 " + client->getUserInfo().getNickname() +
+        " :This server was created Tue 16 Jan 2024 at 14:47\r\n";
+    std::string rpl_myinfo = server_name + " 004 " +
+                             client->getUserInfo().getNickname() + server_name +
+                             " i1 itkol\r\n";
+
+    send(client->getSockfd(), rpl_welcome.c_str(), rpl_welcome.length(), 0);
+    send(client->getSockfd(), rpl_yourhost.c_str(), rpl_yourhost.length(), 0);
+    send(client->getSockfd(), rpl_created.c_str(), rpl_created.length(), 0);
+    send(client->getSockfd(), rpl_myinfo.c_str(), rpl_myinfo.length(), 0);
+}

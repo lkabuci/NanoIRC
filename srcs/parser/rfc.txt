@@ -9,7 +9,13 @@ for the command and its parameters
 
 
 
-<message>  ::= <command> <params> <crlf>
+<message>  ::= [':' <prefix> <SPACE> ] <command> <params> <crlf>
+<prefix>   ::= <servername> | <nick> [ '!' <user> ] [ '@' <host> ]
+<servername> =  <hostname>
+<host>       =  <hostname> | <hostaddr>
+<hostname>   =  <shortname> *( "." <shortname> )
+<shortname>  =  ( letter | digit ) *( letter | digit | "-" )
+                *( letter | digit )
 <command>  ::= <letter> | <number> <number> <number>
 <SPACE>    ::= ' ' { ' ' }
 <params>   ::= <SPACE> [ ':' <trailing> | <middle> <params> ]
