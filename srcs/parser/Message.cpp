@@ -53,6 +53,7 @@ void Message::_parse(const std::string& message) {
     if (message.empty() || message == CR_LF)
         return;
     Parser::init(message);
+    Parser::skipSpaces();
     _command();
     _params();
     _crlf();
