@@ -62,6 +62,7 @@ void ClientHandler::handleClientInput(Client*& pClient) {
         return;
     } else if (bytesRead > MAX_MSG_LEN) {
         handleTooLongMessage(pClient);
+        ClientList::remove(pClient->getUserInfo().getNickname());
         return;
     }
     pClient->appendMessage(buffer);
