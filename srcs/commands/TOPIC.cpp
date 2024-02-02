@@ -4,7 +4,7 @@
 #include <vector>
 
 static void sendErr1(int fd, const std::string& nick) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+    std::string msg = std::string(":") + Reactor::getServerName() +
                       std::string(" 461 ") + nick +
                       " TOPIC :Not enough parameters\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
@@ -12,21 +12,21 @@ static void sendErr1(int fd, const std::string& nick) {
 
 static void sendErr2(int fd, const std::string& nick,
                      const std::string& channel) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+    std::string msg = std::string(":") + Reactor::getServerName() +
                       std::string(" 403 ") + nick + " " + channel +
                       " :No such channel\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 static void sendErr3(int fd, const std::string& nick,
                      const std::string& channel) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+    std::string msg = std::string(":") + Reactor::getServerName() +
                       std::string(" 442 ") + nick + " " + channel +
                       " :You're not on that channel\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 static void sendErr4(int fd, const std::string& nick,
                      const std::string& channel) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+    std::string msg = std::string(":") + Reactor::getServerName() +
                       std::string(" 331 ") + nick + " " + channel +
                       " :No topic is set.\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
@@ -34,23 +34,23 @@ static void sendErr4(int fd, const std::string& nick,
 
 static void sendErr5(int fd, const std::string& nick,
                      const std::string& channel) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+    std::string msg = std::string(":") + Reactor::getServerName() +
                       std::string(" 482 ") + nick + " " + channel +
                       " :You're not channel operator\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 static void sendSucc(int fd, const std::string& nick,
                      const std::string& channel, const std::string& topic) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      " 332 " + nick + " " + channel + " :" + topic + CR_LF;
+    std::string msg = std::string(":") + Reactor::getServerName() + " 332 " +
+                      nick + " " + channel + " :" + topic + CR_LF;
     send(fd, msg.c_str(), msg.size(), 0);
 }
 static void sendSucc2(int fd, const std::string& nick,
                       const std::string& channel, const std::string& nickSetter,
                       std::string time) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      " 333 " + nick + " " + channel + " " + nickSetter + " " +
-                      time + CR_LF;
+    std::string msg = std::string(":") + Reactor::getServerName() + " 333 " +
+                      nick + " " + channel + " " + nickSetter + " " + time +
+                      CR_LF;
     send(fd, msg.c_str(), msg.size(), 0);
 }
 
@@ -97,8 +97,8 @@ void TOPIC::execute(Client*                         client,
             tmpChannel.setTopic(topic);
             std::string msg = ":" + client->getUserInfo().getNickname() + "!~" +
                               client->getUserInfo().getUsername() + "@" +
-                              Reactor::getInstance().getServerIp() + " TOPIC " +
-                              tmpChannel.name() + " :" + topic + CR_LF;
+                              client->getIp() + " TOPIC " + tmpChannel.name() +
+                              " :" + topic + CR_LF;
             tmpChannel.setTopicSetter(client);
             tmpChannel.setTime(time(NULL));
             tmpChannel.sendToAll(client, msg);

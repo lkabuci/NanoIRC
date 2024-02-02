@@ -1,10 +1,9 @@
 #include "KICK.hpp"
-#include <cstddef>
 #include <string>
 #include <sys/socket.h>
 
 static void sendErr1(int fd, const std::string& nick) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+    std::string msg = std::string(":") + Reactor::getServerName() +
                       std::string(" 461 ") + nick +
                       " KICK :Not enough parameters\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
@@ -12,14 +11,14 @@ static void sendErr1(int fd, const std::string& nick) {
 
 static void sendErr2(int fd, const std::string& nick,
                      const std::string& channel) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+    std::string msg = std::string(":") + Reactor::getServerName() +
                       std::string(" 403 ") + nick + " " + channel +
                       " :No such channel\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 static void sendErr3(int fd, const std::string& nick, const std::string nick2,
                      const std::string& channel) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+    std::string msg = std::string(":") + Reactor::getServerName() +
                       std::string(" 441 ") + nick + " " + nick2 + " " +
                       channel + " :They aren't on that channel\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
@@ -27,7 +26,7 @@ static void sendErr3(int fd, const std::string& nick, const std::string nick2,
 
 static void sendErr4(int fd, const std::string& nick,
                      const std::string& channel) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+    std::string msg = std::string(":") + Reactor::getServerName() +
                       std::string(" 482 ") + nick + " " + channel +
                       " :You're not channel operator\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
@@ -73,8 +72,7 @@ void KICK::execute(Client* client, const std::vector<std::string>& parameters) {
         reason = user->getUserInfo().getNickname();
     std::string msg = ":" + client->getUserInfo().getNickname() + "!~" +
                       client->getUserInfo().getUsername() + "@" +
-                      Reactor::getInstance().getServerIp() + " KICK " +
-                      tmpChannel.name() + " " +
+                      client->getIp() + " KICK " + tmpChannel.name() + " " +
                       user->getUserInfo().getNickname() + " :" + reason + CR_LF;
     tmpChannel.sendToAll(client, msg);
     send(client->getSockfd(), msg.c_str(), msg.size(), 0);
