@@ -39,7 +39,7 @@ void Reactor::removeClient(Client* client) {
 
 void Reactor::run(const char* port) {
     BOT bot(port);
-    // bot.addToClients();
+    bot.addToClients();
     while (serverIsRunning) {
         if (Demultiplexer::waitForEvents() == -1) {
             break;

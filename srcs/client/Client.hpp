@@ -23,7 +23,6 @@ class Client {
     void               setIsDoneReading(bool isDoneReading);
     const char*        getIp() const;
     void               finish();
-    const char*        getIp() const;
     const char*        gettPort() const;
 
   private:

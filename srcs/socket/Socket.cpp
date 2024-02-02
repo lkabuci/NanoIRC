@@ -1,6 +1,7 @@
 #include "Socket.hpp"
 #include "../server/Reactor.hpp"
 #include "AddressResolver.hpp"
+#include <cstring>
 
 Socket::Socket() : _sockfd(), _ip(), _port(), _addresses(NULL) {}
 
@@ -41,6 +42,9 @@ void Socket::initializeSocket() {
             continue;
         }
         return;
+    }
+    if (_ip == NULL) {
+        _ip = "bot";
     }
     std::cerr << "Error: could not bind address for " << std::string(_ip) + ":"
               << std::string(_port) << ".\n";

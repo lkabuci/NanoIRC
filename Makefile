@@ -1,7 +1,7 @@
 GREEN = \033[38;2;0;153;0m
 NC = \033[0m # No Color
 
-CXX			= c++
+CXX			= c++ -fsanitize=address
 CXXFLAGS	= -std=c++98 -Wall -Wextra -g# -Werror
 
 RM			= rm -rf
