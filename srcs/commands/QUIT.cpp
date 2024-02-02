@@ -13,6 +13,8 @@ void QUIT::execute(Client* client, const std::vector<std::string>& parameters) {
 }
 
 void QUIT::_setQuitMessage() {
+    if (Parser::isAtEnd())
+        _message = _client->getUserInfo().getNickname();
     if (!Parser::match(TYPES::COLON)) {
         //_oneParam();
         _message.append(Parser::end().lexeme());
