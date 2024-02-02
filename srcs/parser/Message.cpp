@@ -23,7 +23,7 @@ std::string Message::_commandsStr[] = {
     "PASS",    "NICK",   "USER", "JOIN", "KICK",   "INVITE", "TOPIC", "MODE",
     "PRIVMSG", "NOTICE", "QUIT", "PONG", "INVITE", "MODE",   "KICK",  "TOPIC"};
 
-Message::Message() : _client(NULL), _cmdfunc(NULL) {}
+Message::Message() : _client(NULL), _cmdfunc(NULL), _delete(false) {}
 
 Message::~Message() {
     _reset();
@@ -47,6 +47,10 @@ void Message::run(Client* client) {
     } catch (const std::exception& e) {
     }
     _client->finish();
+    if (_delete) {
+        Reactor::getInstance().removeClient(client);
+        _delete = false;
+    }
 }
 
 void Message::_parse(const std::string& message) {
@@ -179,6 +183,7 @@ void Message::_execute(const std::string& msg) {
         _cmdfunc = new NOTICE();
         break;
     case TYPES::QUIT:
+        _delete = true;
         _cmdfunc = new QUIT();
         break;
     case TYPES::INVITE:

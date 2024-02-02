@@ -32,6 +32,7 @@ void Reactor::removeClient(Client* client) {
         long index = std::distance(_clients.begin(), it);
 
         delete *it;
+        *it = NULL;
         _clients.erase(_clients.begin() + index);
         _pollfds.erase(_pollfds.begin() + index + 1);
     }

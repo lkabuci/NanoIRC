@@ -33,6 +33,7 @@ class Message {
     std::vector<std::string> _parameters;
     Command*                 _cmdfunc;
     static uint8_t           _nbrOfParams;
+    bool                     _delete;
 
     TYPES::TokenType _whichCommand();
 
@@ -43,7 +44,6 @@ class Message {
     void        _trailing();
     void        _middle();
     void        _crlf();
-    // void        _errUnknownCommand(const std::string& cmd);
 
     bool _isCommand();
 
