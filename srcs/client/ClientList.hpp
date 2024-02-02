@@ -14,6 +14,8 @@ class ClientList {
     static size_t  numberOfClients();
     static bool    exist(const std::string& nickname);
     static size_t  size();
+    static void    changeNickname(const std::string& oldName,
+                                  const std::string& newName);
 
   private:
     ClientList();

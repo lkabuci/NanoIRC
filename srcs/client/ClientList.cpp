@@ -42,3 +42,12 @@ bool ClientList::exist(const std::string& nickname) {
 size_t ClientList::size() {
     return _clients.size();
 }
+
+void ClientList::changeNickname(const std::string& oldName,
+                                const std::string& newName) {
+    std::map<std::string, Client*>::iterator it = _clients.find(oldName);
+
+    if (it == _clients.end())
+        throw std::exception();
+    const_cast<std::string&>(it->first) = newName;
+}

@@ -22,6 +22,7 @@ class Reactor {
     std::vector<pollfd>& getPollfds();
     void                 setServerIp(char* ip);
     const char*          getServerIp();
+    static const char*   getServerName();
     std::string          bot(Client*);
 
   private:

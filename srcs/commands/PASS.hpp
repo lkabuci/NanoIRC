@@ -21,9 +21,9 @@ class PASS : public Command {
 
     bool _validParameters(Client*                         client,
                           const std::vector<std::string>& parameters);
-    void _errNeedMoreParams(Client* client);
-    void _errAlreadyRegistred(Client* client);
-    void _errPasswdMismatch(Client* client);
+    // void _errNeedMoreParams(Client* client);
+    // void _errAlreadyRegistred(Client* client);
+    // void _errPasswdMismatch(Client* client);
 };
 
 #endif

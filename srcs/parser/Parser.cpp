@@ -76,6 +76,7 @@ bool Parser::name(const std::string& source, std::string& target) {
 
     if (!std::isalpha(source[i]))
         return false;
+    i++;
     while (std::isalnum(source[i]) || _special(source[i]))
         i++;
     target = source.substr(0, i);

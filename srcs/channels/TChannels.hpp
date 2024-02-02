@@ -18,6 +18,8 @@ class TChannels {
     static bool     exist(const std::string& name);
     static Channel& get(const size_t& index);
     static void     removeUserFromAll(const std::string& nick);
+    static Channel& userChannel(const std::string& nick);
+    static bool     userExists(const std::string& nick);
 
   private:
     TChannels();

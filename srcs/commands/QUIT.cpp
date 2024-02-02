@@ -13,31 +13,29 @@ void QUIT::execute(Client* client, const std::vector<std::string>& parameters) {
 }
 
 void QUIT::_setQuitMessage() {
+    if (Parser::isAtEnd())
+        _message = _client->getUserInfo().getNickname();
     if (!Parser::match(TYPES::COLON)) {
-        _oneParam();
+        //_oneParam();
+        _message.append(Parser::end().lexeme());
     } else {
-        Parser::skipSpaces();
+        Parser::advance(); // skip space
         while (!Parser::isAtEnd())
             _message.append(Parser::advance().lexeme());
-    }
-}
-
-void QUIT::_oneParam() {
-    _message = Parser::advance().lexeme();
-
-    Parser::skipSpaces();
-    if (!Parser::isAtEnd()) {
-        Reply::error(_client->getSockfd(), ERROR_CODES::ERR_UNKNOWNCOMMAND,
-                     _client->getUserInfo().getNickname(), "USER");
-        throw std::exception();
     }
 }
 
 void QUIT::_sendReply() {
     std::string msg = std::string(":") + _client->getUserInfo().getNickname() +
                       "!" + _client->getUserInfo().getUsername() + "@" +
-                      Reactor::getInstance().getServerIp() +
-                      " QUIT :" + _message + CR_LF;
+                      _client->getIp() + " QUIT :" + _message + CR_LF;
 
     send(_client->getSockfd(), msg.c_str(), msg.length(), 0);
+    try {
+        Channel& channel =
+            TChannels::userChannel(_client->getUserInfo().getNickname());
+
+        channel.sendToAll(_client, msg);
+    } catch (const std::exception& e) {
+    }
 }

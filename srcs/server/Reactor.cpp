@@ -65,6 +65,11 @@ const char* Reactor::getServerIp() {
 }
 
 std::string Reactor::bot(Client* client) {
+    // append CRLF
     send(client->getSockfd(), "hhh", 3, 0);
     return std::string("hhh");
+}
+
+const char* Reactor::getServerName() {
+    return "e1r7p15";
 }

@@ -53,6 +53,7 @@ void Message::_parse(const std::string& message) {
     if (message.empty() || message == CR_LF)
         return;
     Parser::init(message);
+    Parser::skipSpaces();
     _command();
     _params();
     _crlf();
@@ -60,18 +61,9 @@ void Message::_parse(const std::string& message) {
 
 void Message::_crlf() {
     if (!Parser::match(TYPES::CRLF)) {
-        _errUnknownCommand(_cmd);
+        Reply::errUnknownCommand(_client, _cmd);
         throw std::exception();
     }
-}
-
-void Message::_errUnknownCommand(const std::string& cmd) {
-    std::string reply = std::string(":") +
-                        Reactor::getInstance().getServerIp() + " 421 " +
-                        _client->getUserInfo().getNickname() + " " + cmd +
-                        " :Unknown command\r\n";
-
-    send(_client->getSockfd(), reply.c_str(), reply.length(), 0);
 }
 
 std::string Message::_getMessage(std::string& msg) {
@@ -88,7 +80,7 @@ std::string Message::_getMessage(std::string& msg) {
 
 void Message::_command() {
     if (!_isCommand()) {
-        _errUnknownCommand(Parser::peek().lexeme());
+        Reply::errUnknownCommand(_client, Parser::peek().lexeme());
         throw std::exception();
     }
     _cmd = Parser::advance().lexeme();
@@ -98,7 +90,7 @@ void Message::_params() {
     if (Parser::check(TYPES::CRLF) || _nbrOfParams >= MAX_PARAMS)
         return;
     if (!Parser::skipSpaces()) {
-        _errUnknownCommand(_cmd);
+        Reply::errUnknownCommand(_client, _cmd);
         throw std::exception();
     }
     ++_nbrOfParams;
@@ -206,13 +198,10 @@ void Message::_execute(const std::string& msg) {
     default:
         break;
     }
-    if (!_cmdfunc)
-        return;
     try {
         _cmdfunc->execute(_client, _parameters);
     } catch (...) {
     }
-    //_client->finish();
 }
 
 TYPES::TokenType Message::_whichCommand() {

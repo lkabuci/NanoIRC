@@ -34,15 +34,12 @@ class JOIN : public Command {
     void _addClientToChannel(Channel& channel, MEMBER_PERMISSION::Flags flag);
     bool _userIsRegistered();
     void _leaveAllChannels();
+    void _sendLeftReply(Channel& channel);
     bool _validChannel(const std::string& channel);
     void _joinWithoutAsk(Channel& channel);
+    bool _isEnd();
 
-    void _channelReply(const std::string& channel);
     void _tellMembers(Channel& channel);
-    void _errNotEnoughParams(Client* client);
-    void _errNoSuchChannel(const std::string& name);
-    void _errChannelIsFull(const std::string& name);
-    void _errInviteOnlyChan(const std::string& name);
 };
 
 #endif
