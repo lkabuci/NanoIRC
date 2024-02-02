@@ -112,6 +112,9 @@ class Reply {
     static void errNoRecipient(Client* client, const std::string& cmd);
 
     static void errErroneousNickname(Client* client, const std::string& name);
+    // ERR_CANNOTSENDTOCHAN
+    static void errCannotSendToChan(Client* client, const std::string& channel,
+                                    const std::string& nickname);
 
   private:
     Reply();

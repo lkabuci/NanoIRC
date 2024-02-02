@@ -227,7 +227,7 @@ void Reply::welcome(Client* client) {
     std::string rpl_yourhost = server_name + " 002 " +
                                client->getUserInfo().getNickname() +
                                " :Your host is " + Reactor::getServerName() +
-                               ", running version v1\r\n";
+                               ", running version i1\r\n";
     std::string rpl_created =
         server_name + " 003 " + client->getUserInfo().getNickname() +
         " :This server was created Tue 16 Jan 2024 at 14:47\r\n";
@@ -306,5 +306,15 @@ void Reply::errErroneousNickname(Client* client, const std::string& name) {
         reply.append("*");
     }
     reply.append(" " + name + " :Erroneouse Nickname\r\n");
+    send(client->getSockfd(), reply.c_str(), reply.length(), 0);
+}
+
+void Reply::errCannotSendToChan(Client* client, const std::string& channel,
+                                const std::string& nickname) {
+    //: adrift.sg.quakenet.org 404 i1 #ch :Cannot send to channel
+    std::string reply = std::string(":") + Reactor::getServerName() + " 404 " +
+                        nickname + " " + channel +
+                        " :Cannot send to channel\r\n";
+
     send(client->getSockfd(), reply.c_str(), reply.length(), 0);
 }
