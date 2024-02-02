@@ -1,56 +1,55 @@
 #include "INVITE.hpp"
-#include "TOPIC.hpp"
 #include <vector>
 
 static void send1(int fd, const std::string& nick) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+    std::string msg = std::string(":") + Reactor::getServerName() +
                       std::string(" 461 ") + nick +
                       " INVITE :Not enough parameters\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 
 static void send2(int fd, const std::string& nick, const std::string& nick2) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+    std::string msg = std::string(":") + Reactor::getServerName() +
                       std::string(" 401 ") + nick + " " + nick2 +
                       " :No such nick\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 
 static void send3(int fd, const std::string& nick, const std::string& channel) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+    std::string msg = std::string(":") + Reactor::getServerName() +
                       std::string(" 403 ") + nick + " " + channel +
                       " :No such channel\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 static void send4(int fd, const std::string& nick, const std::string& channel) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+    std::string msg = std::string(":") + Reactor::getServerName() +
                       std::string(" 442 ") + nick + " " + channel +
                       " :You're not on that channel\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 static void send5(int fd, const std::string& nick) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
+    std::string msg = std::string(":") + Reactor::getServerName() +
                       std::string(" 401 ") + nick + " INVITE :No such nick\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 static void send6(int fd, const std::string& nick, const std::string& channel) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      " 482 " + nick + " " + channel +
+    std::string msg = std::string(":") + Reactor::getServerName() + " 482 " +
+                      nick + " " + channel +
                       " :You're not channel operator\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
 
 static void sendSucc(int fd, const std::string& nick, const std::string& nick2,
                      const std::string& channel) {
-    std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
-                      " 341 " + nick + " " + nick2 + " " + channel + CR_LF;
+    std::string msg = std::string(":") + Reactor::getServerName() + " 341 " +
+                      nick + " " + nick2 + " " + channel + CR_LF;
     send(fd, msg.c_str(), msg.size(), 0);
 }
 static void SendInv(int fd, const std::string& nick, const std::string& user,
-                    const std::string& nick2, const std::string& channel) {
-    std::string msg = std::string(":") + nick + "!~" + user + "@" +
-                      Reactor::getInstance().getServerIp() + " INVITE " +
-                      nick2 + " " + channel + CR_LF;
+                    const std::string& nick2, const std::string& channel,
+                    const std::string& clientIp) {
+    std::string msg = std::string(":") + nick + "!~" + user + "@" + clientIp +
+                      " INVITE " + nick2 + " " + channel + CR_LF;
     send(fd, msg.c_str(), msg.size(), 0);
 }
 
@@ -89,5 +88,5 @@ void INVITE::execute(Client*                         client,
              inv->getUserInfo().getNickname(), tmpChannel.name());
     SendInv(inv->getSockfd(), client->getUserInfo().getNickname(),
             client->getUserInfo().getUsername(),
-            inv->getUserInfo().getNickname(), tmpChannel.name());
+            inv->getUserInfo().getNickname(), tmpChannel.name(), inv->getIp());
 }
