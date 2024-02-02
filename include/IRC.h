@@ -13,6 +13,7 @@ extern volatile sig_atomic_t serverIsRunning;
 
 #include "../srcs/Utils/Utils.hpp"
 #include "../srcs/parser/TokenType.hpp"
+#include <algorithm>
 #include <arpa/inet.h>
 #include <cerrno>
 #include <cstdio>
@@ -28,7 +29,6 @@ extern volatile sig_atomic_t serverIsRunning;
 #include <poll.h>
 #include <string>
 #include <sys/socket.h>
-#include <algorithm>
 #include <unistd.h>
 #include <vector>
 

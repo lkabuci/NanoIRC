@@ -73,3 +73,11 @@ bool Client::isDoneReading() const {
 void Client::setIsDoneReading(bool isDoneReading) {
     _isDoneReading = isDoneReading;
 }
+
+const char* Client::getIp() const {
+    return _ip;
+}
+
+const char* Client::gettPort() const {
+    return _port;
+}
