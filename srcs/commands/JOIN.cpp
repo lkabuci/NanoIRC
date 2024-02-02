@@ -26,7 +26,6 @@ void JOIN::execute(Client* client, const std::vector<std::string>& parameters) {
 }
 
 void JOIN::_leaveAllChannels() {
-    //: i1!~u1@197.230.30.146 PART #1 :Left all channels
     while (TChannels::userExists(_sender->getUserInfo().getNickname())) {
         Channel& channel =
             TChannels::userChannel(_sender->getUserInfo().getNickname());
@@ -87,9 +86,6 @@ void JOIN::_createChannel(const size_t& index) {
 
     channel.add(_sender, MEMBER_PERMISSION::OPERATOR);
     TChannels::add(_channels[index], channel);
-    //    :i1!~u1@197.230.30.146 JOIN #ch
-    //: hostsailor.ro.quakenet.org 353 i1 = #ch :@i1
-    //: hostsailor.ro.quakenet.org 366 i1 #ch :End of /NAMES list.
     Reply::channelReply(_sender, _channels[index]);
 }
 
@@ -116,9 +112,6 @@ void JOIN::_addToChannel(Channel& channel, const size_t& index) {
 }
 
 void JOIN::_addToChannelReply(Channel& channel) {
-    //    :i1!~u1@197.230.30.146 JOIN #ch
-    //: hostsailor.ro.quakenet.org 353 i1 = #ch :@i1
-    //: hostsailor.ro.quakenet.org 366 i1 #ch :End of /NAMES list.
     std::string msg1 = ":" + _sender->getUserInfo().getNickname() + "!~" +
                        _sender->getUserInfo().getUsername() + "@" +
                        _sender->getIp() + " JOIN " + channel.name() + CR_LF;
@@ -133,7 +126,6 @@ void JOIN::_addToChannelReply(Channel& channel) {
     send(_sender->getSockfd(), msg1.c_str(), msg1.length(), 0);
     send(_sender->getSockfd(), msg2.c_str(), msg2.length(), 0);
     send(_sender->getSockfd(), msg3.c_str(), msg3.length(), 0);
-    std::cout << msg1 << msg2 << msg3;
 }
 
 std::string JOIN::_getMembersList(Channel& channel) {
