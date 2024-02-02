@@ -82,7 +82,7 @@ void SendMsg::_sendToChannel(const std::string& name) {
     }
     Channel& channel = TChannels::channel(name);
 
-    if (channel.exist(_sender)) {
+    if (!channel.exist(_sender)) {
         _errCannotSendToChannel(name);
     }
     std::string msg = ":" + _sender->getUserInfo().getNickname() + "!~" +

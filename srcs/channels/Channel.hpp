@@ -63,6 +63,7 @@ class Channel {
     void            setTopicSetter(Client* setter);
     const time_t&   getTime() const;
     void            setTime(time_t time);
+    const std::map<Client*, MEMBER_PERMISSION::Flags>& getMembers() const;
 
   private:
     std::string                                 _name;

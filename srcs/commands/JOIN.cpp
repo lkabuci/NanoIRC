@@ -87,6 +87,9 @@ void JOIN::_createChannel(const size_t& index) {
 
     channel.add(_sender, MEMBER_PERMISSION::OPERATOR);
     TChannels::add(_channels[index], channel);
+    //    :i1!~u1@197.230.30.146 JOIN #ch
+    //: hostsailor.ro.quakenet.org 353 i1 = #ch :@i1
+    //: hostsailor.ro.quakenet.org 366 i1 #ch :End of /NAMES list.
     Reply::channelReply(_sender, _channels[index]);
 }
 
@@ -108,8 +111,46 @@ void JOIN::_addToChannel(Channel& channel, const size_t& index) {
     if (_channelHasKey(channel) && !_keyIsCorrect(channel, index))
         return;
     _addClientToChannel(channel, MEMBER_PERMISSION::REGULAR);
-    Reply::channelReply(_sender, channel.name());
+    _addToChannelReply(channel);
     _tellMembers(channel);
+}
+
+void JOIN::_addToChannelReply(Channel& channel) {
+    //    :i1!~u1@197.230.30.146 JOIN #ch
+    //: hostsailor.ro.quakenet.org 353 i1 = #ch :@i1
+    //: hostsailor.ro.quakenet.org 366 i1 #ch :End of /NAMES list.
+    std::string msg1 = ":" + _sender->getUserInfo().getNickname() + "!~" +
+                       _sender->getUserInfo().getUsername() + "@" +
+                       _sender->getIp() + " JOIN " + channel.name() + CR_LF;
+    std::string msg2 =
+        std::string(":") + Reactor::getServerName() + " 353 " +
+        _sender->getUserInfo().getNickname() + " = " + channel.name() + " :" +
+        _sender->getUserInfo().getNickname() + _getMembersList(channel) + CR_LF;
+    std::string msg3 = std::string(":") + Reactor::getServerName() + " 366 " +
+                       _sender->getUserInfo().getNickname() + " " +
+                       channel.name() + " :End of /Names list.\r\n";
+
+    send(_sender->getSockfd(), msg1.c_str(), msg1.length(), 0);
+    send(_sender->getSockfd(), msg2.c_str(), msg2.length(), 0);
+    send(_sender->getSockfd(), msg3.c_str(), msg3.length(), 0);
+    std::cout << msg1 << msg2 << msg3;
+}
+
+std::string JOIN::_getMembersList(Channel& channel) {
+    std::map<Client*, MEMBER_PERMISSION::Flags> members = channel.getMembers();
+    std::map<Client*, MEMBER_PERMISSION::Flags>::const_iterator it;
+    std::string                                                 list;
+
+    for (it = members.begin(); it != members.end(); ++it) {
+        if (it->first->getUserInfo().getNickname() ==
+            _sender->getUserInfo().getNickname())
+            continue;
+        if (it->second == MEMBER_PERMISSION::OPERATOR)
+            list.append(" @" + it->first->getUserInfo().getNickname());
+        else
+            list.append(" " + it->first->getUserInfo().getNickname());
+    }
+    return list;
 }
 
 void JOIN::_joinWithoutAsk(Channel& channel) {
