@@ -33,6 +33,7 @@ class SendMsg {
     static void _errNoTextToSend();
     static void _errNoSuchNick(const std::string& name);
     static void _errNoSuchChannel(const std::string& name);
+    static void _errCannotSendToChannel(const std::string& name);
 };
 
 #endif
