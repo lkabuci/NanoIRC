@@ -22,6 +22,8 @@ class Client {
     bool               isDoneReading() const;
     void               setIsDoneReading(bool isDoneReading);
     void               finish();
+    const char*        getIp() const;
+    const char*        gettPort() const;
 
   private:
     struct sockaddr_storage& _sockAddr;

@@ -66,8 +66,7 @@ static void sendErr6(int fd, const std::string& nick,
                       " :You're not channel operator\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
-static void sendErr7(int fd, const std::string& nick,
-                     const std::string& channel, std::string str) {
+static void sendErr7(int fd, const std::string& nick, std::string str) {
     std::string msg = std::string(":") + Reactor::getInstance().getServerIp() +
                       std::string(" 461 ") + nick + "MODE" + str +
                       " :Not enough parameters\r\n";
@@ -87,8 +86,7 @@ void handleKey(bool state, char c, std::vector<std::string>& tmp,
     if (tmp.empty()) {
         std::string str(1, (!state) * '-' + (state) * '+');
         return (sendErr7(client->getSockfd(),
-                         client->getUserInfo().getNickname(), channel.name(),
-                         str + "k"));
+                         client->getUserInfo().getNickname(), str + "k"));
     }
     std::string pass;
     if (tmp[0] != ":") {
@@ -133,6 +131,7 @@ void handleKey(bool state, char c, std::vector<std::string>& tmp,
 void handleInvite(bool state, char c, std::vector<std::string>& tmp,
                   Channel& channel, Client* client) {
     (void)c;
+    (void)tmp;
     if (!state && channel.modeIsSet(CHANNEL_MODE::SET_INVITE_ONLY)) {
         channel.unsetMode(CHANNEL_MODE::SET_INVITE_ONLY);
         std::string msg = ":" + client->getUserInfo().getNickname() + "!~" +
@@ -158,8 +157,7 @@ void handleOperator(bool state, char c, std::vector<std::string>& tmp,
     if (tmp.empty()) {
         std::string str(1, (!state) * '-' + (state) * '+');
         return (sendErr7(client->getSockfd(),
-                         client->getUserInfo().getNickname(), channel.name(),
-                         str + "o"));
+                         client->getUserInfo().getNickname(), str + "o"));
     }
     std::string str;
     if (tmp[0] != ":") {
@@ -228,8 +226,7 @@ void handleLimit(bool state, char c, std::vector<std::string>& tmp,
     (void)c;
     if (tmp.empty() && state)
         return (sendErr7(client->getSockfd(),
-                         client->getUserInfo().getNickname(), channel.name(),
-                         "+l"));
+                         client->getUserInfo().getNickname(), "+l"));
     if (state && !channel.modeIsSet(CHANNEL_MODE::SET_LIMIT)) {
         std::string str;
         if (tmp[0] != ":") {

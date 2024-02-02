@@ -79,3 +79,11 @@ void Client::finish() {
     if (!_message.empty())
         _message.clear();
 }
+
+const char* Client::getIp() const {
+    return _ip;
+}
+
+const char* Client::gettPort() const {
+    return _port;
+}
