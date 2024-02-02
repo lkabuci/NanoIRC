@@ -41,9 +41,9 @@ void Client::fillClientIpPort() {
         std::snprintf(_port, sizeof(_port), "%d", ntohs(ipv4->sin_port));
         break;
     case AF_INET6:
-            ipv6 = reinterpret_cast<struct sockaddr_in6*>(&_sockAddr);
-            inet_ntop(AF_INET6, &(ipv6->sin6_addr), _ip, sizeof _ip);
-            std::snprintf(_port, sizeof(_port), "%d", ntohs(ipv6->sin6_port));
+        ipv6 = reinterpret_cast<struct sockaddr_in6*>(&_sockAddr);
+        inet_ntop(AF_INET6, &(ipv6->sin6_addr), _ip, sizeof _ip);
+        std::snprintf(_port, sizeof(_port), "%d", ntohs(ipv6->sin6_port));
         break;
     }
 }
@@ -81,7 +81,6 @@ void Client::finish() {
     if (!_message.empty())
         _message.clear();
 }
-
 
 const char* Client::gettPort() const {
     return _port;
