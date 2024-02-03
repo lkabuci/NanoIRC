@@ -6,7 +6,6 @@
 #define IRC_REACTOR_HPP
 
 #include "../../include/IRC.h"
-#include "../bot/Timer.hpp"
 #include "../client/Client.hpp"
 #include "Demultiplexer.hpp"
 #include "Dispatcher.hpp"
@@ -19,19 +18,13 @@ class Reactor {
     void                 addClient(Client*, int socket);
     void                 removeClient(Client*);
     void                 addPfds(pollfd);
-    void                 run();
+    void                 run(const char* port);
     std::vector<pollfd>& getPollfds();
-    void                 setServerIp(char* ip);
-    const char*          getServerIp();
-    static const char*   getServerName();
     std::string          bot(Client*);
-    const char*          getTime() const;
 
   private:
     std::vector<Client*> _clients;
     std::vector<pollfd>  _pollfds;
-    char*                _serverIp;
-    Timer                _timer;
 };
 
 #endif // IRC_REACTOR_HPP

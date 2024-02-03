@@ -3,7 +3,6 @@
 //
 
 #include "Demultiplexer.hpp"
-#include "Reactor.hpp"
 
 int Demultiplexer::waitForEvents() {
     std::vector<pollfd>& pfds = Reactor::getInstance().getPollfds();

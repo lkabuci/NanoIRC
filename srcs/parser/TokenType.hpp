@@ -16,8 +16,6 @@ enum TokenType {
     MODE,
     PRIVMSG,
     NOTICE,
-    QUIT,
-    PONG,
 
     // separators
     CRLF,
@@ -28,7 +26,7 @@ enum TokenType {
     PLUS,
     MINUS,
     SPACE,
-    COLON,
+    SEMICOLON,
 
     LETTER,
     END

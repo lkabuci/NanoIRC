@@ -1,6 +1,5 @@
 #include "PASS.hpp"
 #include "../parser/Message.hpp"
-#include "../server/Server.hpp"
 
 PASS::PASS() {}
 
@@ -15,29 +14,14 @@ PASS& PASS::operator=(const PASS& p) {
     return *this;
 }
 
-void PASS::execute(Client* client, const std::vector<std::string>& parameters) {
-    if (client->getUserInfo().isRegistered()) {
-        //_errAlreadyRegistred(client);
-        Reply::errAlreadyRegistred(client);
-        return;
-    }
-    if (!_validParameters(client, parameters))
-        return;
-    if (parameters[0] != Server::getPasswd()) {
-        //_errPasswdMismatch(client);
-        Reply::errPasswdMismatch(client);
-        return;
-    }
+void PASS::execute(const std::vector<std::string>& parameters) {
+    if (parameters.size() != 1)
+        throw std::runtime_error("PASS <password>");
+    if (parameters[0] != Message::getPassword())
+        throw std::runtime_error("incorrect password.");
     _password = parameters[0];
-    client->getUserInfo().setPassword(_password);
 }
 
-bool PASS::_validParameters(Client*                         client,
-                            const std::vector<std::string>& parameters) {
-    if (parameters.size() != 1) {
-        //_errNeedMoreParams(client);
-        Reply::errNotEnoughParams(client, "PASS");
-        return false;
-    }
-    return true;
+const std::string& PASS::getPassword() const {
+    return _password;
 }

@@ -3,7 +3,6 @@
 //
 
 #include "ClientHandler.hpp"
-#include "../commands/QUIT.hpp"
 #include "../parser/Message.hpp"
 #include "../server/Reactor.hpp"
 
@@ -45,26 +44,35 @@ void ClientHandler::handleClientInput(Client*& pClient) {
 
     if (bytesRead < 0) {
         handleReceiveError(pClient);
-        ClientList::remove(pClient->getUserInfo().getNickname());
         return;
     } else if (bytesRead == 0) {
         std::cout << "Hangup\n";
         Reactor::getInstance().removeClient(pClient);
         return;
     } else if (bytesRead > MAX_MSG_LEN) {
-        buffer[MAX_MSG_LEN] = '\0';
+        handleTooLongMessage(pClient);
+        return;
     }
     pClient->appendMessage(buffer);
 
     if (hasEndOfMessage(pClient->getMessage())) {
-        Message msg;
+        pClient->setIsDoneReading(true);
+        Message msg_parser;
 
-        msg.run(pClient);
+        try {
+            msg_parser.parse(pClient);
+        } catch (const std::exception& e) {
+            std::cout << e.what() << std::endl;
+        }
     }
 }
 
 void ClientHandler::handleReceiveError(Client*& pClient) {
     Reactor::getInstance().removeClient(pClient);
+}
+
+void ClientHandler::handleTooLongMessage(Client*& pClient) {
+    // TODO: Throw an exception or handle the case of a too long message
 }
 
 bool ClientHandler::hasEndOfMessage(const std::string& message) {

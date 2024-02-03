@@ -38,12 +38,6 @@ const Token& Parser::peek() {
     return _token;
 }
 
-const Token& Parser::end() {
-    while (!isAtEnd())
-        advance();
-    return _prev;
-}
-
 bool Parser::check(const TYPES::TokenType& type) {
     return _token.type() == type;
 }
@@ -55,43 +49,7 @@ bool Parser::isAtEnd() {
 bool Parser::skipSpaces() {
     if (!check(TYPES::SPACE))
         return false;
-    while (match(TYPES::SPACE))
-        ;
+    while (check(TYPES::SPACE))
+        advance();
     return true;
-}
-
-bool Parser::channel(const std::string& source, std::string& target) {
-    size_t i = 0;
-
-    if (source[i] != '#')
-        return false;
-    while (_chstring(source[++i]))
-        ;
-    target = source.substr(0, i);
-    return target.length() == source.length();
-}
-
-bool Parser::name(const std::string& source, std::string& target) {
-    size_t i = 0;
-
-    if (!std::isalpha(source[i]))
-        return false;
-    i++;
-    while (std::isalnum(source[i]) || _special(source[i]))
-        i++;
-    target = source.substr(0, i);
-    return target.length() == source.length();
-}
-
-bool Parser::_nonwhite(char c) {
-    return c != '\0' && c != ' ' && c != '\r' && c != '\n';
-}
-
-bool Parser::_special(char c) {
-    return c == '-' || c == '[' || c == ']' || c == '\\' || c == '`' ||
-           c == '^' || c == '{' || c == '}';
-}
-
-bool Parser::_chstring(char c) {
-    return c != '\0' && c != ' ' && c != '\r' && c != '\n' && c != ',';
 }

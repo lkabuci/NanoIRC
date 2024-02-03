@@ -2,7 +2,7 @@ GREEN = \033[38;2;0;153;0m
 NC = \033[0m # No Color
 
 CXX			= c++
-CXXFLAGS	= -std=c++98 -Wall -Wextra -Werror -g
+CXXFLAGS	= -std=c++98 -Wall -Wextra# -Werror
 
 RM			= rm -rf
 

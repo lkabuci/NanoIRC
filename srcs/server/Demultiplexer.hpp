@@ -6,8 +6,7 @@
 #define IRC_DEMULTIPLEXER_HPP
 
 #include "../../include/IRC.h"
-
-class Reactor;
+#include "Reactor.hpp"
 
 class Demultiplexer {
   public:

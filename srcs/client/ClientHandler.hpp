@@ -12,6 +12,7 @@ class ClientHandler {
     static void handleNewConnection(const pollfd& serverFd);
     static void handleClientInput(Client*& pClient);
     static void handleReceiveError(Client*& pClient);
+    static void handleTooLongMessage(Client*& pClient);
     static bool hasEndOfMessage(const std::string& message);
 };
 
