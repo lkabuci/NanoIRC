@@ -9,12 +9,7 @@ static void printUsage(const char* programName) {
     std::exit(EXIT_FAILURE);
 }
 
-void f() {
-    std::exit(1);
-}
-
 int main(int argc, char* argv[]) {
-    std::set_new_handler(f);
     if (argc != 3) {
         printUsage(argv[0]);
     }

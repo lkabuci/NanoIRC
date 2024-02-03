@@ -4,12 +4,14 @@
 
 #include "Client.hpp"
 #include "../server/ServerHelper.hpp"
-#include "ClientList.hpp"
 
 Client::Client(sockaddr_storage& sockaddr, int sockfd)
     : _sockAddr(sockaddr), _sockfd(sockfd), _ip(), _port(),
       _isDoneReading(false) {
     fillClientIpPort();
+    if (std::strlen(_ip) == 0) {
+        std::memcpy(_ip, "bot", 3);
+    }
     std::cout << "+ add client: (" << sockfd << ") \"" << _ip << "\""
               << std::endl;
 }
@@ -42,10 +44,13 @@ void Client::fillClientIpPort() {
         inet_ntop(AF_INET6, &(ipv6->sin6_addr), _ip, sizeof _ip);
         std::snprintf(_port, sizeof(_port), "%d", ntohs(ipv6->sin6_port));
         break;
+    default:
+        std::memcpy(_ip, "BOT", 3);
+        break;
     }
 }
 
-UserInfo& Client::getUserInfo() {
+const UserInfo& Client::getUserInfo() const {
     return _userInfo;
 }
 
@@ -67,18 +72,4 @@ bool Client::isDoneReading() const {
 
 void Client::setIsDoneReading(bool isDoneReading) {
     _isDoneReading = isDoneReading;
-}
-
-const char* Client::getIp() const {
-    return _ip;
-}
-
-void Client::finish() {
-    _isDoneReading = false;
-    if (!_message.empty())
-        _message.clear();
-}
-
-const char* Client::gettPort() const {
-    return _port;
 }

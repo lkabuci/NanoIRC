@@ -4,33 +4,37 @@
 #define __REPLY_HPP__
 
 #include "../../include/IRC.h"
-#include "../server/Reactor.hpp"
+
+namespace SUCCESS_CODES {
+enum CODES {
+
+};
+}
+
+namespace ERROR_CODES {
+enum CODES {
+
+};
+}
 
 class Reply {
   public:
-    static void errUnknownCommand(Client* client, const std::string& cmd);
-    static void errNotEnoughParams(Client* client, const std::string& cmd);
-    static void errNoSuchChannel(Client* client, const std::string& name);
-    static void errInviteOnlyChan(Client* client, const std::string& name);
-    static void errChannelIsFull(Client* client, const std::string& name);
-    static void errBadChannelKey(Client* client, const std::string& name);
-    static void channelReply(Client* client, const std::string& name);
-    static void welcome(Client* client);
-
-    static void errPasswdMismatch(Client* client);
-    static void errAlreadyRegistred(Client* client);
-
-    static void errNoSuchNick(Client* client, const std::string& name);
-    static void errNotRegistered(Client* client);
-    static void errNoTextToSend(Client* client);
-    static void errNoRecipient(Client* client, const std::string& cmd);
-
-    static void errErroneousNickname(Client* client, const std::string& name);
-    static void errCannotSendToChan(Client* client, const std::string& channel,
-                                    const std::string& nickname);
+    static void succes(int fd, SUCCESS_CODES::CODES code,
+                       const std::string&              servername,
+                       const std::string&              nickname,
+                       const std::vector<std::string>& message);
+    static void error(int fd, ERROR_CODES::CODES code,
+                      const std::string&        servername,
+                      const std::string&        nickname,
+                      std::vector<std::string>& parameters);
 
   private:
     Reply();
+    static std::map<SUCCESS_CODES::CODES, std::string> _fillSuccessMap();
+    static std::map<ERROR_CODES::CODES, std::string>   _fillErrorMap();
+
+    static std::map<SUCCESS_CODES::CODES, std::string> _successReply;
+    static std::map<ERROR_CODES::CODES, std::string>   _errorReply;
 };
 
 #endif

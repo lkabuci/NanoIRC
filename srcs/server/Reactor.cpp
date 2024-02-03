@@ -3,10 +3,7 @@
 //
 
 #include "Reactor.hpp"
-
-#include "../client/ClientList.hpp"
-#include "../commands/QUIT.hpp"
-#include "../server/Server.hpp"
+#include "../bot/Bot.hpp"
 
 Reactor& Reactor::getInstance() {
     static Reactor instance;
@@ -33,16 +30,16 @@ void Reactor::removeClient(Client* client) {
         std::find(_clients.begin(), _clients.end(), client);
     if (it != _clients.end()) {
         long index = std::distance(_clients.begin(), it);
-        QUIT q;
-        q.execute(*it, std::vector<std::string>());
+
         delete *it;
-        *it = NULL;
         _clients.erase(_clients.begin() + index);
         _pollfds.erase(_pollfds.begin() + index + 1);
     }
 }
 
-void Reactor::run() {
+void Reactor::run(const char* port) {
+    BOT bot(port);
+    bot.addToClients();
     while (serverIsRunning) {
         if (Demultiplexer::waitForEvents() == -1) {
             break;
@@ -59,24 +56,7 @@ void Reactor::addPfds(pollfd pfd) {
     _pollfds.push_back(pfd);
 }
 
-void Reactor::setServerIp(char* ip) {
-    _serverIp = ip;
-}
-
-const char* Reactor::getServerIp() {
-    return _serverIp;
-}
-
 std::string Reactor::bot(Client* client) {
-    // append CRLF
     send(client->getSockfd(), "hhh", 3, 0);
     return std::string("hhh");
-}
-
-const char* Reactor::getServerName() {
-    return "ircserver";
-}
-
-const char* Reactor::getTime() const {
-    return _timer.getTime();
 }

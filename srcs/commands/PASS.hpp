@@ -7,23 +7,17 @@
 
 class PASS : public Command {
   public:
-    explicit PASS();
+    PASS();
+    PASS(const PASS& p);
     virtual ~PASS();
 
-    virtual void execute(Client*                         client,
-                         const std::vector<std::string>& parameters);
-
-  private:
-    PASS(const PASS& p);
     PASS& operator=(const PASS& p);
 
-    std::string _password;
+    virtual void       execute(const std::vector<std::string>& parameters);
+    const std::string& getPassword() const;
 
-    bool _validParameters(Client*                         client,
-                          const std::vector<std::string>& parameters);
-    // void _errNeedMoreParams(Client* client);
-    // void _errAlreadyRegistred(Client* client);
-    // void _errPasswdMismatch(Client* client);
+  private:
+    std::string _password;
 };
 
 #endif

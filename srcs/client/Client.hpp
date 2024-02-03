@@ -15,15 +15,12 @@ class Client {
     explicit Client(struct sockaddr_storage&, int);
     ~Client();
     int                getSockfd() const;
-    UserInfo&          getUserInfo();
+    const UserInfo&    getUserInfo() const;
     void               setUserInfo(const UserInfo& userInfo);
     const std::string& getMessage() const;
     void               appendMessage(const std::string& message);
     bool               isDoneReading() const;
     void               setIsDoneReading(bool isDoneReading);
-    const char*        getIp() const;
-    void               finish();
-    const char*        gettPort() const;
 
   private:
     struct sockaddr_storage& _sockAddr;
