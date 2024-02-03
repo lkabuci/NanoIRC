@@ -3,7 +3,11 @@
 //
 
 #include "Reactor.hpp"
+
 #include "../bot/Bot.hpp"
+#include "../client/ClientList.hpp"
+#include "../commands/QUIT.hpp"
+#include "../server/Server.hpp"
 
 Reactor& Reactor::getInstance() {
     static Reactor instance;
@@ -30,7 +34,8 @@ void Reactor::removeClient(Client* client) {
         std::find(_clients.begin(), _clients.end(), client);
     if (it != _clients.end()) {
         long index = std::distance(_clients.begin(), it);
-
+        QUIT q;
+        q.execute(*it, std::vector<std::string>());
         delete *it;
         *it = NULL;
         _clients.erase(_clients.begin() + index);
@@ -41,6 +46,14 @@ void Reactor::removeClient(Client* client) {
 void Reactor::run(const char* port) {
     BOT bot(port);
     bot.addToClients();
+
+    std::cout << "Bot Joined the server\n";
+    _clients[0]->getUserInfo().setPassword(Server::getPasswd());
+    _clients[0]->getUserInfo().setNickname("Bot");
+    _clients[0]->getUserInfo().setUsername("Sa3id");
+    _clients[0]->getUserInfo().setRealname("Za3im");
+
+    ClientList::add(_clients[0]);
     while (serverIsRunning) {
         if (Demultiplexer::waitForEvents() == -1) {
             break;
@@ -73,4 +86,8 @@ std::string Reactor::bot(Client* client) {
 
 const char* Reactor::getServerName() {
     return "ircserver";
+}
+
+const char* Reactor::getTime() const {
+    return _timer.getTime();
 }

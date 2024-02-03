@@ -10,9 +10,6 @@ Client::Client(sockaddr_storage& sockaddr, int sockfd)
     : _sockAddr(sockaddr), _sockfd(sockfd), _ip(), _port(),
       _isDoneReading(false) {
     fillClientIpPort();
-    if (std::strlen(_ip) == 0) {
-        std::memcpy(_ip, "bot", 3);
-    }
     std::cout << "+ add client: (" << sockfd << ") \"" << _ip << "\""
               << std::endl;
 }

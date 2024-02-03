@@ -4,11 +4,13 @@
 #include "../../include/IRC.h"
 #include "../client/Client.hpp"
 #include "../socket/AddressResolver.hpp"
+#include "Timer.hpp"
 
 class BOT {
   public:
     explicit BOT(const char* port);
-    void addToClients();
+    void       addToClients();
+    const char execute();
 
   private:
     const AddressResolver _address;
