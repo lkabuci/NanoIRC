@@ -9,12 +9,12 @@ BOT::BOT(const char* port) : _address(port) {
     for (; p != NULL; p = p->ai_next) {
         if ((botSockFd =
                  socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
-            perror("bot: socket");
+            std::perror("bot: socket");
             continue;
         }
         if (::connect(botSockFd, p->ai_addr, p->ai_addrlen) == -1) {
             close(botSockFd);
-            perror("bot: connect");
+            std::perror("bot: connect");
             continue;
         }
         break;

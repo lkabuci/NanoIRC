@@ -94,6 +94,10 @@ void JOIN::_createChannel(const size_t& index) {
 void JOIN::_addToChannel(Channel& channel, const size_t& index) {
     if (channel.exist(_sender))
         return;
+    if (channel.isInvited(_sender)) {
+        _joinWithoutAsk(channel);
+        return;
+    }
     if (_channelIsInviteOnly(channel)) {
         if (!channel.isInvited(_sender)) {
             Reply::errInviteOnlyChan(_sender, channel.name());
@@ -102,7 +106,8 @@ void JOIN::_addToChannel(Channel& channel, const size_t& index) {
         _joinWithoutAsk(channel);
         return;
     }
-    if (channel.getNumberOfMembers() + 1 > channel.getLimit()) {
+    if (channel.modeIsSet(CHANNEL_MODE::SET_LIMIT) &&
+        channel.getNumberOfMembers() + 1 > channel.getLimit()) {
         Reply::errChannelIsFull(_sender, channel.name());
         return;
     }
@@ -148,10 +153,6 @@ std::string JOIN::_getMembersList(Channel& channel) {
 }
 
 void JOIN::_joinWithoutAsk(Channel& channel) {
-    _addClientToChannel(channel, MEMBER_PERMISSION::REGULAR);
-    _addToChannelReply(channel);
-    Reply::channelReply(_sender, channel.name());
-    _tellMembers(channel);
     _addClientToChannel(channel, MEMBER_PERMISSION::REGULAR);
     _addToChannelReply(channel);
     _tellMembers(channel);
@@ -213,13 +214,6 @@ void JOIN::_addKey() {
     if (Parser::check(TYPES::COMMA)) {
         _keys.push_back("");
     } else {
-        // std::string key;
-
-        // while (!_isEnd()) {
-        //     if (Parser::check(TYPES::SPACE))
-        //         break;
-        //     key.append(Parser::advance().lexeme());
-        // }
         _keys.push_back(Parser::advance().lexeme());
     }
 }

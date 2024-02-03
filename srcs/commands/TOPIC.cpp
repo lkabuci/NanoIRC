@@ -58,7 +58,7 @@ void TOPIC::execute(Client*                         client,
                     const std::vector<std::string>& parameters) {
     std::vector<std::string> tmp(parameters);
     std::string              topic;
-    if (tmp.size() < 1)
+    if (tmp.size() < 2)
         return (
             sendErr1(client->getSockfd(), client->getUserInfo().getNickname()));
     if (tmp[0][0] != '#')
@@ -93,7 +93,7 @@ void TOPIC::execute(Client*                         client,
             topic = Utils::join(tmp);
         }
         if (tmpChannel.flagIsSet(client, MEMBER_PERMISSION::OPERATOR) ||
-            tmpChannel.modeIsSet(CHANNEL_MODE::SET_TOPIC)) {
+            !tmpChannel.modeIsSet(CHANNEL_MODE::SET_TOPIC)) {
             tmpChannel.setTopic(topic);
             std::string msg = ":" + client->getUserInfo().getNickname() + "!~" +
                               client->getUserInfo().getUsername() + "@" +
