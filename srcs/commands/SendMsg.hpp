@@ -20,6 +20,7 @@ class SendMsg {
     static std::vector<std::string> _channels;
     static Client*                  _sender;
 
+    static void _sendToBot();
     static void _parseReceivers();
     static void _addUser();
     static void _addChannel();
@@ -34,6 +35,7 @@ class SendMsg {
     static void _errNoSuchNick(const std::string& name);
     static void _errNoSuchChannel(const std::string& name);
     static void _errCannotSendToChannel(const std::string& name);
+    static void _unsupportedParam();
 };
 
 #endif

@@ -4,7 +4,6 @@
 
 #include "Reactor.hpp"
 
-#include "../bot/Bot.hpp"
 #include "../client/ClientList.hpp"
 #include "../commands/QUIT.hpp"
 #include "../server/Server.hpp"
@@ -44,16 +43,6 @@ void Reactor::removeClient(Client* client) {
 }
 
 void Reactor::run(const char* port) {
-    BOT bot(port);
-    bot.addToClients();
-
-    std::cout << "Bot Joined the server\n";
-    _clients[0]->getUserInfo().setPassword(Server::getPasswd());
-    _clients[0]->getUserInfo().setNickname("Bot");
-    _clients[0]->getUserInfo().setUsername("Sa3id");
-    _clients[0]->getUserInfo().setRealname("Za3im");
-
-    ClientList::add(_clients[0]);
     while (serverIsRunning) {
         if (Demultiplexer::waitForEvents() == -1) {
             break;

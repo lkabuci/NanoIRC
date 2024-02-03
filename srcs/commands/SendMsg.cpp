@@ -66,6 +66,10 @@ void SendMsg::_sendText() {
 }
 
 void SendMsg::_sendToUser(const std::string& name) {
+    if (name == "Bot") {
+        _sendToBot();
+        return;
+    }
     if (!ClientList::exist(name)) {
         _errNoSuchNick(name);
         return;
@@ -81,9 +85,6 @@ void SendMsg::_sendToUser(const std::string& name) {
 
 void SendMsg::_sendToChannel(const std::string& name) {
     if (!TChannels::exist(name)) {
-        //        :tngnet.nl.quakenet.org 403 i1 #ch1 :No such channel
-        //: tngnet.nl.quakenet.org 403 i1 #ch2 :No such channel
-        //: tngnet.nl.quakenet.org 403 i1 #ch3 :No such channel
         _errNoSuchChannel(name);
         return;
     }
@@ -157,4 +158,27 @@ void SendMsg::_errNotRegistered() {
     if (_cmd == "NOTICE")
         return;
     Reply::errNotRegistered(_sender);
+}
+
+void SendMsg::_sendToBot() {
+    std::string msg = std::string(":Bot!~Bot@") +
+                      Reactor::getInstance().getServerIp() + " " + _cmd +
+                      " Bot :";
+
+    if (_textToSend == "/logtime\r\n") {
+        msg.append(std::string(Reactor::getInstance().getTime()) + CR_LF);
+    } else if (_textToSend == "/clients\r\n") {
+        msg.append(Utils::toStr(ClientList::size()) + CR_LF);
+    } else {
+        _unsupportedParam();
+        return;
+    }
+    send(_sender->getSockfd(), msg.c_str(), msg.length(), 0);
+}
+
+void SendMsg::_unsupportedParam() {
+    std::string reply = std::string(":") + Reactor::getServerName() +
+                        " 421 Bot " + _cmd + " :Unsupported param\r\n";
+
+    send(_sender->getSockfd(), reply.c_str(), reply.length(), 0);
 }

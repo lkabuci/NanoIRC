@@ -1,6 +1,8 @@
 #include "Timer.hpp"
 #include <cstring>
 
+char Timer::_buffer[];
+
 Timer::Timer() {
     _start = std::time(NULL);
     char buffer[20];
