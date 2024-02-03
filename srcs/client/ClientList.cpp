@@ -28,7 +28,7 @@ void ClientList::remove(const std::string& nickname) {
     if (it == _clients.end())
         return;
     _clients.erase(it);
-    TChannels::removeUserFromAll(it->first);
+    TChannels::removeUserFromAll(nickname);
 }
 
 size_t ClientList::numberOfClients() {

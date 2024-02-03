@@ -3,6 +3,7 @@
 //
 
 #include "ClientHandler.hpp"
+#include "../commands/QUIT.hpp"
 #include "../parser/Message.hpp"
 #include "../server/Reactor.hpp"
 
@@ -57,10 +58,14 @@ void ClientHandler::handleClientInput(Client*& pClient) {
         */
 
         std::cout << "Hangup\n";
-        ClientList::remove(pClient->getUserInfo().getNickname());
+        // ClientList::remove(pClient->getUserInfo().getNickname());
+        QUIT q;
+
+        q.execute(pClient, std::vector<std::string>());
         Reactor::getInstance().removeClient(pClient);
         return;
     } else if (bytesRead > MAX_MSG_LEN) {
+        //! TODO: concatenate the message
         handleTooLongMessage(pClient);
         ClientList::remove(pClient->getUserInfo().getNickname());
         return;

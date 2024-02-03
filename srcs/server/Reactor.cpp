@@ -72,5 +72,5 @@ std::string Reactor::bot(Client* client) {
 }
 
 const char* Reactor::getServerName() {
-    return "e1r7p15.ma";
+    return "ircserver";
 }

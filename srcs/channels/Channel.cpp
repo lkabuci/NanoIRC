@@ -101,8 +101,9 @@ bool Channel::exist(const std::string& nickname) {
         _members.begin();
 
     for (; it != _members.end(); ++it) {
-        if (it->first->getUserInfo().getNickname() == nickname)
+        if (it->first->getUserInfo().getNickname() == nickname) {
             return true;
+        }
     }
     return false;
 }

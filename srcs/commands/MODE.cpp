@@ -280,9 +280,9 @@ void handleflags(std::string& mode, std::vector<std::string>& tmp,
 
 void MODE::execute(Client* client, const std::vector<std::string>& parameters) {
     std::vector<std::string> tmp(parameters);
-    for (size_t i = 0; i < parameters.size(); i++) {
-        std::cerr << "para " + parameters[i] + "\n";
-    }
+    // for (size_t i = 0; i < parameters.size(); i++) {
+    //     std::cerr << "para " + parameters[i] + "\n";
+    // }
     if (tmp.size() < 2)
         return (
             sendErr1(client->getSockfd(), client->getUserInfo().getNickname()));

@@ -4,6 +4,8 @@ JOIN::JOIN() : _sender(NULL) {}
 
 JOIN::~JOIN() {}
 
+//! TODO check limit
+
 void JOIN::execute(Client* client, const std::vector<std::string>& parameters) {
     if (parameters.empty()) {
         Reply::errNotEnoughParams(client, "JOIN");
@@ -146,8 +148,12 @@ std::string JOIN::_getMembersList(Channel& channel) {
 }
 
 void JOIN::_joinWithoutAsk(Channel& channel) {
+    //_addClientToChannel(channel, MEMBER_PERMISSION::REGULAR);
+    //_addToChannelReply(channel);
+    // Reply::channelReply(_sender, channel.name());
+    //_tellMembers(channel);
     _addClientToChannel(channel, MEMBER_PERMISSION::REGULAR);
-    Reply::channelReply(_sender, channel.name());
+    _addToChannelReply(channel);
     _tellMembers(channel);
 }
 
@@ -207,14 +213,14 @@ void JOIN::_addKey() {
     if (Parser::check(TYPES::COMMA)) {
         _keys.push_back("");
     } else {
-        std::string key;
+        // std::string key;
 
-        while (!_isEnd()) {
-            if (Parser::check(TYPES::SPACE))
-                break;
-            key.append(Parser::advance().lexeme());
-        }
-        _keys.push_back(key);
+        // while (!_isEnd()) {
+        //     if (Parser::check(TYPES::SPACE))
+        //         break;
+        //     key.append(Parser::advance().lexeme());
+        // }
+        _keys.push_back(Parser::advance().lexeme());
     }
 }
 

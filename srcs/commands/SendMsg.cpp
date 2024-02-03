@@ -6,6 +6,8 @@ std::vector<std::string> SendMsg::_users;
 std::vector<std::string> SendMsg::_channels;
 Client*                  SendMsg::_sender = NULL;
 
+// PRIVMSG #kshgk,#gsj,#jksd, #ksdj :kshf skdjf kjsfh
+
 void SendMsg::sendMessage(Client*                         client,
                           const std::vector<std::string>& parameters,
                           const std::string&              command) {
@@ -66,6 +68,7 @@ void SendMsg::_sendText() {
 void SendMsg::_sendToUser(const std::string& name) {
     if (!ClientList::exist(name)) {
         _errNoSuchNick(name);
+        return;
     }
     Client*     receiver = ClientList::get(name);
     std::string msg = ":" + _sender->getUserInfo().getNickname() + "!~" +
@@ -78,12 +81,17 @@ void SendMsg::_sendToUser(const std::string& name) {
 
 void SendMsg::_sendToChannel(const std::string& name) {
     if (!TChannels::exist(name)) {
+        //        :tngnet.nl.quakenet.org 403 i1 #ch1 :No such channel
+        //: tngnet.nl.quakenet.org 403 i1 #ch2 :No such channel
+        //: tngnet.nl.quakenet.org 403 i1 #ch3 :No such channel
         _errNoSuchChannel(name);
+        return;
     }
     Channel& channel = TChannels::channel(name);
 
     if (!channel.exist(_sender)) {
         _errCannotSendToChannel(name);
+        return;
     }
     std::string msg = ":" + _sender->getUserInfo().getNickname() + "!~" +
                       _sender->getUserInfo().getUsername() + "@" +
@@ -103,7 +111,6 @@ void SendMsg::_errCannotSendToChannel(const std::string& name) {
 void SendMsg::_errNoSuchChannel(const std::string& name) {
     if (_cmd != "NOTICE")
         Reply::errNoSuchChannel(_sender, name);
-    throw std::exception();
 }
 
 void SendMsg::_addChannel() {
@@ -144,7 +151,6 @@ void SendMsg::_errNoTextToSend() {
 void SendMsg::_errNoSuchNick(const std::string& name) {
     if (_cmd != "NOTICE")
         Reply::errNoSuchNick(_sender, name);
-    throw std::exception();
 }
 
 void SendMsg::_errNotRegistered() {
