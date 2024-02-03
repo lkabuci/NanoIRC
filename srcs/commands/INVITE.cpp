@@ -38,6 +38,12 @@ static void send6(int fd, const std::string& nick, const std::string& channel) {
                       " :You're not channel operator\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
+static void send7(int fd, const std::string& nick, const std::string& channel) {
+    std::string msg = std::string(":") + Reactor::getServerName() +
+                      std::string(" 443 ") + nick + " " + channel +
+                      " :is already on channel\r\n";
+    send(fd, msg.c_str(), msg.size(), 0);
+}
 
 static void sendSucc(int fd, const std::string& nick, const std::string& nick2,
                      const std::string& channel) {
@@ -77,8 +83,8 @@ void INVITE::execute(Client*                         client,
         return (send4(client->getSockfd(), client->getUserInfo().getNickname(),
                       tmpChannel.name()));
     else if (tmpChannel.exist(inv))
-        return (
-            send5(client->getSockfd(), client->getUserInfo().getNickname()));
+        return (send7(client->getSockfd(), client->getUserInfo().getNickname(),
+                      tmpChannel.name()));
     else if (tmpChannel.modeIsSet(CHANNEL_MODE::SET_INVITE_ONLY) &&
              !tmpChannel.flagIsSet(client, MEMBER_PERMISSION::OPERATOR))
         return (send6(client->getSockfd(), client->getUserInfo().getNickname(),
