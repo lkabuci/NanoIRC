@@ -19,7 +19,7 @@ class Reactor {
     void                 addClient(Client*, int socket);
     void                 removeClient(Client*);
     void                 addPfds(pollfd);
-    void                 run(const char* port);
+    void                 run();
     std::vector<pollfd>& getPollfds();
     void                 setServerIp(char* ip);
     const char*          getServerIp();

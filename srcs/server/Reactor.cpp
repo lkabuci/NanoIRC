@@ -42,7 +42,7 @@ void Reactor::removeClient(Client* client) {
     }
 }
 
-void Reactor::run(const char* port) {
+void Reactor::run() {
     while (serverIsRunning) {
         if (Demultiplexer::waitForEvents() == -1) {
             break;

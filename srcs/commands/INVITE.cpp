@@ -27,11 +27,7 @@ static void send4(int fd, const std::string& nick, const std::string& channel) {
                       " :You're not on that channel\r\n";
     send(fd, msg.c_str(), msg.size(), 0);
 }
-static void send5(int fd, const std::string& nick) {
-    std::string msg = std::string(":") + Reactor::getServerName() +
-                      std::string(" 401 ") + nick + " INVITE :No such nick\r\n";
-    send(fd, msg.c_str(), msg.size(), 0);
-}
+
 static void send6(int fd, const std::string& nick, const std::string& channel) {
     std::string msg = std::string(":") + Reactor::getServerName() + " 482 " +
                       nick + " " + channel +

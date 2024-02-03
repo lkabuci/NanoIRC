@@ -3,10 +3,8 @@
 
 char Timer::_buffer[];
 
-Timer::Timer() {
+Timer::Timer() : _start(std::time(NULL)) {
     _start = std::time(NULL);
-    char buffer[20];
-    std::cout << "Current time: " << buffer << std::endl;
 }
 
 const char* Timer::getTime() const {

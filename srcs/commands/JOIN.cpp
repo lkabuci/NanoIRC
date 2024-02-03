@@ -4,8 +4,6 @@ JOIN::JOIN() : _sender(NULL) {}
 
 JOIN::~JOIN() {}
 
-//! TODO check limit
-
 void JOIN::execute(Client* client, const std::vector<std::string>& parameters) {
     if (parameters.empty()) {
         Reply::errNotEnoughParams(client, "JOIN");

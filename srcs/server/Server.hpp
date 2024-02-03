@@ -18,7 +18,6 @@ class Server {
 
   private:
     Socket             _sock;
-    const char*        _port;
     static std::string _passwd;
 };
 

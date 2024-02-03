@@ -7,8 +7,7 @@
 
 std::string Server::_passwd;
 
-Server::Server(const char* port, const char* passwd)
-    : _sock(port), _port(port) {
+Server::Server(const char* port, const char* passwd) : _sock(port) {
     _passwd = passwd;
     Utils::isAllDigits(port);
     pollfd serverPollfd = {_sock.getSocketFd(), POLLIN, 0};
@@ -16,7 +15,7 @@ Server::Server(const char* port, const char* passwd)
 }
 
 void Server::run() {
-    Reactor::getInstance().run(_port);
+    Reactor::getInstance().run();
 }
 
 const std::string& Server::getPasswd() {

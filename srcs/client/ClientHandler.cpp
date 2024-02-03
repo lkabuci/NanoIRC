@@ -48,29 +48,15 @@ void ClientHandler::handleClientInput(Client*& pClient) {
         ClientList::remove(pClient->getUserInfo().getNickname());
         return;
     } else if (bytesRead == 0) {
-        //! TODO
-        /*
-        If, for some other reason, a client connection is closed without  the
-        client  issuing  a  QUIT  command  (e.g.  client  dies and EOF occurs
-        on socket), the server is required to fill in the quit  message  with
-        some sort  of  message  reflecting the nature of the event which
-        caused it to happen.
-        */
-
         std::cout << "Hangup\n";
-        // ClientList::remove(pClient->getUserInfo().getNickname());
         Reactor::getInstance().removeClient(pClient);
         return;
     } else if (bytesRead > MAX_MSG_LEN) {
-        //! TODO: concatenate the message
-        handleTooLongMessage(pClient);
-        ClientList::remove(pClient->getUserInfo().getNickname());
-        return;
+        buffer[MAX_MSG_LEN] = '\0';
     }
     pClient->appendMessage(buffer);
 
     if (hasEndOfMessage(pClient->getMessage())) {
-        // pClient->setIsDoneReading(true);
         Message msg;
 
         msg.run(pClient);
@@ -79,11 +65,6 @@ void ClientHandler::handleClientInput(Client*& pClient) {
 
 void ClientHandler::handleReceiveError(Client*& pClient) {
     Reactor::getInstance().removeClient(pClient);
-}
-
-void ClientHandler::handleTooLongMessage(Client*& pClient) {
-    (void)pClient;
-    // TODO: Throw an exception or handle the case of a too long message
 }
 
 bool ClientHandler::hasEndOfMessage(const std::string& message) {
