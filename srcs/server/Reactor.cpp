@@ -87,3 +87,7 @@ std::string Reactor::bot(Client* client) {
 const char* Reactor::getServerName() {
     return "ircserver";
 }
+
+const char* Reactor::getTime() const {
+    return _timer.getTime();
+}
