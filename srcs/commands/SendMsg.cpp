@@ -32,7 +32,7 @@ void SendMsg::sendMessage(Client*                         client,
 }
 
 void SendMsg::_parseReceivers() {
-    while (!Parser::isAtEnd()) {
+    while (!Parser::isAtEnd() && !Parser::check(TYPES::SPACE)) {
         if (Parser::check(TYPES::HASH))
             _addChannel();
         else

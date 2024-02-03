@@ -237,7 +237,6 @@ void handleLimit(bool state, char c, std::vector<std::string>& tmp,
         std::stringstream ss(str);
         unsigned long     limit;
         ss >> limit;
-        std::cout << "--> " << limit << std::endl;
         channel.setLimit(limit);
         channel.setMode(CHANNEL_MODE::SET_LIMIT);
         std::string msg = ":" + client->getUserInfo().getNickname() + "!~" +

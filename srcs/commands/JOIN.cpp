@@ -102,7 +102,7 @@ void JOIN::_addToChannel(Channel& channel, const size_t& index) {
         _joinWithoutAsk(channel);
         return;
     }
-    if (index >= channel.getLimit()) {
+    if (channel.getNumberOfMembers() + 1 > channel.getLimit()) {
         Reply::errChannelIsFull(_sender, channel.name());
         return;
     }
@@ -148,10 +148,10 @@ std::string JOIN::_getMembersList(Channel& channel) {
 }
 
 void JOIN::_joinWithoutAsk(Channel& channel) {
-    //_addClientToChannel(channel, MEMBER_PERMISSION::REGULAR);
-    //_addToChannelReply(channel);
-    // Reply::channelReply(_sender, channel.name());
-    //_tellMembers(channel);
+    _addClientToChannel(channel, MEMBER_PERMISSION::REGULAR);
+    _addToChannelReply(channel);
+    Reply::channelReply(_sender, channel.name());
+    _tellMembers(channel);
     _addClientToChannel(channel, MEMBER_PERMISSION::REGULAR);
     _addToChannelReply(channel);
     _tellMembers(channel);
