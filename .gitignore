@@ -8,3 +8,4 @@ cmake-build-debug/
 venv/
 CmakePresets.json
 CMakeUserPresets.json
+srcs/parser/rfc.txt

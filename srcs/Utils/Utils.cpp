@@ -19,7 +19,7 @@ std::string Utils::join(const std::vector<std::string>& arr) {
     return str;
 }
 
-std::string Utils::toStr(int nbr) {
+std::string Utils::toStr(long nbr) {
     std::string        ret;
     std::ostringstream convert;
     convert << nbr;
@@ -31,4 +31,12 @@ bool Utils::isAllDigits(const char* str) {
     char* endptr;
     std::strtol(str, &endptr, 10);
     return *endptr == 0 && *str != 0;
+}
+
+std::string Utils::strToLower(const std::string& str) {
+    std::string lower;
+
+    for (size_t i = 0; i < str.length(); ++i)
+        lower += (std::isupper(str[i]) ? std::tolower(str[i]) : str[i]);
+    return lower;
 }

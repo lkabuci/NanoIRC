@@ -13,13 +13,12 @@ class Server {
   public:
     explicit Server(const char* port, const char* passwd);
     ~Server();
-    void        run();
-    const char* getPasswd() const;
+    void                      run();
+    static const std::string& getPasswd();
 
   private:
-    Socket      _sock;
-    const char* _port;
-    const char* _passwd;
+    Socket             _sock;
+    static std::string _passwd;
 };
 
 #endif // IRC_SERVER_HPP

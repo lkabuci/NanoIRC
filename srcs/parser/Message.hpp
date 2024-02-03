@@ -5,7 +5,6 @@
 
 #include "../client/Client.hpp"
 #include "../commands/Command.hpp"
-#include "ErrorReplies.hpp"
 #include "Lexer.hpp"
 #include "Parser.hpp"
 
@@ -15,41 +14,40 @@ class Message {
     Message(const std::string& message);
     ~Message();
 
-    // void parse(const std::string& message);
-    void parse(Client* client);
-    void execute(const std::string& password);
-
-    const std::string&              getCommand() const;
-    const std::vector<std::string>& getParameters() const;
-
-    static const std::string& getPassword();
+    void run(Client* client);
 
   private:
     Message(const Message&);
     Message& operator=(const Message&);
 
-    enum { MAX_MSG_LEN = 512, MAX_PARAMS = 15, CMDS_NBR = 8 };
+    enum { MAX_PARAMS = 15, CMDS_NBR = 16 };
 
     static TYPES::TokenType _commandTypes[CMDS_NBR];
     static std::string      _commandsStr[CMDS_NBR];
 
+    void _parse(const std::string& message);
+    void _execute(const std::string& msg);
+
     Client*                  _client;
-    std::string              _message;
     std::string              _cmd;
     std::vector<std::string> _parameters;
-    static std::string       _password;
     Command*                 _cmdfunc;
+    static uint8_t           _nbrOfParams;
+    bool                     _delete;
 
     TYPES::TokenType _whichCommand();
 
-    void _command();
-    void _params();
-    bool _nospcrlfcl();
-    void _trailing();
-    void _middle();
+    std::string _getMessage(std::string& msg);
+    void        _command();
+    void        _params();
+    bool        _nospcrlfcl();
+    void        _trailing();
+    void        _middle();
+    void        _crlf();
 
-    void _skipSpaces();
     bool _isCommand();
+
+    void _reset();
 };
 
 #endif

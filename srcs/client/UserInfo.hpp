@@ -9,17 +9,27 @@
 
 class UserInfo {
   public:
+    UserInfo();
+
+    enum { PASSWORD_SET = 1, NICK_SET = 2, USER_SET = 4 };
+
     const std::string& getUsername() const;
     void               setUsername(const std::string& username);
     const std::string& getNickname() const;
     void               setNickname(const std::string& nickname);
     const std::string& getRealname() const;
     void               setRealname(const std::string& realname);
+    const std::string& getPassword() const;
+    void               setPassword(const std::string& password);
+    bool               isSet(int flag);
+    bool               isRegistered();
 
   private:
+    std::string _password;
     std::string _username;
     std::string _nickname;
     std::string _realname;
+    int         _flags;
 };
 
 #endif // IRC_USERINFO_HPP
