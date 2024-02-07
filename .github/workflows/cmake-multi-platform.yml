@@ -16,24 +16,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # - name: Build and install Google Test
-      #   run: |
-      #     git clone https://github.com/google/googletest.git
-      #     cd googletest
-      #     cmake -Bbuild -DCMAKE_BUILD_TYPE=Release -S.
-      #     cmake --build build
-      #     sudo cmake --install build
-
-      - name: Install Dependecies
+      - name: Install Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y clang-format
-
-      # - name: Build and run unit tests
-      #   run: |
-      #     cmake -B build/ -DBUILD_TESTS=ON
-      #     make -C build/
-      #     ./build/unit_tests
 
       - name: Check Code Formatting
         run: |
@@ -44,7 +30,9 @@ jobs:
           echo -e "${YELLOW}+ Checking formatter${NC}"
           is_formatted=0
           for file in $(find srcs/ include/ -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \)); do
+              echo "Checking file: $file"
               output=$(clang-format --dry-run -Werror "$file" 2>&1)
+              echo "Output: $output"
               # Check if output contains any suggestions
               if [[ -n "${output//[$'\n\r ']}" ]]; then
                   echo -e "${RED}x ${NC}$(basename $file)"
@@ -56,4 +44,6 @@ jobs:
           if [[ $is_formatted -eq 1 ]]; then
               echo "Some files aren't properly formatted"
               exit 1
+          else
+              echo "All files are properly formatted"
           fi
