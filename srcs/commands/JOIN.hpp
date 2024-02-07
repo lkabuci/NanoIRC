@@ -7,20 +7,41 @@
 
 class JOIN : public Command {
   public:
-    JOIN();
-    JOIN(const JOIN& join);
+    explicit JOIN();
     virtual ~JOIN();
 
-    JOIN& operator=(const JOIN& join);
-
-    virtual void execute(const std::vector<std::string>& parameters);
+    virtual void execute(Client*                         client,
+                         const std::vector<std::string>& parameters);
 
   private:
+    JOIN(const JOIN& join);
+    JOIN& operator=(const JOIN& join);
+
     std::vector<std::string> _channels;
     std::vector<std::string> _keys;
+    Client*                  _sender;
 
     void _setChannels();
+    void _addChannel();
     void _setKeys();
+    void _addKey();
+    void _joinUser();
+    void _createChannel(const size_t& index);
+    void _addToChannel(Channel& channel, const size_t& index);
+    bool _channelIsInviteOnly(Channel& channel);
+    bool _keyIsCorrect(Channel& channel, const size_t& index);
+    bool _channelHasKey(Channel& channel);
+    void _addClientToChannel(Channel& channel, MEMBER_PERMISSION::Flags flag);
+    bool _userIsRegistered();
+    void _leaveAllChannels();
+    void _sendLeftReply(Channel& channel);
+    bool _validChannel(const std::string& channel);
+    void _joinWithoutAsk(Channel& channel);
+    void _addToChannelReply(Channel& channel);
+    std::string _getMembersList(Channel& channel);
+    bool        _isEnd();
+
+    void _tellMembers(Channel& channel);
 };
 
 #endif

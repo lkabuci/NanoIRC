@@ -5,20 +5,23 @@
 #include "Server.hpp"
 #include "Reactor.hpp"
 
-Server::Server(const char* port, const char* passwd)
-    : _sock(port), _port(port), _passwd(passwd) {
+std::string Server::_passwd;
+
+Server::Server(const char* port, const char* passwd) : _sock(port) {
+    _passwd = passwd;
     Utils::isAllDigits(port);
     pollfd serverPollfd = {_sock.getSocketFd(), POLLIN, 0};
     Reactor::getInstance().addPfds(serverPollfd);
 }
 
 void Server::run() {
-    Reactor::getInstance().run(_port);
+    Reactor::getInstance().run();
 }
 
-const char* Server::getPasswd() const {
+const std::string& Server::getPasswd() {
     return _passwd;
 }
+
 Server::~Server() {
     std::cout << "Closing server\n";
     close(_sock.getSocketFd());

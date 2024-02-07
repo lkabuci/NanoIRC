@@ -50,7 +50,7 @@ Token Lexer::getNextToken() {
         case ' ':
             return Token(TYPES::SPACE, " ");
         case ':':
-            return Token(TYPES::SEMICOLON, ":");
+            return Token(TYPES::COLON, ":");
         default:
             _letter();
             return _token;
@@ -120,5 +120,7 @@ std::map<std::string, TYPES::TokenType> Lexer::_init() {
     m["MODE"] = TYPES::MODE;
     m["PRIVMSG"] = TYPES::PRIVMSG;
     m["NOTICE"] = TYPES::NOTICE;
+    m["QUIT"] = TYPES::QUIT;
+    m["PONG"] = TYPES::PONG;
     return m;
 }
