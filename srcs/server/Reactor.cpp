@@ -8,6 +8,12 @@
 #include "../commands/QUIT.hpp"
 #include "../server/Server.hpp"
 
+char    Reactor::_hostname[];
+
+Reactor::Reactor() {
+    gethostname(_hostname, 1024);
+}
+
 Reactor& Reactor::getInstance() {
     static Reactor instance;
     return instance;
@@ -74,7 +80,7 @@ std::string Reactor::bot(Client* client) {
 }
 
 const char* Reactor::getServerName() {
-    return "ircserver";
+    return _hostname;
 }
 
 const char* Reactor::getTime() const {

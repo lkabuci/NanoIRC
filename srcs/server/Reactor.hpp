@@ -28,10 +28,13 @@ class Reactor {
     const char*          getTime() const;
 
   private:
+    Reactor();
+
     std::vector<Client*> _clients;
     std::vector<pollfd>  _pollfds;
     char*                _serverIp;
     Timer                _timer;
+    static char          _hostname[1024];
 };
 
 #endif // IRC_REACTOR_HPP
