@@ -8,7 +8,7 @@
 #include "../commands/QUIT.hpp"
 #include "../server/Server.hpp"
 
-char    Reactor::_hostname[];
+char Reactor::_hostname[];
 
 Reactor::Reactor() {
     gethostname(_hostname, 1024);

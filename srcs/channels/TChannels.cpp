@@ -7,7 +7,7 @@ size_t TChannels::size() {
 }
 
 void TChannels::remove(const std::string& name) {
-    std::map<std::string, Channel>::const_iterator channel_pos =
+    std::map<std::string, Channel>::iterator channel_pos =
         _channels.find(Utils::strToLower(name));
 
     if (channel_pos == _channels.end())

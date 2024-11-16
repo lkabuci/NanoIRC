@@ -7,8 +7,8 @@
 
 class INVITE : public Command {
   public:
-    INVITE(){};
-    ~INVITE(){};
+    INVITE() {};
+    ~INVITE() {};
     virtual void execute(Client*                         client,
                          const std::vector<std::string>& parameters);
 };

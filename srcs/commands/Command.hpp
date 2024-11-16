@@ -4,11 +4,11 @@
 #define __COMMAND_HPP__
 
 #include "../../include/IRC.h"
+#include "../Reply/Reply.hpp"
 #include "../Utils/Utils.hpp"
 #include "../channels/TChannels.hpp"
 #include "../client/ClientList.hpp"
 #include "../parser/Parser.hpp"
-#include "../reply/Reply.hpp"
 #include "../server/Reactor.hpp"
 
 class Command {
